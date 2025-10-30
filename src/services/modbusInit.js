@@ -10,7 +10,6 @@ import devicesConfig from '../config/devices.js';
  */
 export async function initModbus() {
   try {
-    // Группируем устройства по портам
     const devicesByPort = {};
     
     devicesConfig.forEach(device => {
@@ -37,13 +36,11 @@ export async function initModbus() {
       manager = new SimulatorManager({
         timeout: 100,
         retries: 3,
-        pollInterval: 2000 // интервал опроса в режиме симуляции
+        pollInterval: 5000 // интервал опроса в режиме симуляции
       });
 
-      // Подключаемся
       await manager.connect();
 
-      // Добавляем все устройства
       devicesConfig.forEach(device => {
         manager.addDevice({
           slaveId: device.slaveId,
@@ -54,13 +51,10 @@ export async function initModbus() {
         });
       });
 
-      // Запускаем опрос
       manager.startPolling();
       
       console.log('\n✓ Симулятор инициализирован и запущен\n');
     } else {
-      // Продакшн режим - используем реальный Modbus
-      // Создаем ModbusManager для каждого порта
       for (const [portKey, portData] of Object.entries(devicesByPort)) {
         const portConfig = portData.config;
         
@@ -82,7 +76,6 @@ export async function initModbus() {
         // Подключаемся к порту
         await manager.connect();
 
-        // Добавляем все устройства на этом порту
         portData.devices.forEach(device => {
           manager.addDevice({
             slaveId: device.slaveId,
@@ -93,7 +86,6 @@ export async function initModbus() {
           });
         });
 
-        // Запускаем опрос
         manager.startPolling();
       }
 

@@ -8,9 +8,6 @@ class SimulatorConnection {
     this.isConnected = false;
   }
 
-  /**
-   * Имитация подключения
-   */
   async connect() {
     try {
       this.isConnected = true;
@@ -23,9 +20,6 @@ class SimulatorConnection {
     }
   }
 
-  /**
-   * Имитация отключения
-   */
   async disconnect() {
     try {
       this.isConnected = false;

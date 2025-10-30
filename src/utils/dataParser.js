@@ -1,34 +1,18 @@
-/**
- * Утилита для парсинга данных разных типов из Modbus регистров
- */
-
-/**
- * Определяет количество регистров для чтения в зависимости от типа данных
- * @param {string} dataType - Тип данных
- * @returns {number} Количество регистров (каждый регистр = 16 бит = 2 байта)
- */
 export function getRegisterCount(dataType) {
   const typeMap = {
-    'bool': 1,      // 1 регистр
-    'int16': 1,     // 1 регистр
-    'uint16': 1,    // 1 регистр
-    'int32': 2,     // 2 регистра
-    'uint32': 2,    // 2 регистра
-    'float': 2,     // 2 регистра (32 бита)
-    'double': 4     // 4 регистра (64 бита)
+    'bool': 1,      
+    'int16': 1,     
+    'uint16': 1,    
+    'int32': 2,     
+    'uint32': 2,    
+    'float': 2,     
+    'double': 4     
   };
 
   return typeMap[dataType] || 1;
 }
 
-/**
- * Парсит сырые данные из регистров в нужный тип
- * @param {Array} data - Массив значений регистров
- * @param {string} dataType - Тип данных для парсинга
- * @param {string} byteOrder - Порядок байт: 'BE' (Big Endian) или 'LE' (Little Endian)
- * @param {string} wordOrder - Порядок слов: 'BE' (Big Endian) или 'LE' (Little Endian)
- * @returns {number|boolean} Распарсенное значение
- */
+
 export function parseData(data, dataType, byteOrder = 'BE', wordOrder = 'BE') {
   if (!data || data.length === 0) {
     return null;
@@ -54,7 +38,6 @@ export function parseData(data, dataType, byteOrder = 'BE', wordOrder = 'BE') {
     // Учитываем порядок слов для многорегистровых значений
     let registers = [...data];
     if (wordOrder === 'LE' && registers.length > 1) {
-      // Меняем порядок регистров (слов)
       registers = registers.reverse();
     }
     
@@ -81,7 +64,6 @@ export function parseData(data, dataType, byteOrder = 'BE', wordOrder = 'BE') {
         return byteOrder === 'BE' ? buffer.readDoubleBE(0) : buffer.readDoubleLE(0);
 
       default:
-        // Если тип не распознан, возвращаем первое значение
         return data[0];
     }
   } catch (error) {
@@ -90,12 +72,7 @@ export function parseData(data, dataType, byteOrder = 'BE', wordOrder = 'BE') {
   }
 }
 
-/**
- * Извлекает значение бита из числа
- * @param {number} value - Значение регистра
- * @param {number} bitIndex - Индекс бита (0-15)
- * @returns {boolean} Значение бита (true/false)
- */
+
 export function extractBit(value, bitIndex) {
   if (value === null || value === undefined) {
     return null;
@@ -106,16 +83,9 @@ export function extractBit(value, bitIndex) {
     return null;
   }
   
-  // Извлекаем бит через битовую маску
   return ((value >> bitIndex) & 1) === 1;
 }
 
-/**
- * Применяет масштабирование к значению
- * @param {number} value - Значение
- * @param {number} scale - Коэффициент масштабирования
- * @returns {number} Масштабированное значение
- */
 export function applyScale(value, scale = 1) {
   if (value === null || value === undefined) {
     return null;
@@ -127,22 +97,3 @@ export function applyScale(value, scale = 1) {
   
   return value * scale;
 }
-
-/**
- * Форматирует значение с единицей измерения
- * @param {number} value - Значение
- * @param {string} unit - Единица измерения
- * @returns {string} Отформатированная строка
- */
-export function formatValue(value, unit = '') {
-  if (value === null || value === undefined) {
-    return 'N/A';
-  }
-  
-  if (unit) {
-    return `${value} ${unit}`;
-  }
-  
-  return value.toString();
-}
-

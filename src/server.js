@@ -1,11 +1,11 @@
 import express from 'express';
-import { config } from './config/env.js';  // ← Добавить
+import { config } from './config/env.js';
 import connectDB from './utils/database.js';
 import { initModbus } from './services/modbusInit.js';
 import devicesRouter, { setModbusManager } from './routes/devices.js';
 
 const app = express();
-const { port, host } = config.server;  // ← Изменить
+const { port, host } = config.server;
 
 // Подключение к базе данных
 connectDB();

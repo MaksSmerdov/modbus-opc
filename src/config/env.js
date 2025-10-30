@@ -1,11 +1,7 @@
 import dotenv from 'dotenv';
 
-// Загружаем переменные окружения
 dotenv.config();
 
-/**
- * Конфигурация окружения
- */
 export const config = {
   // Режим работы
   env: process.env.NODE_ENV || 'development',
@@ -22,12 +18,6 @@ export const config = {
   database: {
     uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/modbus-opc'
   },
-
-  // Modbus
-  modbus: {
-    timeout: parseInt(process.env.MODBUS_TIMEOUT, 10) || 500,
-    retries: parseInt(process.env.MODBUS_RETRIES, 10) || 3
-  }
 };
 
 // Логируем текущую конфигурацию при запуске

@@ -26,26 +26,16 @@ class ModbusManager {
     this.pollTimer = null;
   }
 
-  /**
-   * Подключение к порту
-   */
   async connect() {
     return await this.connection.connect();
   }
 
-  /**
-   * Отключение от порта
-   */
   async disconnect() {
     this.stopPolling();
     this.saver.stopAllSaving(this.devices);
     await this.connection.disconnect();
   }
 
-  /**
-   * Добавление устройства для опроса
-   * @param {Object} device - Настройки устройства
-   */
   addDevice(device) {
     if (!device.slaveId || device.slaveId < 1 || device.slaveId > 247) {
       throw new Error('slaveId должен быть от 1 до 247');
@@ -75,10 +65,6 @@ class ModbusManager {
     return deviceConfig;
   }
 
-  /**
-   * Удаление устройства
-   * @param {number} slaveId - ID устройства
-   */
   removeDevice(slaveId) {
     const index = this.devices.findIndex(d => d.slaveId === slaveId);
     if (index !== -1) {
@@ -90,9 +76,6 @@ class ModbusManager {
     return false;
   }
 
-  /**
-   * Запуск автоматического опроса
-   */
   startPolling() {
     if (this.isPolling) {
       return;
@@ -113,9 +96,6 @@ class ModbusManager {
     poll();
   }
 
-  /**
-   * Остановка автоматического опроса
-   */
   stopPolling() {
     if (this.pollTimer) {
       clearTimeout(this.pollTimer);
@@ -124,9 +104,6 @@ class ModbusManager {
     this.isPolling = false;
   }
 
-  /**
-   * Получение статуса всех устройств
-   */
   getDevicesStatus() {
     return this.devices.map(device => ({
       slaveId: device.slaveId,

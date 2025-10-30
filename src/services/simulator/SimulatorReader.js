@@ -10,11 +10,6 @@ class SimulatorReader {
     this.lastValues = new Map();
   }
 
-  /**
-   * Генерирует случайное значение в зависимости от типа данных
-   * @param {Object} register - Конфигурация регистра
-   * @returns {number|boolean} Сгенерированное значение
-   */
   generateValue(register) {
     const key = `${register.address}_${register.bitIndex || 0}`;
     

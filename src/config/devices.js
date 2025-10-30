@@ -76,7 +76,7 @@ const devicesConfig = [
     timeout: 500,
     retries: 3,
     saveInterval: 30000,
-    logData: false,
+    logData: true,
     registers: deaeratorRegisters
   },
  

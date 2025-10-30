@@ -18,9 +18,6 @@ class ModbusConnection {
     this.isConnected = false;
   }
 
-  /**
-   * Подключение к порту
-   */
   async connect() {
     try {
       if (this.connectionType === 'RTU') {
@@ -48,9 +45,6 @@ class ModbusConnection {
     }
   }
 
-  /**
-   * Отключение от порта
-   */
   async disconnect() {
     try {
       if (this.client.isOpen) {

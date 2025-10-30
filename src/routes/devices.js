@@ -6,9 +6,6 @@ const router = express.Router();
 
 let modbusManager = null;
 
-/**
- * Устанавливает ссылку на ModbusManager
- */
 export function setModbusManager(manager) {
   modbusManager = manager;
 }
@@ -24,14 +21,9 @@ function isDataFresh(device) {
   }
   const now = new Date();
   const diff = now - device.lastSuccess;
-  return diff < 60000; // 60 секунд
+  return diff < 60000;
 }
 
-/**
- * Получить данные устройства с проверкой актуальности
- * @param {Object} device - Устройство
- * @returns {Object} Данные устройства или null если устарели
- */
 function getDeviceData(device) {
   if (!isDataFresh(device)) {
     return null;
@@ -69,7 +61,6 @@ router.get('/:deviceName-data', (req, res) => {
     return res.status(503).json({ error: 'Modbus не инициализирован' });
   }
 
-  // Преобразуем имя из URL (boiler1 -> Boiler1)
   const deviceName = req.params.deviceName;
   
   const device = modbusManager.devices.find(d => 

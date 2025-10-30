@@ -9,10 +9,6 @@ class ModbusPoller {
     this.retries = retries;
   }
 
-  /**
-   * Опрос одного устройства
-   * @param {Object} device - Устройство
-   */
   async pollDevice(device) {
     if (!this.reader.connection.isConnected) {
       console.warn('⚠ Нет подключения к Modbus');
@@ -23,19 +19,16 @@ class ModbusPoller {
       const results = [];
       let hasError = false;
       
-      // Читаем все регистры устройства
       for (const register of device.registers) {
         const result = await this.reader.readRegister(device, register);
         results.push(result);
         
-        // Если первый регистр не читается, прерываем опрос устройства
         if (!result.success && results.length === 1) {
           hasError = true;
           break;
         }
       }
 
-      // Если была ошибка на первом регистре, увеличиваем счетчик и выходим
       if (hasError) {
         device.failCount++;
         device.lastError = results[0].error;
@@ -46,22 +39,18 @@ class ModbusPoller {
           console.warn(`⚠ ${device.name} не отвечает (${device.failCount}/${this.retries})`);
         }
         
-        // Добавляем задержку после ошибки, чтобы дать порту восстановиться
         await this.delay(100);
         
         return { success: false, device, error: results[0].error };
       }
 
-      // Обновляем данные устройства, группируя по категориям
       device.data = {};
       results.forEach(r => {
         if (r.success) {
-          // Создаем категорию, если её нет
           if (!device.data[r.category]) {
             device.data[r.category] = {};
           }
           
-          // Для булевых значений и битовых полей - только value, для остальных - value + unit
           if (r.dataType === 'bool' || r.bitIndex !== undefined) {
             device.data[r.category][r.key] = {
               value: r.value
@@ -138,32 +127,26 @@ class ModbusPoller {
     }
 
     for (const device of devices) {
-      // Если устройство не отвечает много раз
       if (device.failCount >= this.retries) {
-        // Проверяем, прошло ли 60 секунд с последней попытки
         const now = Date.now();
         const shouldRetry = !device.lastRetryAttempt || 
-                            (now - device.lastRetryAttempt >= 60000); // 60 секунд
+                            (now - device.lastRetryAttempt >= 60000); 
         
         if (!shouldRetry) {
-          continue; // Пропускаем до следующей попытки
+          continue;
         }
         
-        // Сбрасываем время последней попытки
         device.lastRetryAttempt = now;
       }
     
       try {
-        // Оборачиваем в try-catch, чтобы ошибка одного устройства не останавливала опрос других
         await this.pollDevice(device);
       } catch (error) {
         device.failCount++;
         device.lastError = error.message;
-        // Увеличенная задержка после критической ошибки
         await this.delay(200);
       }
       
-      // Небольшая задержка между устройствами на одном порту
       await this.delay(100);
     }
   }

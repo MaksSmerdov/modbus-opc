@@ -9,18 +9,11 @@ class ModbusReader {
     this.timeout = timeout;
   }
 
-  /**
-   * Чтение регистров с устройства
-   * @param {Object} device - Устройство
-   * @param {Object} register - Регистр для чтения
-   */
   async readRegister(device, register) {
     try {
-      // Устанавливаем таймаут перед каждым запросом
       this.connection.client.setTimeout(this.timeout);
       this.connection.client.setID(device.slaveId);
       
-      // Определяем количество регистров для чтения на основе типа данных
       const length = getRegisterCount(register.dataType);
       
       let result;

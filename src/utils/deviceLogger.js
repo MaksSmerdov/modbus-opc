@@ -2,10 +2,6 @@
  * Утилита для вывода данных устройств в консоль
  */
 
-/**
- * Форматированный вывод данных устройства в консоль
- * @param {Object} device - Устройство с данными
- */
 export function logDeviceData(device) {
   console.log(`\n┌─────────────────────────────────────────────────────────────`);
   console.log(`│ 📊 ${device.name.toUpperCase()} (ID: ${device.slaveId})`);
@@ -31,11 +27,6 @@ export function logDeviceData(device) {
 
 }
 
-/**
- * Получает иконку для категории
- * @param {string} category - Название категории
- * @returns {string} Иконка
- */
 function getCategoryIcon(category) {
   const icons = {
     'alarms': '🚨',
@@ -49,25 +40,17 @@ function getCategoryIcon(category) {
   return icons[category] || '📁';
 }
 
-/**
- * Форматирует значение параметра для вывода
- * @param {Object} data - Данные параметра
- * @returns {string} Отформатированная строка
- */
 function formatValue(data) {
   if (typeof data.value === 'boolean') {
-    // Булевы значения
     return data.value ? '✅ true' : '❌ false';
   }
   
-  // Числовые значения
   let result = `${data.value}`;
   
   if (data.unit) {
     result += ` ${data.unit}`;
   }
   
-  // Добавляем индикатор аварии
   if (data.isAlarm !== undefined) {
     result += data.isAlarm ? ' ⚠️ ALARM' : ' ✓';
   }
@@ -75,10 +58,6 @@ function formatValue(data) {
   return result;
 }
 
-/**
- * Компактный вывод данных (одной строкой для каждого устройства)
- * @param {Object} device - Устройство с данными
- */
 export function logDeviceDataCompact(device) {
   const timestamp = new Date().toLocaleTimeString('ru-RU');
   const alarmsCount = countAlarms(device.data);
@@ -87,11 +66,6 @@ export function logDeviceDataCompact(device) {
   console.log(`${statusIcon} [${timestamp}] ${device.name} | Аварии: ${alarmsCount}`);
 }
 
-/**
- * Подсчитывает количество активных аварий
- * @param {Object} data - Данные устройства
- * @returns {number} Количество аварий
- */
 function countAlarms(data) {
   let count = 0;
   
@@ -104,7 +78,6 @@ function countAlarms(data) {
     }
   }
   
-  // Считаем параметры с isAlarm = true
   for (const category of Object.values(data)) {
     for (const param of Object.values(category)) {
       if (param.isAlarm === true) {
