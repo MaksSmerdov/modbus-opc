@@ -1,4 +1,5 @@
 import { boilerRegisters } from './boiler.js';
+export { boilerRegisters } from './boiler.js';
 
 /**
  * Регистры
@@ -33,7 +34,6 @@ import { boilerRegisters } from './boiler.js';
  * isAlarm появляется только если указаны minValue или maxValue
  * isAlarm = true, если value < minValue или value > maxValue
  */
-export { boilerRegisters } from './boiler.js';
 
 export const registersByType = {
   boiler: boilerRegisters

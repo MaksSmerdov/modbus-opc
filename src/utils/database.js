@@ -1,29 +1,14 @@
 import mongoose from 'mongoose';
-import dbConfig from '../config/database.js';
+import { config } from '../config/env.js';
 
-/**
- * Подключение к MongoDB
- */
-const connectDB = async () => {
+async function connectDB() {
   try {
-    await mongoose.connect(dbConfig.uri, dbConfig.options);
-    console.log('✓ Подключение к MongoDB успешно установлено');
+    await mongoose.connect(config.database.uri);
+    console.log('✓ MongoDB подключен');
   } catch (error) {
     console.error('✗ Ошибка подключения к MongoDB:', error.message);
     process.exit(1);
   }
-};
-
-/**
- * Обработка событий подключения
- */
-mongoose.connection.on('disconnected', () => {
-  console.log('⚠ MongoDB отключена');
-});
-
-mongoose.connection.on('error', (error) => {
-  console.error('✗ Ошибка MongoDB:', error.message);
-});
+}
 
 export default connectDB;
-

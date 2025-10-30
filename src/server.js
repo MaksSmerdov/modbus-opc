@@ -1,10 +1,11 @@
 import express from 'express';
+import { config } from './config/env.js';  // ← Добавить
 import connectDB from './utils/database.js';
 import { initModbus } from './services/modbusInit.js';
 import devicesRouter, { setModbusManager } from './routes/devices.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const { port, host } = config.server;  // ← Изменить
 
 // Подключение к базе данных
 connectDB();
@@ -28,15 +29,20 @@ app.use(express.urlencoded({ extended: true }));
 
 // Базовый маршрут
 app.get('/', (req, res) => {
-  res.json({ message: 'Modbus OPC Server is running' });
+  res.json({ 
+    message: 'Modbus OPC Server is running',
+    environment: config.env,
+    host: host,
+    port: port
+  });
 });
 
 // Подключаем роуты устройств
 app.use('/api', devicesRouter);
 
 // Запуск сервера
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
+app.listen(port, host, () => { 
+  console.log(`✓ API доступен на http://${host}:${port}/api/devices`);
 });
 
 // Корректное завершение при выходе
@@ -47,4 +53,3 @@ process.on('SIGINT', async () => {
   }
   process.exit(0);
 });
-
