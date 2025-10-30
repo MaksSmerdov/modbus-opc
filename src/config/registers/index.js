@@ -3,7 +3,7 @@ import { imRegisters } from './boiler/im.js';
 import { othersRegisters } from './boiler/others.js';
 
 /**
- * Регистры для котла
+ * Регистры
  * 
  * Поля:
  * - key: название параметра (используется в API)
@@ -16,12 +16,18 @@ import { othersRegisters } from './boiler/others.js';
  * - scale: коэффициент масштабирования, по умолчанию 1
  * - decimals: количество знаков после запятой, по умолчанию 0
  * - unit: единица измерения (не обязательно для bool)
+ * - minValue: минимальная допустимая уставка (необязательно, только для числовых типов)
+ * - maxValue: максимальная допустимая уставка (необязательно, только для числовых типов)
  * 
  * Примечание: для bool типа unit не используется в API
  * 
  * Примеры структуры в API:
- * Числовые: { "value": 150, "unit": "мм" }
- * Булевы:   { "value": true }
+ * Числовые без уставок: { "value": 150, "unit": "мм" }
+ * Числовые с уставками: { "value": 150, "unit": "мм", "isAlarm": false }
+ * Булевы:               { "value": true }
+ * 
+ * isAlarm появляется только если указаны minValue или maxValue
+ * isAlarm = true, если value < minValue или value > maxValue
  */
 
 export const boilerRegisters = [

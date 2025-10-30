@@ -5,7 +5,7 @@ export const imRegisters = [
       type: 'holding',
       address: 0x0010,
       dataType: 'float',
-      unit: '%'
+      unit: '%',
     },
     {
       key: 'ИМ разрежения',
@@ -13,7 +13,7 @@ export const imRegisters = [
       type: 'holding',
       address: 0x0012,
       dataType: 'float',
-      unit: '%'
+      unit: '%',
     },
     {
       key: 'ИМ воздуха',
@@ -21,7 +21,7 @@ export const imRegisters = [
       type: 'holding',
       address: 0x0014,
       dataType: 'float',
-      unit: '%'
+      unit: '%',
     },
     {
       key: 'ИМ газа',
@@ -29,7 +29,7 @@ export const imRegisters = [
       type: 'holding',
       address: 0x0016,
       dataType: 'float',
-      unit: '%'
+      unit: '%',
     },
   ];
   

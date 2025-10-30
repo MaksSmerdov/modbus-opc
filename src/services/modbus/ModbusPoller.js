@@ -65,10 +65,28 @@ class ModbusPoller {
               value: r.value
             };
           } else {
-            device.data[r.category][r.key] = {
+            const paramData = {
               value: r.value,
               unit: r.unit || ''
             };
+            
+            // Проверяем уставки, если они заданы
+            if (r.minValue !== undefined || r.maxValue !== undefined) {
+              let isAlarm = false;
+              
+              if (r.value !== null && typeof r.value === 'number') {
+                if (r.minValue !== undefined && r.value < r.minValue) {
+                  isAlarm = true;
+                }
+                if (r.maxValue !== undefined && r.value > r.maxValue) {
+                  isAlarm = true;
+                }
+              }
+              
+              paramData.isAlarm = isAlarm;
+            }
+            
+            device.data[r.category][r.key] = paramData;
           }
         }
       });

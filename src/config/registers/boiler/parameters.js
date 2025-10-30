@@ -5,7 +5,9 @@ export const parametersRegisters = [
       type: 'holding',
       address: 6,
       dataType: 'int16',
-      unit: 'мм'
+      unit: 'мм',
+      minValue: -100,
+      maxValue: 100
     },
     {
       key: 'Разрежение в топке котла',
@@ -15,7 +17,7 @@ export const parametersRegisters = [
       dataType: 'float',
       byteOrder: 'BE',
       decimals: 1,
-      unit: 'кг/м²'
+      unit: 'кг/м²',
     },
     {
       key: 'Давление воздуха перед горелкой',
@@ -24,7 +26,7 @@ export const parametersRegisters = [
       address: 10,
       dataType: 'float',
       byteOrder: 'BE',
-      unit: 'кг/м²'
+      unit: 'кг/м²',
     },
     {
       key: 'Давление газа перед горелкой',
@@ -33,7 +35,7 @@ export const parametersRegisters = [
       address: 12,
       dataType: 'float',
       byteOrder: 'BE',
-      unit: 'кг/м²'
+      unit: 'кг/м²',
     },
     {
       key: 'Давление пара на выходе',
@@ -43,7 +45,7 @@ export const parametersRegisters = [
       dataType: 'float',
       byteOrder: 'BE',
       decimals: 1,
-      unit: 'кг/см²'
+      unit: 'кг/см²',
     }
   ];
   

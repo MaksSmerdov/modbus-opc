@@ -72,7 +72,9 @@ class ModbusReader {
         dataType: register.dataType,
         rawValue: result.data,
         value: parsedValue,
-        unit: register.unit || ''
+        unit: register.unit || '',
+        minValue: register.minValue,
+        maxValue: register.maxValue
       };
     } catch (error) {
       // Очищаем буферы после ошибки
