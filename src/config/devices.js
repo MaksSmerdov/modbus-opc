@@ -1,4 +1,4 @@
-import { boilerRegisters } from './registers/boiler.js';
+import { boilerRegisters } from './registers/index.js';
 
 /**
  * Конфигурация устройств
@@ -20,7 +20,7 @@ import { boilerRegisters } from './registers/boiler.js';
 
 const devicesConfig = [
   {
-    name: 'Boiler1',
+    name: 'boiler1',
     slaveId: 1,
     port: 'COM16',
     connectionType: 'RTU',
@@ -34,7 +34,7 @@ const devicesConfig = [
     registers: boilerRegisters
   },
   {
-    name: 'Boiler2',
+    name: 'boiler2',
     slaveId: 2,
     port: 'COM16',
     connectionType: 'RTU',
@@ -48,7 +48,7 @@ const devicesConfig = [
     registers: boilerRegisters
   },
   {
-    name: 'Boiler3',
+    name: 'boiler3',
     slaveId: 3,
     port: 'COM16',
     connectionType: 'RTU',

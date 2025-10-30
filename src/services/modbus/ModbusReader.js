@@ -49,17 +49,19 @@ class ModbusReader {
 
       // Парсим данные в соответствии с типом
       const byteOrder = register.byteOrder || 'BE';
-      const wordOrder = register.wordOrder || 'BE';
+      const wordOrder = register.wordOrder || 'LE';
       let parsedValue = parseData(result.data, register.dataType, byteOrder, wordOrder);
       
-      // Применяем масштабирование, если указано
-      if (register.scale !== undefined && parsedValue !== null) {
-        parsedValue = applyScale(parsedValue, register.scale);
+      // Применяем масштабирование (по умолчанию scale = 1)
+      const scale = register.scale !== undefined ? register.scale : 1;
+      if (parsedValue !== null) {
+        parsedValue = applyScale(parsedValue, scale);
       }
 
-      // Применяем округление, если указано
-      if (register.decimals !== undefined && parsedValue !== null && typeof parsedValue === 'number') {
-        parsedValue = Number(parsedValue.toFixed(register.decimals));
+      // Применяем округление (по умолчанию decimals = 0)
+      const decimals = register.decimals !== undefined ? register.decimals : 0;
+      if (parsedValue !== null && typeof parsedValue === 'number') {
+        parsedValue = Number(parsedValue.toFixed(decimals));
       }
 
       return {

@@ -38,8 +38,10 @@ class ModbusPoller {
         device.failCount++;
         device.lastError = results[0].error;
         
-        if (device.failCount >= this.retries) {
-          console.warn(`⊘ ${device.name} не отвечает`);
+        if (device.failCount > this.retries) {
+          console.warn(`⊘ ${device.name} не отвечает, ожидание переподключения...`);
+        } else {
+          console.warn(`⚠ ${device.name} не отвечает (${device.failCount}/${this.retries})`);
         }
         
         // Добавляем задержку после ошибки, чтобы дать порту восстановиться
@@ -71,6 +73,11 @@ class ModbusPoller {
         }
       });
 
+      // Если устройство восстановилось после отключения
+      if (device.failCount > 0) {
+        console.log(`✓ ${device.name} - связь восстановлена`);
+      }
+      
       device.failCount = 0;
       device.lastSuccess = new Date();
       device.lastError = null;
@@ -81,8 +88,10 @@ class ModbusPoller {
       device.failCount++;
       device.lastError = error.message;
       
-      if (device.failCount >= this.retries) {
-        console.warn(`⊘ ${device.name} не отвечает`);
+      if (device.failCount > this.retries) {
+        console.warn(`⊘ ${device.name} не отвечает, ожидание переподключения...`);
+      } else {
+        console.warn(`⚠ ${device.name} не отвечает (${device.failCount}/${this.retries})`);
       }
 
       return { success: false, device, error: error.message };
@@ -104,11 +113,21 @@ class ModbusPoller {
     }
 
     for (const device of devices) {
-      // Пропускаем устройство, если оно не отвечает много раз
+      // Если устройство не отвечает много раз
       if (device.failCount >= this.retries) {
-        continue;
+        // Проверяем, прошло ли 60 секунд с последней попытки
+        const now = Date.now();
+        const shouldRetry = !device.lastRetryAttempt || 
+                            (now - device.lastRetryAttempt >= 60000); // 60 секунд
+        
+        if (!shouldRetry) {
+          continue; // Пропускаем до следующей попытки
+        }
+        
+        // Сбрасываем время последней попытки
+        device.lastRetryAttempt = now;
       }
-
+    
       try {
         // Оборачиваем в try-catch, чтобы ошибка одного устройства не останавливала опрос других
         await this.pollDevice(device);

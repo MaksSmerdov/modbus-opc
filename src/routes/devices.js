@@ -70,9 +70,8 @@ router.get('/:deviceName-data', (req, res) => {
   }
 
   // Преобразуем имя из URL (boiler1 -> Boiler1)
-  const deviceNameFromUrl = req.params.deviceName;
-  const deviceName = deviceNameFromUrl.charAt(0).toUpperCase() + deviceNameFromUrl.slice(1);
-
+  const deviceName = req.params.deviceName;
+  
   const device = modbusManager.devices.find(d => 
     d.name.toLowerCase() === deviceName.toLowerCase()
   );

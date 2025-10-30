@@ -60,6 +60,7 @@ class ModbusManager {
       lastSuccess: null,
       lastError: null,
       lastSave: null,
+      lastRetryAttempt: null,
       data: {},
       saveTimer: null
     };
