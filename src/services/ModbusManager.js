@@ -56,6 +56,7 @@ class ModbusManager {
       name: device.name || `Device_${device.slaveId}`,
       registers: device.registers || [],
       saveInterval: device.saveInterval || 30000,
+      logData: device.logData || false,
       failCount: 0,
       lastSuccess: null,
       lastError: null,

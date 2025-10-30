@@ -1,3 +1,5 @@
+import { logDeviceData } from '../../utils/deviceLogger.js';
+
 /**
  * Класс для опроса Modbus устройств
  */
@@ -99,6 +101,11 @@ class ModbusPoller {
       device.failCount = 0;
       device.lastSuccess = new Date();
       device.lastError = null;
+      
+      // Выводим данные в консоль, если включен флаг logData
+      if (device.logData) {
+        logDeviceData(device);
+      }
       
       return { success: true, device, results };
 

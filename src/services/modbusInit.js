@@ -49,7 +49,8 @@ export async function initModbus() {
           slaveId: device.slaveId,
           name: device.name,
           registers: device.registers,
-          saveInterval: device.saveInterval || 30000
+          saveInterval: device.saveInterval || 30000,
+          logData: device.logData || false
         });
       });
 
@@ -87,7 +88,8 @@ export async function initModbus() {
             slaveId: device.slaveId,
             name: device.name,
             registers: device.registers,
-            saveInterval: device.saveInterval || 30000
+            saveInterval: device.saveInterval || 30000,
+            logData: device.logData || false
           });
         });
 

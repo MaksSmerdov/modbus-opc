@@ -16,6 +16,7 @@ import {deaeratorRegisters} from './registers/index.js';
  * - timeout: таймаут ответа устройства (мс)
  * - retries: количество попыток перед пропуском
  * - saveInterval: интервал сохранения в БД (мс), по умолчанию 30000
+ * - logData: выводить данные в консоль (по умолчанию false)
  * - registers: ссылка на файл регистров
  */
 
@@ -32,6 +33,7 @@ const devicesConfig = [
     timeout: 500,
     retries: 3,
     saveInterval: 30000,
+    logData: false, 
     registers: boilerRegisters
   },
   {
@@ -74,6 +76,7 @@ const devicesConfig = [
     timeout: 500,
     retries: 3,
     saveInterval: 30000,
+    logData: false,
     registers: deaeratorRegisters
   },
  
