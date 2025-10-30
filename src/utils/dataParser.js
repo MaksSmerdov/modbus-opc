@@ -91,6 +91,26 @@ export function parseData(data, dataType, byteOrder = 'BE', wordOrder = 'BE') {
 }
 
 /**
+ * Извлекает значение бита из числа
+ * @param {number} value - Значение регистра
+ * @param {number} bitIndex - Индекс бита (0-15)
+ * @returns {boolean} Значение бита (true/false)
+ */
+export function extractBit(value, bitIndex) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  
+  if (bitIndex < 0 || bitIndex > 15) {
+    console.error(`Недопустимый индекс бита: ${bitIndex}. Должен быть от 0 до 15.`);
+    return null;
+  }
+  
+  // Извлекаем бит через битовую маску
+  return ((value >> bitIndex) & 1) === 1;
+}
+
+/**
  * Применяет масштабирование к значению
  * @param {number} value - Значение
  * @param {number} scale - Коэффициент масштабирования

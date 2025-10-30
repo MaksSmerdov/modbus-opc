@@ -59,8 +59,8 @@ class ModbusPoller {
             device.data[r.category] = {};
           }
           
-          // Для булевых значений - только value, для остальных - value + unit
-          if (r.dataType === 'bool') {
+          // Для булевых значений и битовых полей - только value, для остальных - value + unit
+          if (r.dataType === 'bool' || r.bitIndex !== undefined) {
             device.data[r.category][r.key] = {
               value: r.value
             };

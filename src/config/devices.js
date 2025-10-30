@@ -1,4 +1,4 @@
-import { boilerRegisters } from './registers/index.js';
+import {boilerRegisters} from './registers/index.js';
 
 /**
  * Конфигурация устройств

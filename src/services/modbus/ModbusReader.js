@@ -1,4 +1,4 @@
-import { getRegisterCount, parseData, applyScale } from '../../utils/dataParser.js';
+import { getRegisterCount, parseData, applyScale, extractBit } from '../../utils/dataParser.js';
 
 /**
  * Класс для чтения данных из Modbus устройств
@@ -52,16 +52,21 @@ class ModbusReader {
       const wordOrder = register.wordOrder || 'LE';
       let parsedValue = parseData(result.data, register.dataType, byteOrder, wordOrder);
       
-      // Применяем масштабирование (по умолчанию scale = 1)
-      const scale = register.scale !== undefined ? register.scale : 1;
-      if (parsedValue !== null) {
-        parsedValue = applyScale(parsedValue, scale);
-      }
+      // Если указан битовый индекс, извлекаем бит из значения
+      if (register.bitIndex !== undefined) {
+        parsedValue = extractBit(parsedValue, register.bitIndex);
+      } else {
+        // Применяем масштабирование (по умолчанию scale = 1) - только для не-битовых значений
+        const scale = register.scale !== undefined ? register.scale : 1;
+        if (parsedValue !== null) {
+          parsedValue = applyScale(parsedValue, scale);
+        }
 
-      // Применяем округление (по умолчанию decimals = 0)
-      const decimals = register.decimals !== undefined ? register.decimals : 0;
-      if (parsedValue !== null && typeof parsedValue === 'number') {
-        parsedValue = Number(parsedValue.toFixed(decimals));
+        // Применяем округление (по умолчанию decimals = 0) - только для не-битовых значений
+        const decimals = register.decimals !== undefined ? register.decimals : 0;
+        if (parsedValue !== null && typeof parsedValue === 'number') {
+          parsedValue = Number(parsedValue.toFixed(decimals));
+        }
       }
 
       return {
@@ -74,7 +79,8 @@ class ModbusReader {
         value: parsedValue,
         unit: register.unit || '',
         minValue: register.minValue,
-        maxValue: register.maxValue
+        maxValue: register.maxValue,
+        bitIndex: register.bitIndex
       };
     } catch (error) {
       // Очищаем буферы после ошибки
