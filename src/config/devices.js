@@ -1,4 +1,5 @@
 import {boilerRegisters} from './registers/index.js';
+import {deaeratorRegisters} from './registers/index.js';
 
 /**
  * Конфигурация устройств
@@ -60,6 +61,20 @@ const devicesConfig = [
     retries: 3,
     saveInterval: 30000,
     registers: boilerRegisters
+  },
+  {
+    name: 'deaerator',
+    slaveId: 4,
+    port: 'COM16',
+    connectionType: 'RTU',
+    baudRate: 57600,
+    dataBits: 8,
+    stopBits: 1,
+    parity: 'none',
+    timeout: 500,
+    retries: 3,
+    saveInterval: 30000,
+    registers: deaeratorRegisters
   },
  
 ];

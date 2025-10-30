@@ -1,5 +1,7 @@
 import { boilerRegisters } from './boiler.js';
-export { boilerRegisters } from './boiler.js';
+export { boilerRegisters } from './boiler.js';  
+import { deaeratorRegisters } from './deaerator.js';
+export { deaeratorRegisters } from './deaerator.js';
 
 /**
  * Регистры
@@ -36,6 +38,7 @@ export { boilerRegisters } from './boiler.js';
  */
 
 export const registersByType = {
-  boiler: boilerRegisters
+  boiler: boilerRegisters,
+  deaerator: deaeratorRegisters
 };
 
