@@ -7,9 +7,7 @@
  * 
  * Регистр 0x0001 (адрес 1):
  * - Биты 0-9:   Информация (infoMap) → категория 'info'
- * 
- * Регистры автоматически генерируются из карт ниже
- * Чтобы использовать эти регистры, раскомментируйте импорт в index.js
+ *
  */
 
 // Карта аварий - регистр 0x0000, биты 0-12, категория 'alarms'
@@ -29,14 +27,12 @@ export const alarmsMap = {
   'Пламя запальника погасло': 12,
 };
 
-// Доп. информация - регистр 0x0000, биты 13-15, категория 'info'
 export const extraInfoMap = {
   'Клапан запальника': 13,
   'Искрообразование': 14,
   'Розжиг запальника': 15,
 };
 
-// Основная информация - регистр 0x0001, биты 0-9, категория 'info'
 export const infoMap = {
   'Останов котла': 0,
   'Режим вентиляции': 1,
@@ -70,8 +66,8 @@ function generateBitRegisters(bitMap, address, category) {
 
 // Автоматическая генерация регистров из карт
 export const statusRegisters = [
-  ...generateBitRegisters(alarmsMap, 0x0000, 'alarms'),      // Аварии из регистра 0x0000
-  ...generateBitRegisters(extraInfoMap, 0x0000, 'info'),     // Доп. инфо из регистра 0x0000
-  ...generateBitRegisters(infoMap, 0x0001, 'info')           // Инфо из регистра 0x0001
+  ...generateBitRegisters(alarmsMap, 0x0000, 'alarms'),
+  ...generateBitRegisters(extraInfoMap, 0x0000, 'info'),
+  ...generateBitRegisters(infoMap, 0x0001, 'info')
 ];
 

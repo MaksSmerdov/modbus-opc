@@ -87,10 +87,6 @@ router.get('/:deviceName-data', (req, res) => {
  * - limit: количество записей (по умолчанию 100)
  * - from: начальная дата (ISO string или DD.MM.YYYY)
  * - to: конечная дата (ISO string или DD.MM.YYYY)
- * 
- * Примеры: 
- * /api/boiler1-history?limit=50
- * /api/boiler1-history?from=2025-10-30T00:00:00Z&to=2025-10-30T23:59:59Z
  */
 router.get('/:deviceName-history', async (req, res) => {
   try {

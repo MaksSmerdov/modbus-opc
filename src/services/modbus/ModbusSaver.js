@@ -9,12 +9,7 @@ class ModbusSaver {
     this.retries = retries;
   }
 
-  /**
-   * Сохранение данных устройства в БД
-   * @param {Object} device - Устройство
-   */
   async saveDeviceData(device) {
-    // Пропускаем, если нет данных или устройство не отвечает
     if (!device.data || Object.keys(device.data).length === 0) {
       return;
     }
@@ -24,7 +19,6 @@ class ModbusSaver {
     }
 
     try {
-      // Получаем модель для конкретного устройства (создает отдельную коллекцию)
       const DeviceModel = getDeviceModel(device.name);
       
       const now = new Date();
@@ -42,10 +36,6 @@ class ModbusSaver {
     }
   }
 
-  /**
-   * Запуск автоматического сохранения для устройства
-   * @param {Object} device - Устройство
-   */
   startDeviceSaving(device) {
     if (device.saveTimer) {
       return;
@@ -62,10 +52,6 @@ class ModbusSaver {
     device.saveTimer = setTimeout(save, device.saveInterval);
   }
 
-  /**
-   * Остановка автоматического сохранения для устройства
-   * @param {Object} device - Устройство
-   */
   stopDeviceSaving(device) {
     if (device.saveTimer) {
       clearTimeout(device.saveTimer);
@@ -73,9 +59,6 @@ class ModbusSaver {
     }
   }
 
-  /**
-   * Остановка всех таймеров сохранения
-   */
   stopAllSaving(devices) {
     devices.forEach(device => {
       this.stopDeviceSaving(device);

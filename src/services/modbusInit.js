@@ -73,7 +73,6 @@ export async function initModbus() {
           pollInterval: 5000 // интервал опроса всех устройств
         });
 
-        // Подключаемся к порту
         await manager.connect();
 
         portData.devices.forEach(device => {

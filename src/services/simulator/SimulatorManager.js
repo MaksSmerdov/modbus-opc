@@ -94,17 +94,6 @@ class SimulatorManager {
     this.isPolling = false;
   }
 
-  getDevicesStatus() {
-    return this.devices.map(device => ({
-      slaveId: device.slaveId,
-      name: device.name,
-      failCount: device.failCount,
-      lastSuccess: device.lastSuccess,
-      lastError: device.lastError,
-      isResponding: device.failCount < this.retries,
-      data: device.data
-    }));
-  }
 }
 
 export default SimulatorManager;

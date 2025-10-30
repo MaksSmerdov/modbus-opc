@@ -57,35 +57,3 @@ function formatValue(data) {
   
   return result;
 }
-
-export function logDeviceDataCompact(device) {
-  const timestamp = new Date().toLocaleTimeString('ru-RU');
-  const alarmsCount = countAlarms(device.data);
-  const statusIcon = alarmsCount > 0 ? '⚠️' : '✅';
-  
-  console.log(`${statusIcon} [${timestamp}] ${device.name} | Аварии: ${alarmsCount}`);
-}
-
-function countAlarms(data) {
-  let count = 0;
-  
-  // Считаем аварии из категории alarms
-  if (data.alarms) {
-    for (const param of Object.values(data.alarms)) {
-      if (param.value === true) {
-        count++;
-      }
-    }
-  }
-  
-  for (const category of Object.values(data)) {
-    for (const param of Object.values(category)) {
-      if (param.isAlarm === true) {
-        count++;
-      }
-    }
-  }
-  
-  return count;
-}
-
