@@ -2,13 +2,13 @@ import express from 'express';
 import { config } from './config/env.js';
 import connectDB from './utils/database.js';
 import { initModbus } from './services/modbusInit.js';
-import devicesRouter, { setModbusManager } from './routes/devices.js';
+import apiRouter, { setModbusManager } from './routes/index.js';
 
 const app = express();
 const { port, host } = config.server;
 
 // Подключение к базе данных
-connectDB();
+void connectDB();
 
 // Инициализация Modbus
 let modbusManager = null;
@@ -37,12 +37,14 @@ app.get('/', (req, res) => {
   });
 });
 
-// Подключаем роуты устройств
-app.use('/api', devicesRouter);
+// Подключаем все API роуты
+app.use('/api', apiRouter);
 
 // Запуск сервера
 app.listen(port, host, () => { 
-  console.log(`✓ API доступен на http://${host}:${port}/api/devices`);
+  console.log(`✓ API доступен:`);
+  console.log(`  - Данные устройств: http://${host}:${port}/api/data/devices`);
+  console.log(`  - Конфигурация: http://${host}:${port}/api/config`);
 });
 
 // Корректное завершение при выходе

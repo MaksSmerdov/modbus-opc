@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { dataDB } from '../../utils/database.js';
 
 /**
  * Схема для сохранения данных устройств
@@ -24,14 +25,19 @@ const deviceDataSchema = new mongoose.Schema({
   }
 });
 
-// Индекс для быстрого поиска по времени
 deviceDataSchema.index({ timestamp: -1 });
 
+/**
+ * Получает или создает модель для конкретного устройства
+ * @param {string} deviceName - Название устройства
+ * @returns {mongoose.Model} Mongoose модель
+ */
 export function getDeviceModel(deviceName) {
-  if (mongoose.models[deviceName]) {
-    return mongoose.models[deviceName];
+  if (dataDB.models[deviceName]) {
+    return dataDB.models[deviceName];
   }
-  return mongoose.model(deviceName, deviceDataSchema, deviceName);
+  return dataDB.model(deviceName, deviceDataSchema, deviceName);
 }
 
 export default { getDeviceModel };
+

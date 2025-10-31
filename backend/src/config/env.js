@@ -14,13 +14,17 @@ export const config = {
     host: process.env.HOST || 'localhost'
   },
 
-  // База данных
+  // Базы данных
   database: {
-    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/modbus-opc'
+    // БД для конфигурации устройств
+    configUri: process.env.MONGODB_CONFIG_URI || 'mongodb://localhost:27017/modbus-config',
+    // БД для исторических данных
+    dataUri: process.env.MONGODB_DATA_URI || 'mongodb://localhost:27017/modbus-data'
   },
 };
 
 // Логируем текущую конфигурацию при запуске
 console.log(`\n🚀 Режим: ${config.env}`);
 console.log(`📡 Сервер: http://${config.server.host}:${config.server.port}`);
-console.log(`💾 База данных: ${config.database.uri}\n`);
+console.log(`💾 БД конфигурации: ${config.database.configUri}`);
+console.log(`💾 БД данных: ${config.database.dataUri}\n`);

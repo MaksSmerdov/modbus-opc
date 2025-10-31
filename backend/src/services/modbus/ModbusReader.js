@@ -64,7 +64,7 @@ class ModbusReader {
 
       return {
         success: true,
-        key: register.key,
+        key: register.name || register.key, // name из БД, key для обратной совместимости
         category: register.category || 'default',
         address: register.address,
         dataType: register.dataType,
@@ -87,7 +87,7 @@ class ModbusReader {
       
       return {
         success: false,
-        key: register.key,
+        key: register.name || register.key, // name из БД, key для обратной совместимости
         category: register.category || 'default',
         address: register.address,
         dataType: register.dataType,

@@ -1,6 +1,6 @@
 import express from 'express';
-import { getDeviceModel } from '../models/DeviceData.js';
-import { formatDate } from '../utils/dateFormatter.js';
+import { getDeviceModel } from '../../models/data/index.js';
+import { formatDate } from '../../utils/dateFormatter.js';
 
 const router = express.Router();
 
@@ -32,10 +32,10 @@ function getDeviceData(device) {
 }
 
 /**
- * GET /api/devices
+ * GET /api/data/devices
  * Возвращает данные всех устройств
  */
-router.get('/devices', (req, res) => {
+router.get('/', (req, res) => {
   if (!modbusManager) {
     return res.status(503).json({ error: 'Modbus не инициализирован' });
   }
@@ -52,11 +52,10 @@ router.get('/devices', (req, res) => {
 });
 
 /**
- * GET /api/:deviceName-data
+ * GET /api/data/:deviceName
  * Возвращает актуальные данные конкретного устройства по имени
- * Примеры: /api/boiler1-data, /api/boiler2-data
  */
-router.get('/:deviceName-data', (req, res) => {
+router.get('/:deviceName', (req, res) => {
   if (!modbusManager) {
     return res.status(503).json({ error: 'Modbus не инициализирован' });
   }
@@ -81,26 +80,24 @@ router.get('/:deviceName-data', (req, res) => {
 });
 
 /**
- * GET /api/:deviceName-history
+ * GET /api/data/:deviceName/history
  * Возвращает исторические данные устройства из БД
  * Query параметры:
  * - limit: количество записей (по умолчанию 100)
  * - from: начальная дата (ISO string или DD.MM.YYYY)
  * - to: конечная дата (ISO string или DD.MM.YYYY)
  */
-router.get('/:deviceName-history', async (req, res) => {
+router.get('/:deviceName/history', async (req, res) => {
   try {
     const deviceNameFromUrl = req.params.deviceName;
     const deviceName = deviceNameFromUrl.charAt(0).toUpperCase() + deviceNameFromUrl.slice(1);
 
-    // Получаем модель для конкретного устройства
     const DeviceModel = getDeviceModel(deviceName);
 
     const limit = parseInt(req.query.limit) || 100;
     const from = req.query.from ? new Date(req.query.from) : null;
     const to = req.query.to ? new Date(req.query.to) : null;
 
-    // Строим запрос
     const query = {};
     
     if (from || to) {

@@ -1,4 +1,4 @@
-import { getDeviceModel } from '../../models/DeviceData.js';
+import { getDeviceModel } from '../../models/index.js';
 import { formatDate } from '../../utils/dateFormatter.js';
 
 /**

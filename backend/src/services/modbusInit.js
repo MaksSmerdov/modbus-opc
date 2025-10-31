@@ -1,6 +1,6 @@
 import ModbusManager from './ModbusManager.js';
 import SimulatorManager from './simulator/SimulatorManager.js';
-import devices from '../devices/instances.js';
+import { loadDevicesFromDB, hasDevicesInDB } from './deviceLoader.js';
 import { config } from '../config/env.js';
 
 /**
@@ -30,7 +30,7 @@ async function initializeManager(manager, devices) {
 /**
  * Создает и инициализирует симулятор
  */
-async function initSimulator() {
+async function initSimulator(devices) {
   console.log(`\n=== Инициализация Симулятора (режим разработки) ===`);
   console.log(`Устройства: ${devices.map(d => d.name).join(', ')}`);
   
@@ -105,10 +105,29 @@ function groupDevicesByPort(devices) {
  */
 export async function initModbus() {
   try {
+    // Проверяем наличие устройств в БД
+    const hasDevices = await hasDevicesInDB();
+    
+    if (!hasDevices) {
+      console.warn('⚠ В БД нет устройств. Запустите скрипт миграции или добавьте устройства через API.');
+      console.warn('⚠ Modbus не инициализирован.');
+      return null;
+    }
+
+    // Загружаем устройства из БД
+    const devices = await loadDevicesFromDB();
+    
+    if (devices.length === 0) {
+      console.warn('⚠ Нет активных устройств для инициализации.');
+      return null;
+    }
+
+    console.log(`✓ Загружено ${devices.length} устройств(о) из БД`);
+
     const useSimulator = config.isDevelopment;
 
     if (useSimulator) {
-      return await initSimulator();
+      return await initSimulator(devices);
     } else {
       const devicesByPort = groupDevicesByPort(devices);
       return await initModbusManagers(devicesByPort);
