@@ -1,8 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-/**
- * Базовый API для всех запросов
- */
 export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ 

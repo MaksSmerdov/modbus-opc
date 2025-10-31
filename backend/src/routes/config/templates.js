@@ -5,15 +5,48 @@ import { reinitializeModbus } from '../../utils/modbusReloader.js';
 const router = express.Router();
 
 /**
- * GET /api/config/templates
- * Получить все шаблоны регистров
+ * @swagger
+ * /api/config/templates:
+ *   get:
+ *     summary: Получить список всех шаблонов регистров
+ *     tags: [Templates]
+ *     parameters:
+ *       - in: query
+ *         name: deviceType
+ *         schema:
+ *           type: string
+ *         description: Фильтр по типу устройства
+ *     responses:
+ *       200:
+ *         description: Список шаблонов
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 count:
+ *                   type: integer
+ *                   example: 4
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/RegisterTemplate'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/', async (req, res) => {
   try {
     const { deviceType } = req.query;
-    
+
     const query = deviceType ? { deviceType } : {};
-    
+
     const templates = await RegisterTemplate.find(query)
       .sort({ name: 1 })
       .lean();
@@ -33,8 +66,43 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * GET /api/config/templates/:id
- * Получить шаблон по ID
+ * @swagger
+ * /api/config/templates/{id}:
+ *   get:
+ *     summary: Получить шаблон по ID
+ *     tags: [Templates]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId шаблона
+ *     responses:
+ *       200:
+ *         description: Данные шаблона
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/RegisterTemplate'
+ *       404:
+ *         description: Шаблон не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/:id', async (req, res) => {
   try {
@@ -61,8 +129,55 @@ router.get('/:id', async (req, res) => {
 });
 
 /**
- * POST /api/config/templates
- * Создать новый шаблон регистров
+ * @swagger
+ * /api/config/templates:
+ *   post:
+ *     summary: Создать новый шаблон регистров
+ *     tags: [Templates]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, deviceType, registers]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: BoilerTemplate
+ *               deviceType:
+ *                 type: string
+ *                 example: boiler
+ *               registers:
+ *                 type: array
+ *                 minItems: 1
+ *                 items:
+ *                   $ref: '#/components/schemas/Register'
+ *     responses:
+ *       201:
+ *         description: Шаблон успешно создан
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/RegisterTemplate'
+ *       400:
+ *         description: Ошибка валидации или дубликат имени
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/', async (req, res) => {
   try {
@@ -123,7 +238,7 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Ошибка создания шаблона:', error);
-    
+
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -139,8 +254,67 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * PUT /api/config/templates/:id
- * Обновить шаблон регистров
+ * @swagger
+ * /api/config/templates/{id}:
+ *   put:
+ *     summary: Обновить шаблон регистров
+ *     tags: [Templates]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId шаблона
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: BoilerTemplate
+ *               deviceType:
+ *                 type: string
+ *                 example: boiler
+ *               registers:
+ *                 type: array
+ *                 minItems: 1
+ *                 items:
+ *                   $ref: '#/components/schemas/Register'
+ *     responses:
+ *       200:
+ *         description: Шаблон успешно обновлен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/RegisterTemplate'
+ *       400:
+ *         description: Ошибка валидации или дубликат имени
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Шаблон не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.put('/:id', async (req, res) => {
   try {
@@ -182,7 +356,7 @@ router.put('/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Ошибка обновления шаблона:', error);
-    
+
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -198,8 +372,75 @@ router.put('/:id', async (req, res) => {
 });
 
 /**
- * PATCH /api/config/templates/:id/registers/:registerIndex
- * Обновить конкретный регистр в шаблоне
+ * @swagger
+ * /api/config/templates/{id}/registers/{registerIndex}:
+ *   patch:
+ *     summary: Обновить конкретный регистр в шаблоне
+ *     tags: [Templates]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId шаблона
+ *       - in: path
+ *         name: registerIndex
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Индекс регистра в массиве
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Частичные данные регистра для обновления
+ *             properties:
+ *               address:
+ *                 type: integer
+ *                 example: 0
+ *               length:
+ *                 type: integer
+ *                 example: 2
+ *               name:
+ *                 type: string
+ *                 example: Temperature
+ *               dataType:
+ *                 type: string
+ *                 example: float
+ *     responses:
+ *       200:
+ *         description: Регистр успешно обновлен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/RegisterTemplate'
+ *       400:
+ *         description: Некорректный индекс регистра
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Шаблон не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.patch('/:id/registers/:registerIndex', async (req, res) => {
   try {
@@ -207,7 +448,7 @@ router.patch('/:id/registers/:registerIndex', async (req, res) => {
     const registerUpdates = req.body;
 
     const template = await RegisterTemplate.findById(id);
-    
+
     if (!template) {
       return res.status(404).json({
         success: false,
@@ -249,8 +490,50 @@ router.patch('/:id/registers/:registerIndex', async (req, res) => {
 });
 
 /**
- * DELETE /api/config/templates/:id
- * Удалить шаблон регистров
+ * @swagger
+ * /api/config/templates/{id}:
+ *   delete:
+ *     summary: Удалить шаблон регистров
+ *     tags: [Templates]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId шаблона
+ *     responses:
+ *       200:
+ *         description: Шаблон успешно удален
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Шаблон удален
+ *       400:
+ *         description: Шаблон используется устройствами
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Шаблон не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', async (req, res) => {
   try {

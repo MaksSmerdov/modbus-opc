@@ -5,8 +5,35 @@ import { reinitializeModbus } from '../../utils/modbusReloader.js';
 const router = express.Router();
 
 /**
- * GET /api/config/devices
- * Получить все устройства
+ * @swagger
+ * /api/config/devices:
+ *   get:
+ *     summary: Получить список всех устройств
+ *     tags: [Devices]
+ *     responses:
+ *       200:
+ *         description: Список устройств
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 count:
+ *                   type: integer
+ *                   example: 5
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Device'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/', async (req, res) => {
   try {
@@ -31,8 +58,43 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * GET /api/config/devices/:id
- * Получить устройство по ID
+ * @swagger
+ * /api/config/devices/{id}:
+ *   get:
+ *     summary: Получить устройство по ID
+ *     tags: [Devices]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId устройства
+ *     responses:
+ *       200:
+ *         description: Данные устройства
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Device'
+ *       404:
+ *         description: Устройство не найдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/:id', async (req, res) => {
   try {
@@ -62,8 +124,48 @@ router.get('/:id', async (req, res) => {
 });
 
 /**
- * POST /api/config/devices
- * Создать новое устройство
+ * @swagger
+ * /api/config/devices:
+ *   post:
+ *     summary: Создать новое устройство
+ *     tags: [Devices]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/DeviceInput'
+ *     responses:
+ *       201:
+ *         description: Устройство успешно создано
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Device'
+ *       400:
+ *         description: Ошибка валидации или дубликат имени
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Профиль или шаблон не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/', async (req, res) => {
   try {
@@ -129,7 +231,7 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Ошибка создания устройства:', error);
-    
+
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -145,8 +247,55 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * PUT /api/config/devices/:id
- * Обновить устройство
+ * @swagger
+ * /api/config/devices/{id}:
+ *   put:
+ *     summary: Обновить устройство
+ *     tags: [Devices]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId устройства
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/DeviceInput'
+ *     responses:
+ *       200:
+ *         description: Устройство успешно обновлено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Device'
+ *       400:
+ *         description: Ошибка валидации или дубликат имени
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Устройство, профиль или шаблон не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.put('/:id', async (req, res) => {
   try {
@@ -214,7 +363,7 @@ router.put('/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Ошибка обновления устройства:', error);
-    
+
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -230,8 +379,44 @@ router.put('/:id', async (req, res) => {
 });
 
 /**
- * DELETE /api/config/devices/:id
- * Удалить устройство
+ * @swagger
+ * /api/config/devices/{id}:
+ *   delete:
+ *     summary: Удалить устройство
+ *     tags: [Devices]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId устройства
+ *     responses:
+ *       200:
+ *         description: Устройство успешно удалено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Устройство удалено
+ *       404:
+ *         description: Устройство не найдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', async (req, res) => {
   try {

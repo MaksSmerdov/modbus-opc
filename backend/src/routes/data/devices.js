@@ -32,8 +32,30 @@ function getDeviceData(device) {
 }
 
 /**
- * GET /api/data/devices
- * Возвращает данные всех устройств
+ * @swagger
+ * /api/data/devices:
+ *   get:
+ *     summary: Получить актуальные данные всех устройств
+ *     tags: [Data]
+ *     responses:
+ *       200:
+ *         description: Массив данных устройств
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DeviceData'
+ *       503:
+ *         description: Modbus не инициализирован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Modbus не инициализирован
  */
 router.get('/', (req, res) => {
   if (!modbusManager) {
@@ -52,8 +74,45 @@ router.get('/', (req, res) => {
 });
 
 /**
- * GET /api/data/:deviceName
- * Возвращает актуальные данные конкретного устройства по имени
+ * @swagger
+ * /api/data/devices/{deviceName}:
+ *   get:
+ *     summary: Получить актуальные данные конкретного устройства
+ *     tags: [Data]
+ *     parameters:
+ *       - in: path
+ *         name: deviceName
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Имя устройства
+ *     responses:
+ *       200:
+ *         description: Данные устройства
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DeviceData'
+ *       404:
+ *         description: Устройство не найдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Устройство не найдено
+ *       503:
+ *         description: Modbus не инициализирован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Modbus не инициализирован
  */
 router.get('/:deviceName', (req, res) => {
   if (!modbusManager) {
@@ -61,8 +120,8 @@ router.get('/:deviceName', (req, res) => {
   }
 
   const deviceName = req.params.deviceName;
-  
-  const device = modbusManager.devices.find(d => 
+
+  const device = modbusManager.devices.find(d =>
     d.name.toLowerCase() === deviceName.toLowerCase()
   );
 
@@ -80,12 +139,53 @@ router.get('/:deviceName', (req, res) => {
 });
 
 /**
- * GET /api/data/:deviceName/history
- * Возвращает исторические данные устройства из БД
- * Query параметры:
- * - limit: количество записей (по умолчанию 100)
- * - from: начальная дата (ISO string или DD.MM.YYYY)
- * - to: конечная дата (ISO string или DD.MM.YYYY)
+ * @swagger
+ * /api/data/devices/{deviceName}/history:
+ *   get:
+ *     summary: Получить исторические данные устройства
+ *     tags: [Data]
+ *     parameters:
+ *       - in: path
+ *         name: deviceName
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Имя устройства
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 100
+ *         description: Количество записей
+ *       - in: query
+ *         name: from
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Начальная дата (ISO string или DD.MM.YYYY)
+ *       - in: query
+ *         name: to
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Конечная дата (ISO string или DD.MM.YYYY)
+ *     responses:
+ *       200:
+ *         description: Исторические данные устройства
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HistoricalData'
+ *       500:
+ *         description: Ошибка получения данных из БД
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Ошибка получения данных из БД
  */
 router.get('/:deviceName/history', async (req, res) => {
   try {
@@ -99,7 +199,7 @@ router.get('/:deviceName/history', async (req, res) => {
     const to = req.query.to ? new Date(req.query.to) : null;
 
     const query = {};
-    
+
     if (from || to) {
       query.timestamp = {};
       if (from) query.timestamp.$gte = from;

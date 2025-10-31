@@ -38,8 +38,35 @@ function formatProfile(profile) {
 }
 
 /**
- * GET /api/config/profiles
- * Получить все профили подключений
+ * @swagger
+ * /api/config/profiles:
+ *   get:
+ *     summary: Получить список всех профилей подключений
+ *     tags: [Profiles]
+ *     responses:
+ *       200:
+ *         description: Список профилей
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 count:
+ *                   type: integer
+ *                   example: 3
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ConnectionProfile'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/', async (req, res) => {
   try {
@@ -64,8 +91,43 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * GET /api/config/profiles/:id
- * Получить профиль по ID
+ * @swagger
+ * /api/config/profiles/{id}:
+ *   get:
+ *     summary: Получить профиль по ID
+ *     tags: [Profiles]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId профиля
+ *     responses:
+ *       200:
+ *         description: Данные профиля
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/ConnectionProfile'
+ *       404:
+ *         description: Профиль не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/:id', async (req, res) => {
   try {
@@ -92,8 +154,44 @@ router.get('/:id', async (req, res) => {
 });
 
 /**
- * POST /api/config/profiles
- * Создать новый профиль подключения
+ * @swagger
+ * /api/config/profiles:
+ *   post:
+ *     summary: Создать новый профиль подключения
+ *     tags: [Profiles]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - $ref: '#/components/schemas/ConnectionProfileRTU'
+ *               - $ref: '#/components/schemas/ConnectionProfileTCP'
+ *     responses:
+ *       201:
+ *         description: Профиль успешно создан
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/ConnectionProfile'
+ *       400:
+ *         description: Ошибка валидации или дубликат имени
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/', async (req, res) => {
   try {
@@ -132,7 +230,7 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Ошибка создания профиля:', error);
-    
+
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -148,8 +246,57 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * PUT /api/config/profiles/:id
- * Обновить профиль подключения
+ * @swagger
+ * /api/config/profiles/{id}:
+ *   put:
+ *     summary: Обновить профиль подключения
+ *     tags: [Profiles]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId профиля
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - $ref: '#/components/schemas/ConnectionProfileRTU'
+ *               - $ref: '#/components/schemas/ConnectionProfileTCP'
+ *     responses:
+ *       200:
+ *         description: Профиль успешно обновлен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/ConnectionProfile'
+ *       400:
+ *         description: Ошибка валидации или дубликат имени
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Профиль не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.put('/:id', async (req, res) => {
   try {
@@ -174,7 +321,7 @@ router.put('/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Ошибка обновления профиля:', error);
-    
+
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -190,8 +337,50 @@ router.put('/:id', async (req, res) => {
 });
 
 /**
- * DELETE /api/config/profiles/:id
- * Удалить профиль подключения
+ * @swagger
+ * /api/config/profiles/{id}:
+ *   delete:
+ *     summary: Удалить профиль подключения
+ *     tags: [Profiles]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId профиля
+ *     responses:
+ *       200:
+ *         description: Профиль успешно удален
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Профиль удален
+ *       400:
+ *         description: Профиль используется устройствами
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Профиль не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', async (req, res) => {
   try {

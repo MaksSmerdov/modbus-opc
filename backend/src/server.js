@@ -1,10 +1,12 @@
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
 import { config } from './config/env.js';
 import connectDB from './utils/database.js';
 import { initModbus } from './services/modbusInit.js';
 import apiRouter, { setModbusManager } from './routes/index.js';
 import { setReinitializeFunction } from './utils/modbusReloader.js';
+import { swaggerSpec } from './config/swagger.js';
 
 const app = express();
 const { port, host } = config.server;
@@ -24,17 +26,17 @@ export function getModbusManager() {
 async function reinitializeModbusInternal() {
   try {
     console.log('🔄 Перезапуск Modbus Manager...');
-    
+
     // Останавливаем старый менеджер
     if (modbusManager) {
       await modbusManager.disconnect();
       modbusManager = null;
     }
-    
+
     // Создаём новый менеджер
     modbusManager = await initModbus();
     setModbusManager(modbusManager);
-    
+
     console.log('✓ Modbus Manager успешно перезапущен');
     return true;
   } catch (error) {
@@ -66,13 +68,20 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Swagger документация
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Modbus OPC Server API Documentation',
+}));
+
 // Базовый маршрут
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Modbus OPC Server is running',
     environment: config.env,
     host: host,
-    port: port
+    port: port,
+    documentation: `http://${host}:${port}/api-docs`
   });
 });
 
@@ -80,8 +89,9 @@ app.get('/', (req, res) => {
 app.use('/api', apiRouter);
 
 // Запуск сервера
-app.listen(port, host, () => { 
+app.listen(port, host, () => {
   console.log(`✓ API доступен:`);
+  console.log(`  - Swagger документация: http://${host}:${port}/api-docs`);
   console.log(`  - Данные устройств: http://${host}:${port}/api/data/devices`);
   console.log(`  - Конфигурация: http://${host}:${port}/api/config`);
 });
