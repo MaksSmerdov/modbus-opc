@@ -1,0 +1,120 @@
+import ModbusManager from './ModbusManager.js';
+import SimulatorManager from './simulator/SimulatorManager.js';
+import devices from '../devices/instances.js';
+import { config } from '../config/env.js';
+
+/**
+ * Добавляет устройства в менеджер
+ */
+function addDevicesToManager(manager, devices) {
+  devices.forEach(device => {
+    manager.addDevice({
+      slaveId: device.slaveId,
+      name: device.name,
+      registers: device.registers,
+      saveInterval: device.saveInterval || 30000,
+      logData: device.logData || false
+    });
+  });
+}
+
+/**
+ * Инициализирует менеджер: подключение, добавление устройств, запуск polling
+ */
+async function initializeManager(manager, devices) {
+  await manager.connect();
+  addDevicesToManager(manager, devices);
+  manager.startPolling();
+}
+
+/**
+ * Создает и инициализирует симулятор
+ */
+async function initSimulator() {
+  console.log(`\n=== Инициализация Симулятора (режим разработки) ===`);
+  console.log(`Устройства: ${devices.map(d => d.name).join(', ')}`);
+  
+  const manager = new SimulatorManager({
+    timeout: 100,
+    retries: 3,
+    pollInterval: 5000
+  });
+
+  await initializeManager(manager, devices);
+  
+  console.log('\n✓ Симулятор инициализирован и запущен\n');
+  return manager;
+}
+
+/**
+ * Создает и инициализирует Modbus менеджеры
+ */
+async function initModbusManagers(devicesByPort) {
+  let lastManager = null;
+
+  for (const [portKey, portData] of Object.entries(devicesByPort)) {
+    const profile = portData.profile;
+    
+    console.log(`\n=== Инициализация Modbus на ${profile.port} (${profile.baudRate} baud) ===`);
+    console.log(`Устройства на порту: ${portData.devices.map(d => d.name).join(', ')}`);
+    
+    const manager = new ModbusManager({
+      connectionType: profile.connectionType,
+      port: profile.port,
+      baudRate: profile.baudRate,
+      dataBits: profile.dataBits,
+      stopBits: profile.stopBits,
+      parity: profile.parity,
+      timeout: profile.timeout,
+      retries: profile.retries,
+      pollInterval: 5000
+    });
+
+    await initializeManager(manager, portData.devices);
+    lastManager = manager;
+  }
+
+  console.log('\n✓ Modbus инициализирован и запущен\n');
+  return lastManager;
+}
+
+/**
+ * Группирует устройства по портам
+ */
+function groupDevicesByPort(devices) {
+  const devicesByPort = {};
+  
+  devices.forEach(device => {
+    const profile = device.connectionProfile;
+    const portKey = `${profile.port}_${profile.connectionType}`;
+    if (!devicesByPort[portKey]) {
+      devicesByPort[portKey] = {
+        profile: profile,
+        devices: []
+      };
+    }
+    devicesByPort[portKey].devices.push(device);
+  });
+
+  return devicesByPort;
+}
+
+/**
+ * Инициализация Modbus подключения и устройств
+ * В режиме development использует симулятор вместо реального Modbus
+ */
+export async function initModbus() {
+  try {
+    const useSimulator = config.isDevelopment;
+
+    if (useSimulator) {
+      return await initSimulator();
+    } else {
+      const devicesByPort = groupDevicesByPort(devices);
+      return await initModbusManagers(devicesByPort);
+    }
+  } catch (error) {
+    console.error('✗ Ошибка инициализации Modbus:', error.message);
+    throw error;
+  }
+}

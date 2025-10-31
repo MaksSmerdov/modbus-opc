@@ -27,10 +27,34 @@ dist/
 build/
 *.tsbuildinfo
 
+# Frontend Build & Cache
+.vite/
+.next/
+.nuxt/
+.output/
+.vercel/
+.netlify/
+out/
+.cache/
+.parcel-cache/
+.webpack/
+.rollup.cache/
+
+# Frontend Coverage & Tests
+coverage/
+.nyc_output/
+*.lcov
+
+# Frontend Static
+public/build/
+static/build/
+
+# Storybook
+storybook-static/
+
 # Временные файлы
 *.tmp
 *.temp
-.cache/
 
 # OS
 Thumbs.db

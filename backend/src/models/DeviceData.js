@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
  * Схема для сохранения данных устройств
  */
 const deviceDataSchema = new mongoose.Schema({
-  // ID устройства в сети Modbus
   slaveId: {
     type: Number,
     required: true
