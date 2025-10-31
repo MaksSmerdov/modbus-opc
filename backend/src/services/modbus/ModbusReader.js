@@ -20,7 +20,10 @@ class ModbusReader {
       
       // Оборачиваем в Promise.race для гарантированного таймаута
       const readPromise = (async () => {
-        switch (register.type) {
+        // Поддерживаем оба варианта: functionCode (из БД) и type (старые шаблоны)
+        const funcCode = register.functionCode || register.type;
+        
+        switch (funcCode) {
           case 'holding':
             return await this.connection.client.readHoldingRegisters(register.address, length);
           case 'input':
@@ -30,7 +33,7 @@ class ModbusReader {
           case 'discrete':
             return await this.connection.client.readDiscreteInputs(register.address, length);
           default:
-            throw new Error(`Неизвестный тип регистра: ${register.type}`);
+            throw new Error(`Неизвестный тип регистра: ${funcCode}`);
         }
       })();
       
@@ -46,7 +49,7 @@ class ModbusReader {
       let parsedValue = parseData(result.data, register.dataType, byteOrder, wordOrder);
       
       // Если указан битовый индекс, извлекаем бит из значения
-      if (register.bitIndex !== undefined) {
+      if (register.dataType === 'bits' && typeof register.bitIndex === 'number') {
         parsedValue = extractBit(parsedValue, register.bitIndex);
       } else {
         // Применяем масштабирование (по умолчанию scale = 1) - только для не-битовых значений

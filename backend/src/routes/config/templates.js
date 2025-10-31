@@ -1,5 +1,6 @@
 import express from 'express';
 import { RegisterTemplate, Device } from '../../models/config/index.js';
+import { reinitializeModbus } from '../../utils/modbusReloader.js';
 
 const router = express.Router();
 
@@ -192,6 +193,57 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Ошибка обновления шаблона'
+    });
+  }
+});
+
+/**
+ * PATCH /api/config/templates/:id/registers/:registerIndex
+ * Обновить конкретный регистр в шаблоне
+ */
+router.patch('/:id/registers/:registerIndex', async (req, res) => {
+  try {
+    const { id, registerIndex } = req.params;
+    const registerUpdates = req.body;
+
+    const template = await RegisterTemplate.findById(id);
+    
+    if (!template) {
+      return res.status(404).json({
+        success: false,
+        error: 'Шаблон не найден'
+      });
+    }
+
+    const index = parseInt(registerIndex, 10);
+    if (isNaN(index) || index < 0 || index >= template.registers.length) {
+      return res.status(400).json({
+        success: false,
+        error: 'Некорректный индекс регистра'
+      });
+    }
+
+    // Обновляем только переданные поля
+    Object.keys(registerUpdates).forEach(key => {
+      if (registerUpdates[key] !== undefined) {
+        template.registers[index][key] = registerUpdates[key];
+      }
+    });
+
+    await template.save();
+
+    // Реинициализируем Modbus для применения изменений
+    await reinitializeModbus();
+
+    res.json({
+      success: true,
+      data: template
+    });
+  } catch (error) {
+    console.error('Ошибка обновления регистра:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка обновления регистра'
     });
   }
 });

@@ -1,8 +1,10 @@
 import express from 'express';
+import cors from 'cors';
 import { config } from './config/env.js';
 import connectDB from './utils/database.js';
 import { initModbus } from './services/modbusInit.js';
 import apiRouter, { setModbusManager } from './routes/index.js';
+import { setReinitializeFunction } from './utils/modbusReloader.js';
 
 const app = express();
 const { port, host } = config.server;
@@ -12,6 +14,37 @@ void connectDB();
 
 // Инициализация Modbus
 let modbusManager = null;
+
+// Экспортируем функцию для доступа к менеджеру
+export function getModbusManager() {
+  return modbusManager;
+}
+
+// Функция для реинициализации Modbus
+async function reinitializeModbusInternal() {
+  try {
+    console.log('🔄 Перезапуск Modbus Manager...');
+    
+    // Останавливаем старый менеджер
+    if (modbusManager) {
+      await modbusManager.disconnect();
+      modbusManager = null;
+    }
+    
+    // Создаём новый менеджер
+    modbusManager = await initModbus();
+    setModbusManager(modbusManager);
+    
+    console.log('✓ Modbus Manager успешно перезапущен');
+    return true;
+  } catch (error) {
+    console.error('✗ Ошибка перезапуска Modbus:', error.message);
+    return false;
+  }
+}
+
+// Регистрируем функцию реинициализации
+setReinitializeFunction(reinitializeModbusInternal);
 
 // Запускаем Modbus после небольшой задержки
 setTimeout(async () => {
@@ -24,6 +57,12 @@ setTimeout(async () => {
 }, 1000);
 
 // Middleware
+// CORS - разрешаем запросы с любых источников в режиме разработки
+app.use(cors({
+  origin: config.env === 'development' ? '*' : ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true,
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

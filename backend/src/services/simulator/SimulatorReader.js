@@ -14,7 +14,7 @@ class SimulatorReader {
     const key = `${register.address}_${register.bitIndex || 0}`;
     
     // Для битовых полей
-    if (register.bitIndex !== undefined) {
+    if (register.dataType === 'bits' && typeof register.bitIndex === 'number') {
       // Случайное булево с вероятностью 30% измениться
       const lastValue = this.lastValues.get(key);
       if (lastValue !== undefined && Math.random() > 0.3) {
@@ -64,7 +64,7 @@ class SimulatorReader {
           min = 0;
           max = 10000;
           break;
-        case 'float':
+        case 'float32':
         case 'double':
           min = 0;
           max = 100;

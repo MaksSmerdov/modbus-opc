@@ -5,7 +5,7 @@ export function getRegisterCount(dataType) {
     'uint16': 1,    
     'int32': 2,     
     'uint32': 2,    
-    'float': 2,     
+    'float32': 2,     
     'double': 4     
   };
 
@@ -35,15 +35,40 @@ export function parseData(data, dataType, byteOrder = 'BE', wordOrder = 'BE') {
     // Для 32-битных и 64-битных значений
     const buffer = Buffer.allocUnsafe(data.length * 2);
     
-    // Учитываем порядок слов для многорегистровых значений
+    // Обработка различных форматов порядка байтов для Modbus
     let registers = [...data];
-    if (wordOrder === 'LE' && registers.length > 1) {
+    let writeByteOrder = 'BE'; // По умолчанию Big Endian для записи в буфер
+    
+    // Преобразуем старые обозначения для обратной совместимости
+    if (byteOrder === 'BE' || byteOrder === 'ABCD') {
+      // ABCD - Big Endian (стандартный Modbus)
+      // Регистры как есть, байты в BE
+      writeByteOrder = 'BE';
+    } else if (byteOrder === 'LE' || byteOrder === 'DCBA') {
+      // DCBA - Little Endian (все перевернуто)
+      // Меняем порядок регистров и байтов
       registers = registers.reverse();
+      writeByteOrder = 'LE';
+    } else if (byteOrder === 'BADC') {
+      // BADC - Mid-Big Endian (byte swap)
+      // Меняем порядок регистров, байты остаются BE
+      registers = registers.reverse();
+      writeByteOrder = 'BE';
+    } else if (byteOrder === 'CDAB') {
+      // CDAB - Mid-Little Endian (word swap)
+      // Регистры как есть, но байты LE
+      writeByteOrder = 'LE';
+    } else {
+      // Для обратной совместимости с wordOrder
+      if (wordOrder === 'LE' && registers.length > 1) {
+        registers = registers.reverse();
+      }
+      writeByteOrder = byteOrder === 'LE' ? 'LE' : 'BE';
     }
     
-    // Заполняем буфер с учетом порядка байт
+    // Заполняем буфер
     for (let i = 0; i < registers.length; i++) {
-      if (byteOrder === 'BE') {
+      if (writeByteOrder === 'BE') {
         buffer.writeUInt16BE(registers[i], i * 2);
       } else {
         buffer.writeUInt16LE(registers[i], i * 2);
@@ -52,22 +77,22 @@ export function parseData(data, dataType, byteOrder = 'BE', wordOrder = 'BE') {
 
     switch (dataType) {
       case 'int32':
-        return byteOrder === 'BE' ? buffer.readInt32BE(0) : buffer.readInt32LE(0);
+        return buffer.readInt32BE(0);
 
       case 'uint32':
-        return byteOrder === 'BE' ? buffer.readUInt32BE(0) : buffer.readUInt32LE(0);
+        return buffer.readUInt32BE(0);
 
-      case 'float':
-        return byteOrder === 'BE' ? buffer.readFloatBE(0) : buffer.readFloatLE(0);
+      case 'float32':
+        return buffer.readFloatBE(0);
 
       case 'double':
-        return byteOrder === 'BE' ? buffer.readDoubleBE(0) : buffer.readDoubleLE(0);
+        return buffer.readDoubleBE(0);
 
       default:
         return data[0];
     }
   } catch (error) {
-    console.error(`Ошибка парсинга данных типа ${dataType}:`, error.message, 'data:', data);
+    console.error(`Ошибка парсинга данных типа ${dataType}:`, error.message, 'data:', data, 'byteOrder:', byteOrder);
     return null;
   }
 }

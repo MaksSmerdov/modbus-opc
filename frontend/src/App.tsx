@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { SetupWizard } from '@/features/config/components/SetupWizard/SetupWizard';
+import { DeviceTester } from '@/features/config/components/DeviceTester/DeviceTester';
+
+type AppView = 'wizard' | 'tester';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [view, setView] = useState<AppView>('wizard');
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+      <nav style={{
+        background: '#fff',
+        borderBottom: '1px solid #e0e0e0',
+        padding: '16px 24px',
+        display: 'flex',
+        gap: '16px',
+        marginBottom: '24px'
+      }}>
+        <button
+          onClick={() => setView('wizard')}
+          style={{
+            padding: '8px 16px',
+            background: view === 'wizard' ? '#3b82f6' : '#fff',
+            color: view === 'wizard' ? '#fff' : '#1a1a1a',
+            border: '1px solid #e0e0e0',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 500
+          }}
+        >
+          Мастер настройки
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+        <button
+          onClick={() => setView('tester')}
+          style={{
+            padding: '8px 16px',
+            background: view === 'tester' ? '#3b82f6' : '#fff',
+            color: view === 'tester' ? '#fff' : '#1a1a1a',
+            border: '1px solid #e0e0e0',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 500
+          }}
+        >
+          Тестирование устройств
+        </button>
+      </nav>
+
+      {view === 'wizard' && <SetupWizard />}
+      {view === 'tester' && <DeviceTester />}
+    </div>
+  );
 }
 
-export default App
+export default App;

@@ -51,7 +51,7 @@ class ModbusPoller {
             device.data[r.category] = {};
           }
           
-          if (r.dataType === 'bool' || r.bitIndex !== undefined) {
+          if (r.dataType === 'bool' || (r.dataType === 'bits' && typeof r.bitIndex === 'number')) {
             device.data[r.category][r.key] = {
               value: r.value
             };
@@ -61,8 +61,8 @@ class ModbusPoller {
               unit: r.unit || ''
             };
             
-            // Проверяем уставки, если они заданы
-            if (r.minValue !== undefined || r.maxValue !== undefined) {
+            // Проверяем уставки, если они заданы 
+            if ((r.minValue !== null && r.minValue !== undefined) || (r.maxValue !== null && r.maxValue !== undefined)) {
               let isAlarm = false;
               
               if (r.value !== null && typeof r.value === 'number') {

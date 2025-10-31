@@ -1,5 +1,6 @@
 import express from 'express';
 import { Device, ConnectionProfile, RegisterTemplate } from '../../models/config/index.js';
+import { reinitializeModbus } from '../../utils/modbusReloader.js';
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.get('/', async (req, res) => {
   try {
     const devices = await Device.find()
       .populate('connectionProfileId', 'name connectionType')
-      .populate('registerTemplateId', 'name deviceType')
+      .populate('registerTemplateId') // Загружаем все поля шаблона, включая registers
       .sort({ name: 1 })
       .lean();
 
@@ -119,6 +120,9 @@ router.post('/', async (req, res) => {
       .populate('registerTemplateId')
       .lean();
 
+    // Реинициализируем Modbus для подключения нового устройства
+    await reinitializeModbus();
+
     res.status(201).json({
       success: true,
       data: populatedDevice
@@ -201,6 +205,9 @@ router.put('/:id', async (req, res) => {
       });
     }
 
+    // Реинициализируем Modbus для применения изменений
+    await reinitializeModbus();
+
     res.json({
       success: true,
       data: device
@@ -236,6 +243,9 @@ router.delete('/:id', async (req, res) => {
         error: 'Устройство не найдено'
       });
     }
+
+    // Реинициализируем Modbus для удаления устройства из polling
+    await reinitializeModbus();
 
     res.json({
       success: true,
