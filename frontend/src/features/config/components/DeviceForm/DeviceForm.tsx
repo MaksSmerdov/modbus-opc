@@ -85,13 +85,16 @@ export const DeviceForm = ({
           <span>Записывать данные в лог</span>
         </label>
 
-        <label className={styles['device-form__checkbox']}>
+        <label 
+          className={styles['device-form__checkbox']}
+          title="Уровень 3: Управление опросом конкретного устройства"
+        >
           <input
             type="checkbox"
             checked={formData.isActive}
             onChange={(e) => handleChange('isActive', e.target.checked)}
           />
-          <span>Активное устройство</span>
+          <span>📡 Включить опрос устройства (Уровень 3)</span>
         </label>
       </div>
 

@@ -11,6 +11,7 @@ export const baseApi = createApi({
     'Tags',          // Тэги устройств
     'DeviceData',    // Real-time данные
     'DeviceHistory', // Исторические данные
+    'Polling',       // Состояние опроса
   ],
   endpoints: () => ({}),
 });

@@ -7,8 +7,13 @@ import { Device, Tag } from '../models/config/index.js';
 export async function loadDevicesFromDB() {
   try {
     const devices = await Device.find({ isActive: true })
-      .populate('portId')
+      .populate({
+        path: 'portId',
+        match: { isActive: true } // Загружаем только если порт активен
+      })
       .lean();
+
+    console.log(`📊 Найдено активных устройств: ${devices.length}`);
 
     // Преобразуем в формат, удобный для ModbusManager
     const formattedDevices = await Promise.all(
@@ -16,7 +21,8 @@ export async function loadDevicesFromDB() {
         const port = device.portId;
 
         if (!port) {
-          console.warn(`⚠ Устройство ${device.name} пропущено: отсутствует порт`);
+          console.warn(`⚠ Устройство ${device.name} (ID: ${device._id}) пропущено: порт не найден или отключен`);
+          console.warn(`   Причина: port=${port}, device.isActive=${device.isActive}`);
           return null;
         }
 

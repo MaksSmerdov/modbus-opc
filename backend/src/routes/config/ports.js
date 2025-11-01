@@ -13,6 +13,7 @@ function formatPort(port) {
     connectionType: port.connectionType,
     timeout: port.timeout,
     retries: port.retries,
+    isActive: port.isActive ?? true, // Дефолт для старых портов
     createdAt: port.createdAt,
     updatedAt: port.updatedAt
   };

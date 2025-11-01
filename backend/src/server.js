@@ -7,6 +7,7 @@ import { initModbus } from './services/modbusInit.js';
 import apiRouter, { setModbusManager } from './routes/index.js';
 import { setReinitializeFunction } from './utils/modbusReloader.js';
 import { swaggerSpec } from './config/swagger.js';
+import { getServerSettings } from './models/config/index.js';
 
 const app = express();
 const { port, host } = config.server;
@@ -37,6 +38,15 @@ async function reinitializeModbusInternal() {
     modbusManager = await initModbus();
     setModbusManager(modbusManager);
 
+    // Применяем состояние опроса из БД
+    if (modbusManager) {
+      const settings = await getServerSettings();
+      if (settings.isPollingEnabled && !modbusManager.isPolling) {
+        modbusManager.startPolling();
+        console.log('✓ Опрос запущен (состояние из БД: включено)');
+      }
+    }
+
     console.log('✓ Modbus Manager успешно перезапущен');
     return true;
   } catch (error) {
@@ -53,6 +63,18 @@ setTimeout(async () => {
   try {
     modbusManager = await initModbus();
     setModbusManager(modbusManager);
+    
+    // Читаем состояние опроса из БД и применяем его
+    if (modbusManager) {
+      const settings = await getServerSettings();
+      if (settings.isPollingEnabled && !modbusManager.isPolling) {
+        modbusManager.startPolling();
+        console.log('✓ Опрос автоматически запущен (состояние из БД: включено)');
+      } else if (!settings.isPollingEnabled && modbusManager.isPolling) {
+        modbusManager.stopPolling();
+        console.log('⏸ Опрос автоматически остановлен (состояние из БД: выключено)');
+      }
+    }
   } catch (error) {
     console.error('Не удалось инициализировать Modbus');
   }

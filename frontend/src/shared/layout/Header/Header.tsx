@@ -1,9 +1,7 @@
-import { useGetAllDevicesDataQuery } from '@/features/data/api';
+import { PollingToggle } from '@/features/polling/components';
 import styles from './Header.module.scss';
 
 const Header = () => {
-    const { data } = useGetAllDevicesDataQuery();
-
     return (
         <header className={`${styles['header']}`}>
             <div className={`${styles['header__container']}`}>
@@ -13,11 +11,7 @@ const Header = () => {
                     </h1>
                 </div>
                 <div className={`${styles['header__right']}`}>
-                    {data?.map((device) => (
-                        <div key={device.name}>
-                            {device.name}
-                        </div>
-                    ))}
+                    <PollingToggle />
                 </div>
             </div>
         </header>

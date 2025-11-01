@@ -17,6 +17,8 @@ export interface SidebarProps {
   onAddProfile?: () => void;
   onEditProfile?: (profileId: string) => void;
   onDeleteProfile?: (profileId: string) => void;
+  onToggleActive?: (profileId: string, currentActive: boolean) => void;
+  isPolling?: boolean;
 }
 
 export const Sidebar = ({ 
@@ -25,7 +27,9 @@ export const Sidebar = ({
   onProfileSelect,
   onAddProfile,
   onEditProfile,
-  onDeleteProfile
+  onDeleteProfile,
+  onToggleActive,
+  isPolling = false
 }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -66,6 +70,8 @@ export const Sidebar = ({
                       onSelect={onProfileSelect!}
                       onEdit={onEditProfile}
                       onDelete={onDeleteProfile}
+                      onToggleActive={onToggleActive}
+                      isPolling={isPolling}
                     />
                   </li>
                 ))}

@@ -19,6 +19,7 @@ export const PortForm = ({ initialData, onSubmit, onCancel, loading = false }: P
     initialData?.connectionType || 'RTU'
   );
   const [formData, setFormData] = useState<CreatePortDto>({
+    isActive: initialData?.isActive ?? true,
     name: initialData?.name || '',
     connectionType: initialData?.connectionType || 'RTU',
     // RTU defaults

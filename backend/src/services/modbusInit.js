@@ -19,12 +19,13 @@ function addDevicesToManager(manager, devices) {
 }
 
 /**
- * Инициализирует менеджер: подключение, добавление устройств, запуск polling
+ * Инициализирует менеджер: подключение, добавление устройств
+ * Примечание: опрос НЕ запускается автоматически, это контролируется состоянием из БД в server.js
  */
 async function initializeManager(manager, devices) {
   await manager.connect();
   addDevicesToManager(manager, devices);
-  manager.startPolling();
+  // manager.startPolling() - теперь вызывается в server.js на основе состояния из БД
 }
 
 /**
@@ -42,7 +43,7 @@ async function initSimulator(devices) {
 
   await initializeManager(manager, devices);
   
-  console.log('\n✓ Симулятор инициализирован и запущен\n');
+  console.log('\n✓ Симулятор инициализирован (опрос будет запущен на основе состояния в БД)\n');
   return manager;
 }
 
@@ -74,7 +75,7 @@ async function initModbusManagers(devicesByPort) {
     lastManager = manager;
   }
 
-  console.log('\n✓ Modbus инициализирован и запущен\n');
+  console.log('\n✓ Modbus инициализирован (опрос будет запущен на основе состояния в БД)\n');
   return lastManager;
 }
 

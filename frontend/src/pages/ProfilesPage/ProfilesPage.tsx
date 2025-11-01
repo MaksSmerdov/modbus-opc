@@ -3,6 +3,7 @@ import { MdAdd } from 'react-icons/md';
 import { Modal, Button } from '@/shared/components';
 import { useModal } from '@/shared/hooks/useModal';
 import { PortForm, DeviceForm } from '@/features/config/components';
+import { PollingStatusInfo } from '@/features/polling/components';
 import { 
   useGetPortsQuery, 
   useCreatePortMutation,
@@ -14,6 +15,7 @@ import {
   // useUpdateDeviceMutation,
   // useDeleteDeviceMutation
 } from '@/features/config/api';
+import { useGetPollingStatusQuery } from '@/features/polling/api';
 import type { 
   CreatePortDto, 
   Port,
@@ -43,6 +45,10 @@ export const ProfilesPage = () => {
   // const [updateDevice] = useUpdateDeviceMutation();
   // const [deleteDevice] = useDeleteDeviceMutation();
 
+  // Polling status
+  const { data: pollingStatus } = useGetPollingStatusQuery();
+  const isPolling = pollingStatus?.isPolling ?? false;
+
   // Данные портов
   const ports = portsResponse?.data || [];
   const selectedPort = profileId
@@ -70,13 +76,37 @@ export const ProfilesPage = () => {
   };
 
   const handleEditProfile = (id: string) => {
+    if (isPolling) {
+      alert('Нельзя редактировать порт во время опроса. Остановите опрос в Header.');
+      return;
+    }
     navigate(`?editProfile=${id}`);
     portFormModal.open();
   };
 
   const handleDeleteProfile = (id: string) => {
+    if (isPolling) {
+      alert('Нельзя удалять порт во время опроса. Остановите опрос в Header.');
+      return;
+    }
     navigate(`?deleteProfile=${id}`);
     deletePortModal.open();
+  };
+
+  const handleTogglePortActive = async (portId: string, currentActive: boolean) => {
+    if (isPolling && currentActive) {
+      alert('Нельзя отключить порт во время опроса. Остановите опрос в Header.');
+      return;
+    }
+    try {
+      await updatePort({ 
+        id: portId, 
+        data: { isActive: !currentActive } 
+      }).unwrap();
+      console.log('Статус порта обновлен');
+    } catch (error) {
+      console.error('Ошибка обновления статуса порта:', error);
+    }
   };
 
   const confirmDeleteProfile = async () => {
@@ -164,7 +194,7 @@ export const ProfilesPage = () => {
     id: port._id,
     name: port.name,
     connectionType: port.connectionType,
-    isActive: true,
+    isActive: port.isActive ?? true, // Для старых портов без isActive считаем активными
   }));
 
   // Открываем модалки при наличии query параметров
@@ -199,10 +229,15 @@ export const ProfilesPage = () => {
             </div>
           ) : selectedPort ? (
             <div className={styles['profiles-page__content']}>
+              {/* Информация об уровнях опроса */}
+              <PollingStatusInfo 
+                portIsActive={selectedPort.isActive ?? true}
+              />
+
               {/* Список устройств */}
               <div className={styles['profiles-page__section']}>
                 <div className={styles['profiles-page__section-header']}>
-                  <h2>Устройства</h2>
+                  <h2>Устройства на порту {selectedPort.name}</h2>
                   <Button
                     variant="primary"
                     size="sm"
@@ -223,13 +258,18 @@ export const ProfilesPage = () => {
                 ) : (
                   <div className={styles['profiles-page__devices']}>
                     {portDevices.map((device: DevicePopulated) => (
-                      <div key={device._id} className={styles['profiles-page__device-card']}>
+                      <div 
+                        key={device._id} 
+                        className={styles['profiles-page__device-card']}
+                        onClick={() => navigate(`/devices/${device._id}`)}
+                        style={{ cursor: 'pointer' }}
+                      >
                         <div className={styles['profiles-page__device-header']}>
                           <h3>{device.name}</h3>
                           <span className={`${styles['profiles-page__device-status']} ${
-                            device.isActive ? styles['profiles-page__device-status--active'] : ''
+                            (device.isActive ?? true) ? styles['profiles-page__device-status--active'] : ''
                           }`}>
-                            {device.isActive ? 'Активно' : 'Неактивно'}
+                            {(device.isActive ?? true) ? 'Активно' : 'Неактивно'}
                           </span>
                         </div>
                         <div className={styles['profiles-page__device-info']}>
@@ -326,6 +366,8 @@ export const ProfilesPage = () => {
       onAddProfile: handleAddProfile,
       onEditProfile: handleEditProfile,
       onDeleteProfile: handleDeleteProfile,
+      onToggleActive: handleTogglePortActive,
+      isPolling,
     },
   };
 };

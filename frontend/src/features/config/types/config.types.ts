@@ -33,6 +33,7 @@ export interface Port extends BaseEntity {
   // Общие параметры
   timeout: number;
   retries: number;
+  isActive?: boolean; // Опционально для обратной совместимости (старые порты)
 }
 
 /**
@@ -95,7 +96,7 @@ export interface Device extends BaseEntity {
   tags?: Tag[];
   saveInterval: number;
   logData: boolean;
-  isActive: boolean;
+  isActive?: boolean; // Опционально для обратной совместимости (старые устройства)
 }
 
 /**

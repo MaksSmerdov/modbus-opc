@@ -1,13 +1,21 @@
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from '@/shared/layout';
-import { ProfilesPage } from '@/pages';
+import { ProfilesPage, DevicePage } from '@/pages';
 
-const RootLayout = () => {
+const ProfilesLayout = () => {
   const { content, sidebarProps } = ProfilesPage();
 
   return (
     <Layout sidebarProps={sidebarProps}>
       {content}
+    </Layout>
+  );
+};
+
+const DeviceLayout = () => {
+  return (
+    <Layout>
+      <DevicePage />
     </Layout>
   );
 };
@@ -22,12 +30,11 @@ const NotFound = () => (
 export const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<RootLayout />}>
-        <Route index element={<Navigate to="/profiles" replace />} />
-        <Route path="profiles" element={<Outlet />} />
-        <Route path="profiles/:profileId" element={<Outlet />} />
-        <Route path="*" element={<NotFound />} />
-      </Route>
+      <Route path="/" element={<Navigate to="/profiles" replace />} />
+      <Route path="/profiles" element={<ProfilesLayout />} />
+      <Route path="/profiles/:profileId" element={<ProfilesLayout />} />
+      <Route path="/devices/:deviceId" element={<DeviceLayout />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

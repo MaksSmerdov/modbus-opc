@@ -76,10 +76,16 @@ const portSchema = new mongoose.Schema({
     default: 3,
     min: 1,
     max: 10
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true
 });
+
+portSchema.index({ isActive: 1 });
 
 export const Port = configDB.model('Port', portSchema);
 
