@@ -24,6 +24,16 @@ const router = express.Router();
  *                 hasManager:
  *                   type: boolean
  *                   description: Инициализирован ли менеджер
+ *                 isPollingEnabled:
+ *                   type: boolean
+ *                   description: Включен ли опрос в настройках БД
+ *                 pollInterval:
+ *                   type: integer
+ *                   description: Интервал опроса из настроек БД (мс)
+ *                 currentPollInterval:
+ *                   type: integer
+ *                   nullable: true
+ *                   description: Текущий интервал опроса в менеджере (мс), null если менеджер не инициализирован
  *       500:
  *         description: Ошибка сервера
  */
@@ -31,25 +41,29 @@ router.get('/status', async (req, res) => {
   try {
     const manager = getModbusManager();
     const settings = await getServerSettings();
-    
+
     if (!manager) {
       return res.json({
         isPolling: false,
         hasManager: false,
-        isPollingEnabled: settings.isPollingEnabled
+        isPollingEnabled: settings.isPollingEnabled,
+        pollInterval: settings.pollInterval,
+        currentPollInterval: null
       });
     }
 
     res.json({
       isPolling: manager.isPolling,
       hasManager: true,
-      isPollingEnabled: settings.isPollingEnabled
+      isPollingEnabled: settings.isPollingEnabled,
+      pollInterval: settings.pollInterval,
+      currentPollInterval: manager.pollInterval
     });
   } catch (error) {
     console.error('Ошибка получения статуса опроса:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Ошибка получения статуса опроса',
-      message: error.message 
+      message: error.message
     });
   }
 });
@@ -80,18 +94,18 @@ router.get('/status', async (req, res) => {
 router.post('/start', async (req, res) => {
   try {
     const manager = getModbusManager();
-    
+
     if (!manager) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Modbus Manager не инициализирован',
         message: 'Добавьте устройства и порты для инициализации'
       });
     }
 
     if (manager.isPolling) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Опрос уже запущен',
-        isPolling: true 
+        isPolling: true
       });
     }
 
@@ -101,15 +115,15 @@ router.post('/start', async (req, res) => {
     manager.startPolling();
     console.log('✓ Опрос устройств запущен');
 
-    res.json({ 
+    res.json({
       message: 'Опрос успешно запущен',
-      isPolling: true 
+      isPolling: true
     });
   } catch (error) {
     console.error('Ошибка запуска опроса:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Ошибка запуска опроса',
-      message: error.message 
+      message: error.message
     });
   }
 });
@@ -140,18 +154,18 @@ router.post('/start', async (req, res) => {
 router.post('/stop', async (req, res) => {
   try {
     const manager = getModbusManager();
-    
+
     if (!manager) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Modbus Manager не инициализирован',
         message: 'Нет активного менеджера для остановки'
       });
     }
 
     if (!manager.isPolling) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Опрос уже остановлен',
-        isPolling: false 
+        isPolling: false
       });
     }
 
@@ -161,15 +175,15 @@ router.post('/stop', async (req, res) => {
     manager.stopPolling();
     console.log('✓ Опрос устройств остановлен');
 
-    res.json({ 
+    res.json({
       message: 'Опрос успешно остановлен',
-      isPolling: false 
+      isPolling: false
     });
   } catch (error) {
     console.error('Ошибка остановки опроса:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Ошибка остановки опроса',
-      message: error.message 
+      message: error.message
     });
   }
 });

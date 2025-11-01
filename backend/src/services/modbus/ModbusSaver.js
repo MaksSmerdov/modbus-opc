@@ -18,7 +18,7 @@ class ModbusSaver {
     }
 
     try {
-      const DeviceModel = getDeviceModel(device.name);
+      const DeviceModel = getDeviceModel(device.slug || device.name);
 
       const now = new Date();
       const deviceData = new DeviceModel({

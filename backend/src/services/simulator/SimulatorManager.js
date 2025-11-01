@@ -44,6 +44,7 @@ class SimulatorManager {
     const deviceConfig = {
       slaveId: device.slaveId,
       name: device.name || `Device_${device.slaveId}`,
+      slug: device.slug || `device-${device.slaveId}`,
       registers: device.registers || [],
       isActive: device.isActive ?? true,
       portIsActive: device.portIsActive ?? true,

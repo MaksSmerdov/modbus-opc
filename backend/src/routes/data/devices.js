@@ -1,6 +1,7 @@
 import express from 'express';
 import { getDeviceModel } from '../../models/data/index.js';
 import { formatDate } from '../../utils/dateFormatter.js';
+import { getModbusManager } from '../../server.js';
 
 const router = express.Router();
 
@@ -64,6 +65,7 @@ router.get('/', (req, res) => {
 
   const devices = modbusManager.devices.map(device => ({
     name: device.name,
+    slug: device.slug,
     slaveId: device.slaveId,
     lastUpdated: device.lastSuccess ? formatDate(device.lastSuccess) : null,
     isResponding: device.failCount < device.retries,
@@ -75,17 +77,17 @@ router.get('/', (req, res) => {
 
 /**
  * @swagger
- * /api/data/devices/{deviceName}:
+ * /api/data/devices/{deviceSlug}:
  *   get:
  *     summary: Получить актуальные данные конкретного устройства
  *     tags: [Data]
  *     parameters:
  *       - in: path
- *         name: deviceName
+ *         name: deviceSlug
  *         required: true
  *         schema:
  *           type: string
- *         description: Имя устройства
+ *         description: API ключ (slug) устройства
  *     responses:
  *       200:
  *         description: Данные устройства
@@ -119,10 +121,10 @@ router.get('/:deviceName', (req, res) => {
     return res.status(503).json({ error: 'Modbus не инициализирован' });
   }
 
-  const deviceName = req.params.deviceName;
+  const deviceSlug = req.params.deviceName;
 
   const device = modbusManager.devices.find(d =>
-    d.name.toLowerCase() === deviceName.toLowerCase()
+    d.slug === deviceSlug.toLowerCase()
   );
 
   if (!device) {
@@ -131,6 +133,7 @@ router.get('/:deviceName', (req, res) => {
 
   res.json({
     name: device.name,
+    slug: device.slug,
     slaveId: device.slaveId,
     lastUpdated: device.lastSuccess ? formatDate(device.lastSuccess) : null,
     isResponding: device.failCount < device.retries,
@@ -140,17 +143,17 @@ router.get('/:deviceName', (req, res) => {
 
 /**
  * @swagger
- * /api/data/devices/{deviceName}/history:
+ * /api/data/devices/{deviceSlug}/history:
  *   get:
  *     summary: Получить исторические данные устройства
  *     tags: [Data]
  *     parameters:
  *       - in: path
- *         name: deviceName
+ *         name: deviceSlug
  *         required: true
  *         schema:
  *           type: string
- *         description: Имя устройства
+ *         description: API ключ (slug) устройства
  *       - in: query
  *         name: limit
  *         schema:
@@ -189,10 +192,20 @@ router.get('/:deviceName', (req, res) => {
  */
 router.get('/:deviceName/history', async (req, res) => {
   try {
-    const deviceNameFromUrl = req.params.deviceName;
-    const deviceName = deviceNameFromUrl.charAt(0).toUpperCase() + deviceNameFromUrl.slice(1);
+    const deviceSlug = req.params.deviceName.toLowerCase(); // На самом деле это slug
 
-    const DeviceModel = getDeviceModel(deviceName);
+    // Находим устройство по slug чтобы получить его slug для модели
+    const manager = modbusManager || getModbusManager();
+    if (!manager) {
+      return res.status(503).json({ error: 'Modbus не инициализирован' });
+    }
+
+    const device = manager.devices.find(d => d.slug === deviceSlug);
+    if (!device) {
+      return res.status(404).json({ error: 'Устройство не найдено' });
+    }
+
+    const DeviceModel = getDeviceModel(device.slug);
 
     const limit = parseInt(req.query.limit) || 100;
     const from = req.query.from ? new Date(req.query.from) : null;
@@ -213,7 +226,8 @@ router.get('/:deviceName/history', async (req, res) => {
       .lean();
 
     res.json({
-      deviceName,
+      deviceName: device.name,
+      deviceSlug: device.slug,
       count: data.length,
       data
     });

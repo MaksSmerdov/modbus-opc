@@ -186,6 +186,7 @@ router.post('/', async (req, res) => {
   try {
     const {
       name,
+      slug,
       slaveId,
       portId,
       timeout,
@@ -214,8 +215,10 @@ router.post('/', async (req, res) => {
     }
 
     // Создание устройства (без тэгов - массив тэгов пустой изначально)
+    // slug будет автоматически сгенерирован в pre-save hook, если не указан
     const device = await Device.create({
       name,
+      slug, // Если указан - используем, иначе сгенерируется автоматически
       slaveId,
       portId,
       timeout,
@@ -244,9 +247,13 @@ router.post('/', async (req, res) => {
     console.error('Ошибка создания устройства:', error);
 
     if (error.code === 11000) {
+      // Определяем какое поле вызвало ошибку уникальности
+      const isSlugError = error.keyPattern?.slug;
       return res.status(400).json({
         success: false,
-        error: 'Устройство с таким именем уже существует'
+        error: isSlugError
+          ? 'Устройство с таким API ключом (slug) уже существует'
+          : 'Устройство с таким именем уже существует'
       });
     }
 
@@ -312,6 +319,7 @@ router.put('/:id', async (req, res) => {
   try {
     const {
       name,
+      slug,
       slaveId,
       portId,
       timeout,
@@ -336,6 +344,7 @@ router.put('/:id', async (req, res) => {
       req.params.id,
       {
         name,
+        slug, // Можно обновить slug, но он должен быть уникальным
         slaveId,
         portId,
         timeout,
@@ -373,9 +382,13 @@ router.put('/:id', async (req, res) => {
     console.error('Ошибка обновления устройства:', error);
 
     if (error.code === 11000) {
+      // Определяем какое поле вызвало ошибку уникальности
+      const isSlugError = error.keyPattern?.slug;
       return res.status(400).json({
         success: false,
-        error: 'Устройство с таким именем уже существует'
+        error: isSlugError
+          ? 'Устройство с таким API ключом (slug) уже существует'
+          : 'Устройство с таким именем уже существует'
       });
     }
 

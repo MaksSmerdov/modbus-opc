@@ -34,6 +34,14 @@ const options = {
                 name: 'Data',
                 description: 'Получение данных устройств',
             },
+            {
+                name: 'Polling',
+                description: 'Управление опросом устройств',
+            },
+            {
+                name: 'Settings',
+                description: 'Настройки сервера',
+            },
         ],
         components: {
             schemas: {
@@ -61,8 +69,14 @@ const options = {
                         },
                         name: {
                             type: 'string',
-                            description: 'Уникальное имя устройства',
-                            example: 'Boiler1',
+                            description: 'Название устройства (может быть на русском)',
+                            example: 'Котел №1',
+                        },
+                        slug: {
+                            type: 'string',
+                            description: 'Уникальный API ключ устройства (латиница, цифры, дефисы). Если не указан, генерируется автоматически из названия',
+                            example: 'kotel-1',
+                            pattern: '^[a-z0-9-_]+$',
                         },
                         slaveId: {
                             type: 'integer',
@@ -81,8 +95,8 @@ const options = {
                             type: 'integer',
                             description: 'Таймаут соединения (мс)',
                             default: 500,
-                            minimum: 100,
-                            maximum: 10000,
+                            minimum: 500,
+                            maximum: 30000,
                             example: 500,
                         },
                         retries: {
@@ -90,7 +104,7 @@ const options = {
                             description: 'Количество повторных попыток',
                             default: 3,
                             minimum: 1,
-                            maximum: 10,
+                            maximum: 15,
                             example: 3,
                         },
                         tags: {
@@ -102,9 +116,10 @@ const options = {
                         },
                         saveInterval: {
                             type: 'integer',
-                            description: 'Интервал сохранения данных в БД (секунды)',
-                            default: 60,
-                            example: 60,
+                            description: 'Интервал сохранения данных в БД (миллисекунды)',
+                            default: 30000,
+                            minimum: 5000,
+                            example: 30000,
                         },
                         logData: {
                             type: 'boolean',
@@ -134,7 +149,14 @@ const options = {
                     properties: {
                         name: {
                             type: 'string',
-                            example: 'Boiler1',
+                            description: 'Название устройства (может быть на русском)',
+                            example: 'Котел №1',
+                        },
+                        slug: {
+                            type: 'string',
+                            description: 'Уникальный API ключ (опционально, генерируется автоматически если не указан)',
+                            example: 'kotel-1',
+                            pattern: '^[a-z0-9-_]+$',
                         },
                         slaveId: {
                             type: 'integer',
@@ -150,8 +172,8 @@ const options = {
                             type: 'integer',
                             description: 'Таймаут соединения (мс)',
                             default: 500,
-                            minimum: 100,
-                            maximum: 10000,
+                            minimum: 500,
+                            maximum: 30000,
                             example: 500,
                         },
                         retries: {
@@ -159,13 +181,15 @@ const options = {
                             description: 'Количество повторных попыток',
                             default: 3,
                             minimum: 1,
-                            maximum: 10,
+                            maximum: 15,
                             example: 3,
                         },
                         saveInterval: {
                             type: 'integer',
-                            default: 60,
-                            example: 60,
+                            description: 'Интервал сохранения данных в БД (миллисекунды)',
+                            default: 30000,
+                            minimum: 5000,
+                            example: 30000,
                         },
                         logData: {
                             type: 'boolean',
@@ -236,6 +260,12 @@ const options = {
                             description: 'TCP порт (для TCP)',
                             default: 502,
                             example: 502,
+                        },
+                        isActive: {
+                            type: 'boolean',
+                            description: 'Активен ли порт',
+                            default: true,
+                            example: true,
                         },
                         createdAt: {
                             type: 'string',
@@ -465,6 +495,11 @@ const options = {
                             type: 'string',
                             example: 'Boiler1',
                         },
+                        slug: {
+                            type: 'string',
+                            description: 'API ключ (slug) устройства',
+                            example: 'boiler1',
+                        },
                         slaveId: {
                             type: 'integer',
                             example: 1,
@@ -498,6 +533,11 @@ const options = {
                         deviceName: {
                             type: 'string',
                             example: 'Boiler1',
+                        },
+                        deviceSlug: {
+                            type: 'string',
+                            description: 'API ключ (slug) устройства',
+                            example: 'boiler1',
                         },
                         count: {
                             type: 'integer',

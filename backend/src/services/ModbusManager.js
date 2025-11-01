@@ -42,6 +42,7 @@ class ModbusManager {
     const deviceConfig = {
       slaveId: device.slaveId,
       name: device.name || `Device_${device.slaveId}`,
+      slug: device.slug || `device-${device.slaveId}`,
       registers: device.registers || [],
       isActive: device.isActive ?? true,
       portIsActive: device.portIsActive ?? true,
@@ -59,9 +60,6 @@ class ModbusManager {
     };
 
     this.devices.push(deviceConfig);
-    console.log(`✓ Добавлено устройство: ${deviceConfig.name} (ID: ${device.slaveId})`);
-
-    // Запускаем таймер сохранения в БД
     this.saver.startDeviceSaving(deviceConfig);
 
     return deviceConfig;
@@ -80,18 +78,18 @@ class ModbusManager {
 
   /**
    * Обновляет состояние активности устройства
-   * @param {string} deviceName - Имя устройства
+   * @param {string} deviceSlug - Slug устройства
    * @param {boolean} isActive - Новое состояние активности устройства
    * @param {boolean} portIsActive - Новое состояние активности порта
    */
-  updateDeviceStatus(deviceName, isActive, portIsActive) {
-    const device = this.devices.find(d => d.name === deviceName);
+  updateDeviceStatus(deviceSlug, isActive, portIsActive) {
+    const device = this.devices.find(d => d.slug === deviceSlug);
     if (device) {
       device.isActive = isActive ?? device.isActive;
       if (portIsActive !== undefined) {
         device.portIsActive = portIsActive;
       }
-      console.log(`✓ Обновлено состояние устройства ${deviceName}: isActive=${device.isActive}, portIsActive=${device.portIsActive}`);
+      console.log(`✓ Обновлено состояние устройства ${device.name} (${deviceSlug}): isActive=${device.isActive}, portIsActive=${device.portIsActive}`);
       return true;
     }
     return false;

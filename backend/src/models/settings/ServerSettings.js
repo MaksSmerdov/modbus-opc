@@ -14,6 +14,14 @@ const serverSettingsSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
     required: true
+  },
+  pollInterval: {
+    type: Number,
+    default: 5000,
+    required: true,
+    min: 1000,
+    max: 60000,
+    description: 'Интервал опроса Modbus устройств в миллисекундах'
   }
 }, {
   timestamps: true
@@ -26,14 +34,15 @@ export const ServerSettings = configDB.model('ServerSettings', serverSettingsSch
  */
 export async function getServerSettings() {
   let settings = await ServerSettings.findById('server_settings');
-  
+
   if (!settings) {
     settings = await ServerSettings.create({
       _id: 'server_settings',
-      isPollingEnabled: true
+      isPollingEnabled: true,
+      pollInterval: 5000
     });
   }
-  
+
   return settings;
 }
 
@@ -46,7 +55,20 @@ export async function updatePollingState(isEnabled) {
     { isPollingEnabled: isEnabled },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   );
-  
+
+  return settings;
+}
+
+/**
+ * Обновить настройки сервера
+ */
+export async function updateServerSettings(updates) {
+  const settings = await ServerSettings.findByIdAndUpdate(
+    'server_settings',
+    updates,
+    { new: true, upsert: true, setDefaultsOnInsert: true, runValidators: true }
+  );
+
   return settings;
 }
 

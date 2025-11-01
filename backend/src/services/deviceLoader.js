@@ -36,6 +36,7 @@ export async function loadDevicesFromDB() {
 
         return {
           name: device.name,
+          slug: device.slug,
           slaveId: device.slaveId,
           isActive: device.isActive ?? true,
           portIsActive: port.isActive ?? true,
