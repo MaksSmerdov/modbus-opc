@@ -1,31 +1,38 @@
 import { useState, type FormEvent } from 'react';
 import { Button, Input, Select } from '@/shared/components';
-import type { CreateConnectionProfileDto, ConnectionType } from '../../types/config.types';
+import type { 
+  CreateConnectionProfileDto, 
+  ConnectionProfile,
+  ConnectionType 
+} from '../../types/config.types';
 import styles from './ProfileForm.module.scss';
 
 export interface ProfileFormProps {
+  initialData?: ConnectionProfile;
   onSubmit: (data: CreateConnectionProfileDto) => void;
   onCancel?: () => void;
   loading?: boolean;
 }
 
-export function ProfileForm({ onSubmit, onCancel, loading = false }: ProfileFormProps) {
-  const [connectionType, setConnectionType] = useState<ConnectionType>('RTU');
+export const ProfileForm = ({ initialData, onSubmit, onCancel, loading = false }: ProfileFormProps) => {
+  const [connectionType, setConnectionType] = useState<ConnectionType>(
+    initialData?.connectionType || 'RTU'
+  );
   const [formData, setFormData] = useState<CreateConnectionProfileDto>({
-    name: '',
-    connectionType: 'RTU',
+    name: initialData?.name || '',
+    connectionType: initialData?.connectionType || 'RTU',
     // RTU defaults
-    port: 'COM1',
-    baudRate: 9600,
-    dataBits: 8,
-    stopBits: 1,
-    parity: 'none',
+    port: initialData?.port || 'COM1',
+    baudRate: initialData?.baudRate || 9600,
+    dataBits: initialData?.dataBits || 8,
+    stopBits: initialData?.stopBits || 1,
+    parity: initialData?.parity || 'none',
     // TCP defaults
-    host: '',
-    tcpPort: 502,
+    host: initialData?.host || '',
+    tcpPort: initialData?.tcpPort || 502,
     // Common
-    timeout: 500,
-    retries: 3,
+    timeout: initialData?.timeout || 500,
+    retries: initialData?.retries || 3,
   });
 
   const handleSubmit = (e: FormEvent) => {
@@ -51,13 +58,10 @@ export function ProfileForm({ onSubmit, onCancel, loading = false }: ProfileForm
 
   return (
     <form className={styles['profile-form']} onSubmit={handleSubmit}>
-      <h2 className={styles['profile-form__title']}>Создание профиля подключения</h2>
-
       <Input
         label="Название профиля"
         value={formData.name}
         onChange={(e) => handleChange('name', e.target.value)}
-        placeholder="Например: k265_COM16"
         required
         fullWidth
       />
@@ -67,8 +71,8 @@ export function ProfileForm({ onSubmit, onCancel, loading = false }: ProfileForm
         value={connectionType}
         onChange={(e) => handleConnectionTypeChange(e.target.value)}
         options={[
-          { value: 'RTU', label: 'RTU (RS-485/RS-232)' },
-          { value: 'TCP', label: 'TCP (Ethernet)' },
+          { value: 'RTU', label: 'RTU' },
+          { value: 'TCP', label: 'TCP' },
         ]}
         required
         fullWidth
@@ -80,13 +84,12 @@ export function ProfileForm({ onSubmit, onCancel, loading = false }: ProfileForm
             label="COM-порт"
             value={formData.port || ''}
             onChange={(e) => handleChange('port', e.target.value)}
-            placeholder="COM1, COM2, COM16..."
             required
             fullWidth
           />
 
           <Select
-            label="Скорость (baud rate)"
+            label="Скорость"
             value={formData.baudRate || 9600}
             onChange={(e) => handleChange('baudRate', Number(e.target.value))}
             options={[
@@ -188,10 +191,10 @@ export function ProfileForm({ onSubmit, onCancel, loading = false }: ProfileForm
           </Button>
         )}
         <Button type="submit" variant="primary" loading={loading}>
-          Создать профиль
+          {initialData ? 'Сохранить изменения' : 'Создать профиль'}
         </Button>
       </div>
     </form>
   );
-}
+};
 

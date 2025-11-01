@@ -1,54 +1,29 @@
-/**
- * Глобальные стили
- */
-
-* {
-  margin: 0;
-  padding: 0;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  margin: 0 auto;
+  font-family: "Bitter", sans-serif;
   font-size: 16px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #1f2937;
-  background-color: #f9fafb;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  color: #333;
+  background-color: rgb(238, 235, 235);
 }
 
-#root {
-  min-height: 100vh;
-}
-
-h1, h2, h3, h4, h5, h6 {
+.list-reset {
   margin: 0;
-  font-weight: 600;
+  padding: 0;
+  list-style-type: none;
 }
 
-h1 { font-size: 24px; }
-h2 { font-size: 20px; }
-h3 { font-size: 18px; }
-
-button {
-  font-family: inherit;
+.btn-reset {
+  background-color: transparent;
   cursor: pointer;
-  border: none;
-  background: none;
-}
-
-input, select, textarea {
-  font-family: inherit;
-  font-size: inherit;
-}
-
-ul, ol {
-  list-style: none;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
+  padding: 0;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
 }

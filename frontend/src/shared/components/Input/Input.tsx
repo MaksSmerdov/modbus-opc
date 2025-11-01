@@ -4,12 +4,14 @@ import styles from './Input.module.scss';
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  helperText?: string;
   fullWidth?: boolean;
 }
 
 export function Input({
   label,
   error,
+  helperText,
   fullWidth = false,
   className = '',
   id,
@@ -40,6 +42,7 @@ export function Input({
         {...props}
       />
       {error && <span className={styles.input__error}>{error}</span>}
+      {!error && helperText && <span className={styles.input__helper}>{helperText}</span>}
     </div>
   );
 }
