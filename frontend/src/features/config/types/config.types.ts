@@ -4,7 +4,7 @@ import type { BaseEntity } from '@/shared/types/common.types';
  * Типы для модуля конфигурации
  */
 
-// ============ Connection Profile ============
+// ============ Port ============
 
 export type ConnectionType = 'RTU' | 'TCP';
 export type BaudRate = 9600 | 19200 | 38400 | 57600 | 115200;
@@ -13,9 +13,9 @@ export type StopBits = 1 | 2;
 export type Parity = 'none' | 'even' | 'odd';
 
 /**
- * Профиль подключения (группа устройств)
+ * Порт (группа устройств на одном физическом порту)
  */
-export interface ConnectionProfile extends BaseEntity {
+export interface Port extends BaseEntity {
   name: string;
   connectionType: ConnectionType;
   
@@ -36,25 +36,26 @@ export interface ConnectionProfile extends BaseEntity {
 }
 
 /**
- * Данные для создания профиля (без _id и timestamps)
+ * Данные для создания порта (без _id и timestamps)
  */
-export type CreateConnectionProfileDto = Omit<ConnectionProfile, keyof BaseEntity>;
+export type CreatePortDto = Omit<Port, keyof BaseEntity>;
 
 /**
- * Данные для обновления профиля
+ * Данные для обновления порта
  */
-export type UpdateConnectionProfileDto = Partial<CreateConnectionProfileDto>;
+export type UpdatePortDto = Partial<CreatePortDto>;
 
-// ============ Register ============
+// ============ Tag ============
 
 export type FunctionCode = 'holding' | 'input' | 'coil' | 'discrete';
 export type DataType = 'int16' | 'uint16' | 'int32' | 'uint32' | 'float32' | 'string' | 'bits';
 export type ByteOrder = 'BE' | 'LE' | 'ABCD' | 'CDAB' | 'BADC' | 'DCBA';
 
 /**
- * Регистр Modbus
+ * Тэг устройства (регистр Modbus)
  */
-export interface Register {
+export interface Tag extends BaseEntity {
+  deviceId: string;
   address: number;
   length: number;
   name: string;
@@ -73,32 +74,14 @@ export interface Register {
 }
 
 /**
- * Данные для создания регистра
+ * Данные для создания тэга
  */
-export type CreateRegisterDto = Omit<Register, 'length'> & {
-  length?: number; // может быть вычислен автоматически
-};
-
-// ============ Register Template ============
+export type CreateTagDto = Omit<Tag, keyof BaseEntity | 'deviceId'>;
 
 /**
- * Шаблон регистров
+ * Данные для обновления тэга
  */
-export interface RegisterTemplate extends BaseEntity {
-  name: string;
-  deviceType: string;
-  registers: Register[];
-}
-
-/**
- * Данные для создания шаблона
- */
-export type CreateRegisterTemplateDto = Omit<RegisterTemplate, keyof BaseEntity>;
-
-/**
- * Данные для обновления шаблона
- */
-export type UpdateRegisterTemplateDto = Partial<CreateRegisterTemplateDto>;
+export type UpdateTagDto = Partial<CreateTagDto>;
 
 // ============ Device ============
 
@@ -108,8 +91,8 @@ export type UpdateRegisterTemplateDto = Partial<CreateRegisterTemplateDto>;
 export interface Device extends BaseEntity {
   name: string;
   slaveId: number;
-  connectionProfileId: string | ConnectionProfile;
-  registerTemplateId: string | RegisterTemplate;
+  portId: string | Port;
+  tags?: Tag[];
   saveInterval: number;
   logData: boolean;
   isActive: boolean;
@@ -118,17 +101,16 @@ export interface Device extends BaseEntity {
 /**
  * Устройство с заполненными связями (populate)
  */
-export interface DevicePopulated extends Omit<Device, 'connectionProfileId' | 'registerTemplateId'> {
-  connectionProfileId: ConnectionProfile;
-  registerTemplateId: RegisterTemplate;
+export interface DevicePopulated extends Omit<Device, 'portId'> {
+  portId: Port;
+  tags: Tag[];
 }
 
 /**
  * Данные для создания устройства
  */
-export type CreateDeviceDto = Omit<Device, keyof BaseEntity | 'connectionProfileId' | 'registerTemplateId'> & {
-  connectionProfileId: string;
-  registerTemplateId: string;
+export type CreateDeviceDto = Omit<Device, keyof BaseEntity | 'portId' | 'tags'> & {
+  portId: string;
 };
 
 /**

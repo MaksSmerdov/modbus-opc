@@ -1,51 +1,75 @@
-import { Device } from '../models/config/index.js';
+import { Device, Tag } from '../models/config/index.js';
 
 /**
  * Загружает активные устройства из БД с полной информацией
- * @returns {Promise<Array>} Массив устройств с заполненными профилями и шаблонами
+ * @returns {Promise<Array>} Массив устройств с заполненными портами и тэгами
  */
 export async function loadDevicesFromDB() {
   try {
     const devices = await Device.find({ isActive: true })
-      .populate('connectionProfileId')
-      .populate('registerTemplateId')
+      .populate('portId')
       .lean();
 
     // Преобразуем в формат, удобный для ModbusManager
-    const formattedDevices = devices.map(device => {
-      const profile = device.connectionProfileId;
-      const template = device.registerTemplateId;
+    const formattedDevices = await Promise.all(
+      devices.map(async (device) => {
+        const port = device.portId;
 
-      if (!profile || !template) {
-        console.warn(`⚠ Устройство ${device.name} пропущено: отсутствует профиль или шаблон`);
-        return null;
-      }
+        if (!port) {
+          console.warn(`⚠ Устройство ${device.name} пропущено: отсутствует порт`);
+          return null;
+        }
 
-      return {
-        name: device.name,
-        slaveId: device.slaveId,
-        connectionProfile: {
-          connectionType: profile.connectionType,
-          // RTU параметры
-          port: profile.port,
-          baudRate: profile.baudRate,
-          dataBits: profile.dataBits,
-          stopBits: profile.stopBits,
-          parity: profile.parity,
-          // TCP параметры
-          host: profile.host,
-          tcpPort: profile.tcpPort,
-          // Общие параметры
-          timeout: profile.timeout,
-          retries: profile.retries
-        },
-        registers: template.registers,
-        saveInterval: device.saveInterval,
-        logData: device.logData
-      };
-    }).filter(device => device !== null);
+        // Загружаем тэги устройства
+        const tags = await Tag.find({ deviceId: device._id }).lean();
 
-    return formattedDevices;
+        if (tags.length === 0) {
+          console.warn(`⚠ Устройство ${device.name} пропущено: отсутствуют тэги`);
+          return null;
+        }
+
+        return {
+          name: device.name,
+          slaveId: device.slaveId,
+          port: {
+            connectionType: port.connectionType,
+            // RTU параметры
+            port: port.port,
+            baudRate: port.baudRate,
+            dataBits: port.dataBits,
+            stopBits: port.stopBits,
+            parity: port.parity,
+            // TCP параметры
+            host: port.host,
+            tcpPort: port.tcpPort,
+            // Общие параметры
+            timeout: port.timeout,
+            retries: port.retries
+          },
+          registers: tags.map(tag => ({
+            address: tag.address,
+            length: tag.length,
+            name: tag.name,
+            category: tag.category,
+            functionCode: tag.functionCode,
+            dataType: tag.dataType,
+            bitIndex: tag.bitIndex,
+            byteOrder: tag.byteOrder,
+            scale: tag.scale,
+            offset: tag.offset,
+            decimals: tag.decimals,
+            unit: tag.unit,
+            minValue: tag.minValue,
+            maxValue: tag.maxValue,
+            description: tag.description
+          })),
+          saveInterval: device.saveInterval,
+          logData: device.logData
+        };
+      })
+    );
+
+    return formattedDevices.filter(device => device !== null);
   } catch (error) {
     console.error('✗ Ошибка загрузки устройств из БД:', error.message);
     throw error;

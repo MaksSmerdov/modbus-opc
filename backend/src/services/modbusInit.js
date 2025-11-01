@@ -53,20 +53,20 @@ async function initModbusManagers(devicesByPort) {
   let lastManager = null;
 
   for (const [portKey, portData] of Object.entries(devicesByPort)) {
-    const profile = portData.profile;
+    const port = portData.port;
     
-    console.log(`\n=== Инициализация Modbus на ${profile.port} (${profile.baudRate} baud) ===`);
+    console.log(`\n=== Инициализация Modbus на ${port.port} (${port.baudRate} baud) ===`);
     console.log(`Устройства на порту: ${portData.devices.map(d => d.name).join(', ')}`);
     
     const manager = new ModbusManager({
-      connectionType: profile.connectionType,
-      port: profile.port,
-      baudRate: profile.baudRate,
-      dataBits: profile.dataBits,
-      stopBits: profile.stopBits,
-      parity: profile.parity,
-      timeout: profile.timeout,
-      retries: profile.retries,
+      connectionType: port.connectionType,
+      port: port.port,
+      baudRate: port.baudRate,
+      dataBits: port.dataBits,
+      stopBits: port.stopBits,
+      parity: port.parity,
+      timeout: port.timeout,
+      retries: port.retries,
       pollInterval: 5000
     });
 
@@ -85,11 +85,11 @@ function groupDevicesByPort(devices) {
   const devicesByPort = {};
   
   devices.forEach(device => {
-    const profile = device.connectionProfile;
-    const portKey = `${profile.port}_${profile.connectionType}`;
+    const port = device.port;
+    const portKey = `${port.port}_${port.connectionType}`;
     if (!devicesByPort[portKey]) {
       devicesByPort[portKey] = {
-        profile: profile,
+        port: port,
         devices: []
       };
     }

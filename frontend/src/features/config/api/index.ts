@@ -2,7 +2,7 @@
  * Экспорт всех API endpoints для модуля конфигурации
  */
 
-export * from './profilesApi';
+export * from './portsApi';
 export * from './devicesApi';
-export * from './templatesApi';
+export * from './tagsApi';
 

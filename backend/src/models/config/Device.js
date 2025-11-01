@@ -17,14 +17,9 @@ const deviceSchema = new mongoose.Schema({
     min: 1,
     max: 247
   },
-  connectionProfileId: {
+  portId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'ConnectionProfile',
-    required: true
-  },
-  registerTemplateId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'RegisterTemplate',
+    ref: 'Port',
     required: true
   },
   saveInterval: {

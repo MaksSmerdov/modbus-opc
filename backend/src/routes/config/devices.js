@@ -1,5 +1,5 @@
 import express from 'express';
-import { Device, ConnectionProfile, RegisterTemplate } from '../../models/config/index.js';
+import { Device, Port, Tag } from '../../models/config/index.js';
 import { reinitializeModbus } from '../../utils/modbusReloader.js';
 
 const router = express.Router();
@@ -38,15 +38,25 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const devices = await Device.find()
-      .populate('connectionProfileId', 'name connectionType')
-      .populate('registerTemplateId') // Загружаем все поля шаблона, включая registers
+      .populate('portId', 'name connectionType')
       .sort({ name: 1 })
       .lean();
 
+    // Загружаем тэги для каждого устройства
+    const devicesWithTags = await Promise.all(
+      devices.map(async (device) => {
+        const tags = await Tag.find({ deviceId: device._id }).lean();
+        return {
+          ...device,
+          tags
+        };
+      })
+    );
+
     res.json({
       success: true,
-      count: devices.length,
-      data: devices
+      count: devicesWithTags.length,
+      data: devicesWithTags
     });
   } catch (error) {
     console.error('Ошибка получения устройств:', error);
@@ -99,8 +109,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const device = await Device.findById(req.params.id)
-      .populate('connectionProfileId')
-      .populate('registerTemplateId')
+      .populate('portId')
       .lean();
 
     if (!device) {
@@ -110,9 +119,15 @@ router.get('/:id', async (req, res) => {
       });
     }
 
+    // Загружаем тэги устройства
+    const tags = await Tag.find({ deviceId: device._id }).lean();
+
     res.json({
       success: true,
-      data: device
+      data: {
+        ...device,
+        tags
+      }
     });
   } catch (error) {
     console.error('Ошибка получения устройства:', error);
@@ -172,45 +187,35 @@ router.post('/', async (req, res) => {
     const {
       name,
       slaveId,
-      connectionProfileId,
-      registerTemplateId,
+      portId,
       saveInterval,
       logData,
       isActive
     } = req.body;
 
     // Валидация
-    if (!name || !slaveId || !connectionProfileId || !registerTemplateId) {
+    if (!name || !slaveId || !portId) {
       return res.status(400).json({
         success: false,
         error: 'Не все обязательные поля заполнены'
       });
     }
 
-    // Проверка существования профиля и шаблона
-    const profile = await ConnectionProfile.findById(connectionProfileId);
-    const template = await RegisterTemplate.findById(registerTemplateId);
+    // Проверка существования порта
+    const port = await Port.findById(portId);
 
-    if (!profile) {
+    if (!port) {
       return res.status(404).json({
         success: false,
-        error: 'Профиль подключения не найден'
+        error: 'Порт не найден'
       });
     }
 
-    if (!template) {
-      return res.status(404).json({
-        success: false,
-        error: 'Шаблон регистров не найден'
-      });
-    }
-
-    // Создание устройства
+    // Создание устройства (без тэгов - массив тэгов пустой изначально)
     const device = await Device.create({
       name,
       slaveId,
-      connectionProfileId,
-      registerTemplateId,
+      portId,
       saveInterval,
       logData,
       isActive
@@ -218,8 +223,7 @@ router.post('/', async (req, res) => {
 
     // Получаем созданное устройство с заполненными ссылками
     const populatedDevice = await Device.findById(device._id)
-      .populate('connectionProfileId')
-      .populate('registerTemplateId')
+      .populate('portId')
       .lean();
 
     // Реинициализируем Modbus для подключения нового устройства
@@ -227,7 +231,10 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({
       success: true,
-      data: populatedDevice
+      data: {
+        ...populatedDevice,
+        tags: [] // Изначально массив тэгов пустой
+      }
     });
   } catch (error) {
     console.error('Ошибка создания устройства:', error);
@@ -302,30 +309,19 @@ router.put('/:id', async (req, res) => {
     const {
       name,
       slaveId,
-      connectionProfileId,
-      registerTemplateId,
+      portId,
       saveInterval,
       logData,
       isActive
     } = req.body;
 
-    // Проверка существования профиля и шаблона (если они указаны)
-    if (connectionProfileId) {
-      const profile = await ConnectionProfile.findById(connectionProfileId);
-      if (!profile) {
+    // Проверка существования порта (если он указан)
+    if (portId) {
+      const port = await Port.findById(portId);
+      if (!port) {
         return res.status(404).json({
           success: false,
-          error: 'Профиль подключения не найден'
-        });
-      }
-    }
-
-    if (registerTemplateId) {
-      const template = await RegisterTemplate.findById(registerTemplateId);
-      if (!template) {
-        return res.status(404).json({
-          success: false,
-          error: 'Шаблон регистров не найден'
+          error: 'Порт не найден'
         });
       }
     }
@@ -335,16 +331,14 @@ router.put('/:id', async (req, res) => {
       {
         name,
         slaveId,
-        connectionProfileId,
-        registerTemplateId,
+        portId,
         saveInterval,
         logData,
         isActive
       },
       { new: true, runValidators: true }
     )
-      .populate('connectionProfileId')
-      .populate('registerTemplateId')
+      .populate('portId')
       .lean();
 
     if (!device) {
@@ -354,12 +348,18 @@ router.put('/:id', async (req, res) => {
       });
     }
 
+    // Загружаем тэги устройства
+    const tags = await Tag.find({ deviceId: device._id }).lean();
+
     // Реинициализируем Modbus для применения изменений
     await reinitializeModbus();
 
     res.json({
       success: true,
-      data: device
+      data: {
+        ...device,
+        tags
+      }
     });
   } catch (error) {
     console.error('Ошибка обновления устройства:', error);
@@ -428,6 +428,9 @@ router.delete('/:id', async (req, res) => {
         error: 'Устройство не найдено'
       });
     }
+
+    // Удаляем все тэги устройства
+    await Tag.deleteMany({ deviceId: req.params.id });
 
     // Реинициализируем Modbus для удаления устройства из polling
     await reinitializeModbus();

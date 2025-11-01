@@ -1,11 +1,10 @@
 import { useState, type FormEvent } from 'react';
-import { Button, Input, Select } from '@/shared/components';
-import { useGetTemplatesQuery } from '@/features/config/api';
+import { Button, Input } from '@/shared/components';
 import type { CreateDeviceDto, Device } from '../../types/config.types';
 import styles from './DeviceForm.module.scss';
 
 export interface DeviceFormProps {
-  profileId: string;
+  portId: string;
   initialData?: Device;
   onSubmit: (data: CreateDeviceDto) => void;
   onCancel?: () => void;
@@ -13,27 +12,21 @@ export interface DeviceFormProps {
 }
 
 export const DeviceForm = ({ 
-  profileId,
+  portId,
   initialData, 
   onSubmit, 
   onCancel, 
   loading = false 
 }: DeviceFormProps) => {
-  const { data: templatesResponse, isLoading: templatesLoading } = useGetTemplatesQuery();
   
   const [formData, setFormData] = useState<CreateDeviceDto>({
     name: initialData?.name || '',
     slaveId: initialData?.slaveId || 1,
-    connectionProfileId: profileId,
-    registerTemplateId: typeof initialData?.registerTemplateId === 'string' 
-      ? initialData.registerTemplateId 
-      : initialData?.registerTemplateId?._id || '',
+    portId: portId,
     saveInterval: initialData?.saveInterval || 5000,
     logData: initialData?.logData ?? true,
     isActive: initialData?.isActive ?? true,
   });
-
-  const templates = templatesResponse?.data || [];
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -68,22 +61,6 @@ export const DeviceForm = ({
         required
         fullWidth
         helperText="Адрес устройства Modbus (1-247)"
-      />
-
-      <Select
-        label="Шаблон регистров"
-        value={formData.registerTemplateId}
-        onChange={(e) => handleChange('registerTemplateId', e.target.value)}
-        options={[
-          { value: '', label: templatesLoading ? 'Загрузка...' : 'Выберите шаблон' },
-          ...templates.map((template) => ({
-            value: template._id,
-            label: `${template.name} (${template.deviceType})`,
-          })),
-        ]}
-        required
-        fullWidth
-        disabled={templatesLoading}
       />
 
       <Input
@@ -131,4 +108,3 @@ export const DeviceForm = ({
     </form>
   );
 };
-

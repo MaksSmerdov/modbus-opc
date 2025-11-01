@@ -66,7 +66,7 @@ export const devicesApi = baseApi.injectEndpoints({
         url: `/config/devices/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Devices'],
+      invalidatesTags: ['Devices', 'Tags'],
     }),
   }),
 });

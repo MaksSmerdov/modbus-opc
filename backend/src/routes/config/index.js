@@ -1,14 +1,14 @@
 import express from 'express';
 import devicesRouter from './devices.js';
-import profilesRouter from './profiles.js';
-import templatesRouter from './templates.js';
+import portsRouter from './ports.js';
+import tagsRouter from './tags.js';
 
 const router = express.Router();
 
 // Подключаем роуты
 router.use('/devices', devicesRouter);
-router.use('/profiles', profilesRouter);
-router.use('/templates', templatesRouter);
+router.use('/ports', portsRouter);
+router.use('/', tagsRouter); // Роуты для тэгов включают в себя путь /devices/:deviceId/tags
 
 export default router;
 

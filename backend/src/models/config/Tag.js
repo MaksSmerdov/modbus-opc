@@ -2,9 +2,14 @@ import mongoose from 'mongoose';
 import { configDB } from '../../utils/database.js';
 
 /**
- * Схема регистра
+ * Схема тэга (регистра устройства)
  */
-const registerSchema = new mongoose.Schema({
+const tagSchema = new mongoose.Schema({
+  deviceId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Device',
+    required: true
+  },
   address: {
     type: Number,
     required: true,
@@ -108,29 +113,13 @@ const registerSchema = new mongoose.Schema({
     type: String,
     default: ''
   }
-}, { _id: false });
-
-/**
- * Схема шаблона регистров
- */
-const registerTemplateSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
-  },
-  deviceType: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  registers: [registerSchema]
 }, {
   timestamps: true
 });
 
-registerTemplateSchema.index({ deviceType: 1 });
+// Индексы для ускорения поиска
+tagSchema.index({ deviceId: 1 });
+tagSchema.index({ deviceId: 1, address: 1 });
 
-export const RegisterTemplate = configDB.model('RegisterTemplate', registerTemplateSchema);
+export const Tag = configDB.model('Tag', tagSchema);
 

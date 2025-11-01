@@ -23,12 +23,12 @@ const options = {
                 description: 'Управление устройствами',
             },
             {
-                name: 'Profiles',
-                description: 'Управление профилями подключений',
+                name: 'Ports',
+                description: 'Управление портами',
             },
             {
-                name: 'Templates',
-                description: 'Управление шаблонами регистров',
+                name: 'Tags',
+                description: 'Управление тэгами устройств',
             },
             {
                 name: 'Data',
@@ -52,7 +52,7 @@ const options = {
                 },
                 Device: {
                     type: 'object',
-                    required: ['name', 'slaveId', 'connectionProfileId', 'registerTemplateId'],
+                    required: ['name', 'slaveId', 'portId'],
                     properties: {
                         _id: {
                             type: 'string',
@@ -71,17 +71,18 @@ const options = {
                             maximum: 247,
                             example: 1,
                         },
-                        connectionProfileId: {
+                        portId: {
                             oneOf: [
-                                { type: 'string', description: 'ID профиля подключения' },
-                                { $ref: '#/components/schemas/ConnectionProfile' },
+                                { type: 'string', description: 'ID порта' },
+                                { $ref: '#/components/schemas/Port' },
                             ],
                         },
-                        registerTemplateId: {
-                            oneOf: [
-                                { type: 'string', description: 'ID шаблона регистров' },
-                                { $ref: '#/components/schemas/RegisterTemplate' },
-                            ],
+                        tags: {
+                            type: 'array',
+                            description: 'Массив тэгов устройства',
+                            items: {
+                                $ref: '#/components/schemas/Tag',
+                            },
                         },
                         saveInterval: {
                             type: 'integer',
@@ -113,7 +114,7 @@ const options = {
                 },
                 DeviceInput: {
                     type: 'object',
-                    required: ['name', 'slaveId', 'connectionProfileId', 'registerTemplateId'],
+                    required: ['name', 'slaveId', 'portId'],
                     properties: {
                         name: {
                             type: 'string',
@@ -125,13 +126,9 @@ const options = {
                             maximum: 247,
                             example: 1,
                         },
-                        connectionProfileId: {
+                        portId: {
                             type: 'string',
                             example: '65f1234567890abcdef12345',
-                        },
-                        registerTemplateId: {
-                            type: 'string',
-                            example: '65f1234567890abcdef12346',
                         },
                         saveInterval: {
                             type: 'integer',
@@ -150,7 +147,7 @@ const options = {
                         },
                     },
                 },
-                ConnectionProfile: {
+                Port: {
                     type: 'object',
                     required: ['name', 'connectionType'],
                     properties: {
@@ -160,7 +157,7 @@ const options = {
                         },
                         name: {
                             type: 'string',
-                            description: 'Уникальное имя профиля',
+                            description: 'Уникальное имя порта',
                             example: 'RTU-485',
                         },
                         connectionType: {
@@ -230,7 +227,7 @@ const options = {
                         },
                     },
                 },
-                ConnectionProfileRTU: {
+                PortRTU: {
                     type: 'object',
                     required: ['name', 'connectionType', 'port', 'baudRate'],
                     properties: {
@@ -279,7 +276,7 @@ const options = {
                         },
                     },
                 },
-                ConnectionProfileTCP: {
+                PortTCP: {
                     type: 'object',
                     required: ['name', 'connectionType', 'host'],
                     properties: {
@@ -313,31 +310,115 @@ const options = {
                         },
                     },
                 },
-                RegisterTemplate: {
+                Tag: {
                     type: 'object',
-                    required: ['name', 'deviceType', 'registers'],
+                    required: ['deviceId', 'address', 'length', 'name', 'dataType'],
                     properties: {
                         _id: {
                             type: 'string',
                             example: '65f1234567890abcdef12348',
                         },
+                        deviceId: {
+                            type: 'string',
+                            description: 'ID устройства',
+                            example: '65f1234567890abcdef12345',
+                        },
+                        address: {
+                            type: 'integer',
+                            description: 'Адрес регистра',
+                            minimum: 0,
+                            maximum: 65535,
+                            example: 0,
+                        },
+                        length: {
+                            type: 'integer',
+                            description: 'Длина в регистрах',
+                            minimum: 1,
+                            maximum: 125,
+                            example: 2,
+                        },
                         name: {
                             type: 'string',
-                            description: 'Уникальное имя шаблона',
-                            example: 'BoilerTemplate',
+                            description: 'Название параметра',
+                            example: 'Temperature',
                         },
-                        deviceType: {
+                        category: {
                             type: 'string',
-                            description: 'Тип устройства',
-                            example: 'boiler',
+                            description: 'Категория',
+                            default: 'general',
+                            example: 'general',
                         },
-                        registers: {
-                            type: 'array',
-                            description: 'Массив регистров',
-                            minItems: 1,
-                            items: {
-                                $ref: '#/components/schemas/Register',
-                            },
+                        functionCode: {
+                            type: 'string',
+                            description: 'Тип функции Modbus',
+                            enum: ['holding', 'input', 'coil', 'discrete'],
+                            default: 'holding',
+                            example: 'holding',
+                        },
+                        dataType: {
+                            type: 'string',
+                            description: 'Тип данных',
+                            enum: ['int16', 'uint16', 'int32', 'uint32', 'float32', 'string', 'bits'],
+                            example: 'float32',
+                        },
+                        bitIndex: {
+                            type: 'integer',
+                            description: 'Индекс бита (только для типа bits)',
+                            minimum: 0,
+                            maximum: 15,
+                            nullable: true,
+                            example: null,
+                        },
+                        byteOrder: {
+                            type: 'string',
+                            description: 'Порядок байтов',
+                            enum: ['BE', 'LE', 'ABCD', 'CDAB', 'BADC', 'DCBA'],
+                            default: 'ABCD',
+                            example: 'ABCD',
+                        },
+                        scale: {
+                            type: 'number',
+                            description: 'Масштабный коэффициент',
+                            default: 1,
+                            example: 1,
+                        },
+                        offset: {
+                            type: 'number',
+                            description: 'Смещение',
+                            default: 0,
+                            example: 0,
+                        },
+                        decimals: {
+                            type: 'integer',
+                            description: 'Количество знаков после запятой',
+                            minimum: 0,
+                            maximum: 10,
+                            default: 0,
+                            example: 2,
+                        },
+                        unit: {
+                            type: 'string',
+                            description: 'Единица измерения',
+                            default: '',
+                            example: '°C',
+                        },
+                        minValue: {
+                            type: 'number',
+                            description: 'Минимальное значение',
+                            nullable: true,
+                            example: null,
+                        },
+                        maxValue: {
+                            type: 'number',
+                            description: 'Максимальное значение',
+                            nullable: true,
+                            example: null,
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Описание',
+                            default: '',
+                            example: 'Температура котла',
                         },
                         createdAt: {
                             type: 'string',

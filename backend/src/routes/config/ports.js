@@ -1,36 +1,36 @@
 import express from 'express';
-import { ConnectionProfile, Device } from '../../models/config/index.js';
+import { Port, Device } from '../../models/config/index.js';
 
 const router = express.Router();
 
 /**
- * Форматирует профиль для ответа - оставляет только релевантные поля
+ * Форматирует порт для ответа - оставляет только релевантные поля
  */
-function formatProfile(profile) {
+function formatPort(port) {
   const base = {
-    _id: profile._id,
-    name: profile.name,
-    connectionType: profile.connectionType,
-    timeout: profile.timeout,
-    retries: profile.retries,
-    createdAt: profile.createdAt,
-    updatedAt: profile.updatedAt
+    _id: port._id,
+    name: port.name,
+    connectionType: port.connectionType,
+    timeout: port.timeout,
+    retries: port.retries,
+    createdAt: port.createdAt,
+    updatedAt: port.updatedAt
   };
 
-  if (profile.connectionType === 'RTU') {
+  if (port.connectionType === 'RTU') {
     return {
       ...base,
-      port: profile.port,
-      baudRate: profile.baudRate,
-      dataBits: profile.dataBits,
-      stopBits: profile.stopBits,
-      parity: profile.parity
+      port: port.port,
+      baudRate: port.baudRate,
+      dataBits: port.dataBits,
+      stopBits: port.stopBits,
+      parity: port.parity
     };
-  } else if (profile.connectionType === 'TCP') {
+  } else if (port.connectionType === 'TCP') {
     return {
       ...base,
-      host: profile.host,
-      tcpPort: profile.tcpPort
+      host: port.host,
+      tcpPort: port.tcpPort
     };
   }
 
@@ -39,13 +39,13 @@ function formatProfile(profile) {
 
 /**
  * @swagger
- * /api/config/profiles:
+ * /api/config/ports:
  *   get:
- *     summary: Получить список всех профилей подключений
- *     tags: [Profiles]
+ *     summary: Получить список всех портов
+ *     tags: [Ports]
  *     responses:
  *       200:
- *         description: Список профилей
+ *         description: Список портов
  *         content:
  *           application/json:
  *             schema:
@@ -60,7 +60,7 @@ function formatProfile(profile) {
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/ConnectionProfile'
+ *                     $ref: '#/components/schemas/Port'
  *       500:
  *         description: Ошибка сервера
  *         content:
@@ -70,42 +70,42 @@ function formatProfile(profile) {
  */
 router.get('/', async (req, res) => {
   try {
-    const profiles = await ConnectionProfile.find()
+    const ports = await Port.find()
       .sort({ name: 1 })
       .lean();
 
-    const formattedProfiles = profiles.map(formatProfile);
+    const formattedPorts = ports.map(formatPort);
 
     res.json({
       success: true,
-      count: formattedProfiles.length,
-      data: formattedProfiles
+      count: formattedPorts.length,
+      data: formattedPorts
     });
   } catch (error) {
-    console.error('Ошибка получения профилей:', error);
+    console.error('Ошибка получения портов:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка получения профилей'
+      error: 'Ошибка получения портов'
     });
   }
 });
 
 /**
  * @swagger
- * /api/config/profiles/{id}:
+ * /api/config/ports/{id}:
  *   get:
- *     summary: Получить профиль по ID
- *     tags: [Profiles]
+ *     summary: Получить порт по ID
+ *     tags: [Ports]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId профиля
+ *         description: MongoDB ObjectId порта
  *     responses:
  *       200:
- *         description: Данные профиля
+ *         description: Данные порта
  *         content:
  *           application/json:
  *             schema:
@@ -115,9 +115,9 @@ router.get('/', async (req, res) => {
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/ConnectionProfile'
+ *                   $ref: '#/components/schemas/Port'
  *       404:
- *         description: Профиль не найден
+ *         description: Порт не найден
  *         content:
  *           application/json:
  *             schema:
@@ -131,45 +131,45 @@ router.get('/', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
-    const profile = await ConnectionProfile.findById(req.params.id).lean();
+    const port = await Port.findById(req.params.id).lean();
 
-    if (!profile) {
+    if (!port) {
       return res.status(404).json({
         success: false,
-        error: 'Профиль не найден'
+        error: 'Порт не найден'
       });
     }
 
     res.json({
       success: true,
-      data: formatProfile(profile)
+      data: formatPort(port)
     });
   } catch (error) {
-    console.error('Ошибка получения профиля:', error);
+    console.error('Ошибка получения порта:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка получения профиля'
+      error: 'Ошибка получения порта'
     });
   }
 });
 
 /**
  * @swagger
- * /api/config/profiles:
+ * /api/config/ports:
  *   post:
- *     summary: Создать новый профиль подключения
- *     tags: [Profiles]
+ *     summary: Создать новый порт подключения
+ *     tags: [Ports]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             oneOf:
- *               - $ref: '#/components/schemas/ConnectionProfileRTU'
- *               - $ref: '#/components/schemas/ConnectionProfileTCP'
+ *               - $ref: '#/components/schemas/PortRTU'
+ *               - $ref: '#/components/schemas/PortTCP'
  *     responses:
  *       201:
- *         description: Профиль успешно создан
+ *         description: Порт успешно создан
  *         content:
  *           application/json:
  *             schema:
@@ -179,7 +179,7 @@ router.get('/:id', async (req, res) => {
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/ConnectionProfile'
+ *                   $ref: '#/components/schemas/Port'
  *       400:
  *         description: Ошибка валидации или дубликат имени
  *         content:
@@ -195,10 +195,10 @@ router.get('/:id', async (req, res) => {
  */
 router.post('/', async (req, res) => {
   try {
-    const profileData = req.body;
+    const portData = req.body;
 
     // Базовая валидация
-    if (!profileData.name || !profileData.connectionType) {
+    if (!portData.name || !portData.connectionType) {
       return res.status(400).json({
         success: false,
         error: 'Не все обязательные поля заполнены'
@@ -206,15 +206,15 @@ router.post('/', async (req, res) => {
     }
 
     // Валидация в зависимости от типа
-    if (profileData.connectionType === 'RTU') {
-      if (!profileData.port || !profileData.baudRate) {
+    if (portData.connectionType === 'RTU') {
+      if (!portData.port || !portData.baudRate) {
         return res.status(400).json({
           success: false,
           error: 'Для RTU необходимо указать порт и скорость'
         });
       }
-    } else if (profileData.connectionType === 'TCP') {
-      if (!profileData.host) {
+    } else if (portData.connectionType === 'TCP') {
+      if (!portData.host) {
         return res.status(400).json({
           success: false,
           error: 'Для TCP необходимо указать хост'
@@ -222,53 +222,53 @@ router.post('/', async (req, res) => {
       }
     }
 
-    const profile = await ConnectionProfile.create(profileData);
+    const port = await Port.create(portData);
 
     res.status(201).json({
       success: true,
-      data: formatProfile(profile.toObject())
+      data: formatPort(port.toObject())
     });
   } catch (error) {
-    console.error('Ошибка создания профиля:', error);
+    console.error('Ошибка создания порта:', error);
 
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        error: 'Профиль с таким именем уже существует'
+        error: 'Порт с таким именем уже существует'
       });
     }
 
     res.status(500).json({
       success: false,
-      error: 'Ошибка создания профиля'
+      error: 'Ошибка создания порта'
     });
   }
 });
 
 /**
  * @swagger
- * /api/config/profiles/{id}:
+ * /api/config/ports/{id}:
  *   put:
- *     summary: Обновить профиль подключения
- *     tags: [Profiles]
+ *     summary: Обновить порт подключения
+ *     tags: [Ports]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId профиля
+ *         description: MongoDB ObjectId порта
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             oneOf:
- *               - $ref: '#/components/schemas/ConnectionProfileRTU'
- *               - $ref: '#/components/schemas/ConnectionProfileTCP'
+ *               - $ref: '#/components/schemas/PortRTU'
+ *               - $ref: '#/components/schemas/PortTCP'
  *     responses:
  *       200:
- *         description: Профиль успешно обновлен
+ *         description: Порт успешно обновлен
  *         content:
  *           application/json:
  *             schema:
@@ -278,7 +278,7 @@ router.post('/', async (req, res) => {
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/ConnectionProfile'
+ *                   $ref: '#/components/schemas/Port'
  *       400:
  *         description: Ошибка валидации или дубликат имени
  *         content:
@@ -286,7 +286,7 @@ router.post('/', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Профиль не найден
+ *         description: Порт не найден
  *         content:
  *           application/json:
  *             schema:
@@ -300,58 +300,58 @@ router.post('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   try {
-    const profileData = req.body;
+    const portData = req.body;
 
-    const profile = await ConnectionProfile.findByIdAndUpdate(
+    const port = await Port.findByIdAndUpdate(
       req.params.id,
-      profileData,
+      portData,
       { new: true, runValidators: true }
     ).lean();
 
-    if (!profile) {
+    if (!port) {
       return res.status(404).json({
         success: false,
-        error: 'Профиль не найден'
+        error: 'Порт не найден'
       });
     }
 
     res.json({
       success: true,
-      data: formatProfile(profile)
+      data: formatPort(port)
     });
   } catch (error) {
-    console.error('Ошибка обновления профиля:', error);
+    console.error('Ошибка обновления порта:', error);
 
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        error: 'Профиль с таким именем уже существует'
+        error: 'Порт с таким именем уже существует'
       });
     }
 
     res.status(500).json({
       success: false,
-      error: 'Ошибка обновления профиля'
+      error: 'Ошибка обновления порта'
     });
   }
 });
 
 /**
  * @swagger
- * /api/config/profiles/{id}:
+ * /api/config/ports/{id}:
  *   delete:
- *     summary: Удалить профиль подключения
- *     tags: [Profiles]
+ *     summary: Удалить порт подключения
+ *     tags: [Ports]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId профиля
+ *         description: MongoDB ObjectId порта
  *     responses:
  *       200:
- *         description: Профиль успешно удален
+ *         description: Порт успешно удален
  *         content:
  *           application/json:
  *             schema:
@@ -362,15 +362,15 @@ router.put('/:id', async (req, res) => {
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: Профиль удален
+ *                   example: Порт удален
  *       400:
- *         description: Профиль используется устройствами
+ *         description: Порт используется устройствами
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Профиль не найден
+ *         description: Порт не найден
  *         content:
  *           application/json:
  *             schema:
@@ -384,36 +384,36 @@ router.put('/:id', async (req, res) => {
  */
 router.delete('/:id', async (req, res) => {
   try {
-    // Проверяем, используется ли профиль какими-либо устройствами
+    // Проверяем, используется ли порт какими-либо устройствами
     const devicesUsingProfile = await Device.countDocuments({
-      connectionProfileId: req.params.id
+      portId: req.params.id
     });
 
     if (devicesUsingProfile > 0) {
       return res.status(400).json({
         success: false,
-        error: `Профиль используется ${devicesUsingProfile} устройством(и). Удаление невозможно.`
+        error: `Порт используется ${devicesUsingProfile} устройством(и). Удаление невозможно.`
       });
     }
 
-    const profile = await ConnectionProfile.findByIdAndDelete(req.params.id).lean();
+    const port = await Port.findByIdAndDelete(req.params.id).lean();
 
-    if (!profile) {
+    if (!port) {
       return res.status(404).json({
         success: false,
-        error: 'Профиль не найден'
+        error: 'Порт не найден'
       });
     }
 
     res.json({
       success: true,
-      message: 'Профиль удален'
+      message: 'Порт удален'
     });
   } catch (error) {
-    console.error('Ошибка удаления профиля:', error);
+    console.error('Ошибка удаления порта:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка удаления профиля'
+      error: 'Ошибка удаления порта'
     });
   }
 });

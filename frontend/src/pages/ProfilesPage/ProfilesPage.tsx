@@ -2,12 +2,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { MdAdd } from 'react-icons/md';
 import { Modal, Button } from '@/shared/components';
 import { useModal } from '@/shared/hooks/useModal';
-import { ProfileForm, DeviceForm } from '@/features/config/components';
+import { PortForm, DeviceForm } from '@/features/config/components';
 import { 
-  useGetProfilesQuery, 
-  useCreateProfileMutation,
-  useUpdateProfileMutation,
-  useDeleteProfileMutation,
+  useGetPortsQuery, 
+  useCreatePortMutation,
+  useUpdatePortMutation,
+  useDeletePortMutation,
   useGetDevicesQuery,
   useCreateDeviceMutation,
   // TODO: добавить функциональность редактирования и удаления устройств
@@ -15,8 +15,8 @@ import {
   // useDeleteDeviceMutation
 } from '@/features/config/api';
 import type { 
-  CreateConnectionProfileDto, 
-  ConnectionProfile,
+  CreatePortDto, 
+  Port,
   CreateDeviceDto,
   DevicePopulated
 } from '@/features/config/types/config.types';
@@ -26,15 +26,15 @@ import styles from './ProfilesPage.module.scss';
 export const ProfilesPage = () => {
   const { profileId } = useParams<{ profileId?: string }>();
   const navigate = useNavigate();
-  const profileFormModal = useModal();
+  const portFormModal = useModal();
   const deviceFormModal = useModal();
-  const deleteProfileModal = useModal();
+  const deletePortModal = useModal();
 
-  // API hooks - Profiles
-  const { data: profilesResponse, isLoading } = useGetProfilesQuery();
-  const [createProfile, { isLoading: isCreatingProfile }] = useCreateProfileMutation();
-  const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation();
-  const [deleteProfile, { isLoading: isDeletingProfile }] = useDeleteProfileMutation();
+  // API hooks - Ports
+  const { data: portsResponse, isLoading } = useGetPortsQuery();
+  const [createPort, { isLoading: isCreatingPort }] = useCreatePortMutation();
+  const [updatePort, { isLoading: isUpdatingPort }] = useUpdatePortMutation();
+  const [deletePort, { isLoading: isDeletingPort }] = useDeletePortMutation();
 
   // API hooks - Devices
   const { data: devicesResponse, isLoading: isLoadingDevices } = useGetDevicesQuery();
@@ -43,66 +43,66 @@ export const ProfilesPage = () => {
   // const [updateDevice] = useUpdateDeviceMutation();
   // const [deleteDevice] = useDeleteDeviceMutation();
 
-  // Данные профилей
-  const profiles = profilesResponse?.data || [];
-  const selectedProfile = profileId
-    ? profiles.find((p: ConnectionProfile) => p._id === profileId)
+  // Данные портов
+  const ports = portsResponse?.data || [];
+  const selectedPort = profileId
+    ? ports.find((p: Port) => p._id === profileId)
     : null;
 
-  // Данные устройств - фильтруем по выбранному профилю
+  // Данные устройств - фильтруем по выбранному порту
   const allDevices = devicesResponse?.data || [];
-  const profileDevices = profileId
-    ? allDevices.filter((d: DevicePopulated) => d.connectionProfileId._id === profileId)
+  const portDevices = profileId
+    ? allDevices.filter((d: DevicePopulated) => d.portId._id === profileId)
     : [];
 
   // Editing state из query params
   const searchParams = new URLSearchParams(window.location.search);
-  const editingProfileId = searchParams.get('editProfile');
+  const editingPortId = searchParams.get('editProfile');
   const newDevice = searchParams.get('newDevice');
-  const editingProfile = editingProfileId
-    ? profiles.find((p: ConnectionProfile) => p._id === editingProfileId)
+  const editingPort = editingPortId
+    ? ports.find((p: Port) => p._id === editingPortId)
     : null;
 
-  // Profile Handlers
+  // Port Handlers
   const handleAddProfile = () => {
     navigate('?newProfile=true');
-    profileFormModal.open();
+    portFormModal.open();
   };
 
   const handleEditProfile = (id: string) => {
     navigate(`?editProfile=${id}`);
-    profileFormModal.open();
+    portFormModal.open();
   };
 
   const handleDeleteProfile = (id: string) => {
     navigate(`?deleteProfile=${id}`);
-    deleteProfileModal.open();
+    deletePortModal.open();
   };
 
   const confirmDeleteProfile = async () => {
-    if (!editingProfileId) return;
+    if (!editingPortId) return;
     
     try {
-      await deleteProfile(editingProfileId).unwrap();
-      deleteProfileModal.close();
+      await deletePort(editingPortId).unwrap();
+      deletePortModal.close();
       navigate('/profiles');
-      console.log('Профиль успешно удален');
+      console.log('Порт успешно удален');
     } catch (error) {
-      console.error('Ошибка удаления профиля:', error);
+      console.error('Ошибка удаления порта:', error);
     }
   };
 
-  const handleProfileSubmit = async (data: CreateConnectionProfileDto) => {
+  const handleProfileSubmit = async (data: CreatePortDto) => {
     try {
-      if (editingProfileId) {
-        await updateProfile({ id: editingProfileId, data }).unwrap();
-        console.log('Профиль успешно обновлен');
-        profileFormModal.close();
-        navigate(`/profiles/${editingProfileId}`);
+      if (editingPortId) {
+        await updatePort({ id: editingPortId, data }).unwrap();
+        console.log('Порт успешно обновлен');
+        portFormModal.close();
+        navigate(`/profiles/${editingPortId}`);
       } else {
-        const result = await createProfile(data).unwrap();
-        console.log('Профиль успешно создан');
-        profileFormModal.close();
+        const result = await createPort(data).unwrap();
+        console.log('Порт успешно создан');
+        portFormModal.close();
         if (result.data?._id) {
           navigate(`/profiles/${result.data._id}`);
         } else {
@@ -110,7 +110,7 @@ export const ProfilesPage = () => {
         }
       }
     } catch (error) {
-      console.error('Ошибка сохранения профиля:', error);
+      console.error('Ошибка сохранения порта:', error);
     }
   };
 
@@ -137,7 +137,7 @@ export const ProfilesPage = () => {
   };
 
   const handleCloseProfileModal = () => {
-    profileFormModal.close();
+    portFormModal.close();
     if (profileId) {
       navigate(`/profiles/${profileId}`);
     } else {
@@ -151,7 +151,7 @@ export const ProfilesPage = () => {
   };
 
   const handleCloseDeleteModal = () => {
-    deleteProfileModal.close();
+    deletePortModal.close();
     if (profileId) {
       navigate(`/profiles/${profileId}`);
     } else {
@@ -160,10 +160,10 @@ export const ProfilesPage = () => {
   };
 
   // Данные для Sidebar
-  const sidebarProfiles: Profile[] = profiles.map((profile: ConnectionProfile) => ({
-    id: profile._id,
-    name: profile.name,
-    connectionType: profile.connectionType,
+  const sidebarProfiles: Profile[] = ports.map((port: Port) => ({
+    id: port._id,
+    name: port.name,
+    connectionType: port.connectionType,
     isActive: true,
   }));
 
@@ -171,10 +171,10 @@ export const ProfilesPage = () => {
   const isNewProfile = searchParams.get('newProfile') === 'true';
   const isDeleteMode = searchParams.get('deleteProfile');
   
-  if (isNewProfile && !profileFormModal.isOpen) {
-    profileFormModal.open();
-  } else if (!isNewProfile && !editingProfileId && profileFormModal.isOpen) {
-    profileFormModal.close();
+  if (isNewProfile && !portFormModal.isOpen) {
+    portFormModal.open();
+  } else if (!isNewProfile && !editingPortId && portFormModal.isOpen) {
+    portFormModal.close();
   }
 
   if (newDevice === 'true' && !deviceFormModal.isOpen) {
@@ -183,10 +183,10 @@ export const ProfilesPage = () => {
     deviceFormModal.close();
   }
 
-  if (isDeleteMode && !deleteProfileModal.isOpen) {
-    deleteProfileModal.open();
-  } else if (!isDeleteMode && deleteProfileModal.isOpen) {
-    deleteProfileModal.close();
+  if (isDeleteMode && !deletePortModal.isOpen) {
+    deletePortModal.open();
+  } else if (!isDeleteMode && deletePortModal.isOpen) {
+    deletePortModal.close();
   }
 
   return {
@@ -195,9 +195,9 @@ export const ProfilesPage = () => {
         <div className={styles['profiles-page']}>
           {isLoading ? (
             <div className={styles['profiles-page__loading']}>
-              <p>Загрузка профилей...</p>
+              <p>Загрузка портов...</p>
             </div>
-          ) : selectedProfile ? (
+          ) : selectedPort ? (
             <div className={styles['profiles-page__content']}>
               {/* Список устройств */}
               <div className={styles['profiles-page__section']}>
@@ -215,14 +215,14 @@ export const ProfilesPage = () => {
 
                 {isLoadingDevices ? (
                   <p>Загрузка устройств...</p>
-                ) : profileDevices.length === 0 ? (
+                ) : portDevices.length === 0 ? (
                   <div className={styles['profiles-page__empty-devices']}>
                     <p>Нет устройств</p>
-                    <p>Добавьте первое устройство для этого профиля</p>
+                    <p>Добавьте первое устройство для этого порта</p>
                   </div>
                 ) : (
                   <div className={styles['profiles-page__devices']}>
-                    {profileDevices.map((device: DevicePopulated) => (
+                    {portDevices.map((device: DevicePopulated) => (
                       <div key={device._id} className={styles['profiles-page__device-card']}>
                         <div className={styles['profiles-page__device-header']}>
                           <h3>{device.name}</h3>
@@ -234,7 +234,7 @@ export const ProfilesPage = () => {
                         </div>
                         <div className={styles['profiles-page__device-info']}>
                           <span>Slave ID: {device.slaveId}</span>
-                          <span>Шаблон: {device.registerTemplateId.name}</span>
+                          <span>Тэгов: {device.tags?.length || 0}</span>
                           <span>Интервал: {device.saveInterval} мс</span>
                         </div>
                       </div>
@@ -245,24 +245,24 @@ export const ProfilesPage = () => {
             </div>
           ) : (
             <div className={styles['profiles-page__empty']}>
-              <h2>Выберите профиль</h2>
-              <p>Выберите профиль из списка слева или создайте новый</p>
+              <h2>Выберите порт</h2>
+              <p>Выберите порт из списка слева или создайте новый</p>
             </div>
           )}
         </div>
 
-        {/* Модалка создания/редактирования профиля */}
+        {/* Модалка создания/редактирования порта */}
         <Modal
-          isOpen={profileFormModal.isOpen}
+          isOpen={portFormModal.isOpen}
           onClose={handleCloseProfileModal}
-          title={editingProfileId ? 'Редактирование профиля' : 'Создание профиля подключения'}
+          title={editingPortId ? 'Редактирование порта' : 'Создание порта'}
           size="lg"
         >
-          <ProfileForm
-            initialData={editingProfile || undefined}
+          <PortForm
+            initialData={editingPort || undefined}
             onSubmit={handleProfileSubmit}
             onCancel={handleCloseProfileModal}
-            loading={isCreatingProfile || isUpdatingProfile}
+            loading={isCreatingPort || isUpdatingPort}
           />
         </Modal>
 
@@ -275,7 +275,7 @@ export const ProfilesPage = () => {
         >
           {profileId && (
             <DeviceForm
-              profileId={profileId}
+              portId={profileId}
               onSubmit={handleDeviceSubmit}
               onCancel={handleCloseDeviceModal}
               loading={isCreatingDevice}
@@ -283,17 +283,17 @@ export const ProfilesPage = () => {
           )}
         </Modal>
 
-        {/* Модалка подтверждения удаления профиля */}
+        {/* Модалка подтверждения удаления порта */}
         <Modal
-          isOpen={deleteProfileModal.isOpen}
+          isOpen={deletePortModal.isOpen}
           onClose={handleCloseDeleteModal}
-          title="Удаление профиля"
+          title="Удаление порта"
           size="sm"
         >
           <div className={styles['profiles-page__delete-modal']}>
             <p>
-              Вы уверены, что хотите удалить профиль{' '}
-              <strong>{editingProfile?.name}</strong>?
+              Вы уверены, что хотите удалить порт{' '}
+              <strong>{editingPort?.name}</strong>?
             </p>
             <p className={styles['profiles-page__delete-warning']}>
               Это действие нельзя отменить.
@@ -310,7 +310,7 @@ export const ProfilesPage = () => {
                 type="button"
                 variant="danger"
                 onClick={confirmDeleteProfile}
-                loading={isDeletingProfile}
+                loading={isDeletingPort}
               >
                 Удалить
               </Button>

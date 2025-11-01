@@ -6,9 +6,9 @@ export const baseApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
   }),
   tagTypes: [
-    'Profiles',      // Профили подключений
+    'Ports',         // Порты
     'Devices',       // Устройства
-    'Templates',     // Шаблоны регистров
+    'Tags',          // Тэги устройств
     'DeviceData',    // Real-time данные
     'DeviceHistory', // Исторические данные
   ],

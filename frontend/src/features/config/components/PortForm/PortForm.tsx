@@ -1,24 +1,24 @@
 import { useState, type FormEvent } from 'react';
 import { Button, Input, Select } from '@/shared/components';
 import type { 
-  CreateConnectionProfileDto, 
-  ConnectionProfile,
+  CreatePortDto, 
+  Port,
   ConnectionType 
 } from '../../types/config.types';
-import styles from './ProfileForm.module.scss';
+import styles from './PortForm.module.scss';
 
-export interface ProfileFormProps {
-  initialData?: ConnectionProfile;
-  onSubmit: (data: CreateConnectionProfileDto) => void;
+export interface PortFormProps {
+  initialData?: Port;
+  onSubmit: (data: CreatePortDto) => void;
   onCancel?: () => void;
   loading?: boolean;
 }
 
-export const ProfileForm = ({ initialData, onSubmit, onCancel, loading = false }: ProfileFormProps) => {
+export const PortForm = ({ initialData, onSubmit, onCancel, loading = false }: PortFormProps) => {
   const [connectionType, setConnectionType] = useState<ConnectionType>(
     initialData?.connectionType || 'RTU'
   );
-  const [formData, setFormData] = useState<CreateConnectionProfileDto>({
+  const [formData, setFormData] = useState<CreatePortDto>({
     name: initialData?.name || '',
     connectionType: initialData?.connectionType || 'RTU',
     // RTU defaults
@@ -57,9 +57,9 @@ export const ProfileForm = ({ initialData, onSubmit, onCancel, loading = false }
   };
 
   return (
-    <form className={styles['profile-form']} onSubmit={handleSubmit}>
+    <form className={styles['port-form']} onSubmit={handleSubmit}>
       <Input
-        label="Название профиля"
+        label="Название порта"
         value={formData.name}
         onChange={(e) => handleChange('name', e.target.value)}
         required
@@ -103,7 +103,7 @@ export const ProfileForm = ({ initialData, onSubmit, onCancel, loading = false }
             fullWidth
           />
 
-          <div className={styles['profile-form__row']}>
+          <div className={styles['port-form__row']}>
             <Select
               label="Биты данных"
               value={formData.dataBits || 8}
@@ -162,7 +162,7 @@ export const ProfileForm = ({ initialData, onSubmit, onCancel, loading = false }
         </>
       )}
 
-      <div className={styles['profile-form__row']}>
+      <div className={styles['port-form__row']}>
         <Input
           label="Timeout (мс)"
           type="number"
@@ -184,17 +184,16 @@ export const ProfileForm = ({ initialData, onSubmit, onCancel, loading = false }
         />
       </div>
 
-      <div className={styles['profile-form__actions']}>
+      <div className={styles['port-form__actions']}>
         {onCancel && (
           <Button type="button" variant="secondary" onClick={onCancel}>
             Отмена
           </Button>
         )}
         <Button type="submit" variant="primary" loading={loading}>
-          {initialData ? 'Сохранить изменения' : 'Создать профиль'}
+          {initialData ? 'Сохранить изменения' : 'Создать порт'}
         </Button>
       </div>
     </form>
   );
 };
-

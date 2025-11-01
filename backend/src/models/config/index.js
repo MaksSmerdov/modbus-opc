@@ -1,4 +1,4 @@
 export { Device } from './Device.js';
-export { ConnectionProfile } from './ConnectionProfile.js';
-export { RegisterTemplate } from './RegisterTemplate.js';
+export { Port } from './Port.js';
+export { Tag } from './Tag.js';
 

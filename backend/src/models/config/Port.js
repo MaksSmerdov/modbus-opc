@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 import { configDB } from '../../utils/database.js';
 
 /**
- * Схема профиля подключения
+ * Схема порта
  */
-const connectionProfileSchema = new mongoose.Schema({
+const portSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -81,5 +81,5 @@ const connectionProfileSchema = new mongoose.Schema({
   timestamps: true
 });
 
-export const ConnectionProfile = configDB.model('ConnectionProfile', connectionProfileSchema);
+export const Port = configDB.model('Port', portSchema);
 
