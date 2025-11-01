@@ -1,5 +1,5 @@
 import express from 'express';
-import { Tag, Device } from '../../models/config/index.js';
+import { Tag, Device } from '../../models/settings/index.js';
 import { reinitializeModbus } from '../../utils/modbusReloader.js';
 
 const router = express.Router();

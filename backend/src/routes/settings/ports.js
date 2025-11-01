@@ -1,5 +1,5 @@
 import express from 'express';
-import { Port, Device } from '../../models/config/index.js';
+import { Port, Device } from '../../models/settings/index.js';
 
 const router = express.Router();
 

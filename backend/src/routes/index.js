@@ -1,5 +1,5 @@
 import express from 'express';
-import configRouter from './config/index.js';
+import configRouter from './settings/index.js';
 import dataRouter from './data/index.js';
 import pollingRouter from './polling.js';
 

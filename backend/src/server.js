@@ -7,7 +7,7 @@ import { initModbus } from './services/modbusInit.js';
 import apiRouter, { setModbusManager } from './routes/index.js';
 import { setReinitializeFunction } from './utils/modbusReloader.js';
 import { swaggerSpec } from './config/swagger.js';
-import { getServerSettings } from './models/config/index.js';
+import { getServerSettings } from './models/settings/index.js';
 
 const app = express();
 const { port, host } = config.server;

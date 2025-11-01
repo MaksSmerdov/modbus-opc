@@ -1,4 +1,4 @@
-import { Device, Tag } from '../models/config/index.js';
+import { Device, Tag } from '../models/settings/index.js';
 
 /**
  * Загружает активные устройства из БД с полной информацией

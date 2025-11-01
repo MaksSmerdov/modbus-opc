@@ -1,6 +1,6 @@
 import express from 'express';
 import { getModbusManager } from '../server.js';
-import { getServerSettings, updatePollingState } from '../models/config/index.js';
+import { getServerSettings, updatePollingState } from '../models/settings/index.js';
 
 const router = express.Router();
 
