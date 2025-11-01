@@ -66,7 +66,7 @@ router.get('/', (req, res) => {
     name: device.name,
     slaveId: device.slaveId,
     lastUpdated: device.lastSuccess ? formatDate(device.lastSuccess) : null,
-    isResponding: device.failCount < modbusManager.retries,
+    isResponding: device.failCount < device.retries,
     data: getDeviceData(device)
   }));
 
@@ -133,7 +133,7 @@ router.get('/:deviceName', (req, res) => {
     name: device.name,
     slaveId: device.slaveId,
     lastUpdated: device.lastSuccess ? formatDate(device.lastSuccess) : null,
-    isResponding: device.failCount < modbusManager.retries,
+    isResponding: device.failCount < device.retries,
     data: getDeviceData(device)
   });
 });

@@ -12,6 +12,8 @@ function addDevicesToManager(manager, devices) {
       slaveId: device.slaveId,
       name: device.name,
       registers: device.registers,
+      timeout: device.timeout,
+      retries: device.retries,
       saveInterval: device.saveInterval || 30000,
       logData: device.logData || false
     });
@@ -34,15 +36,13 @@ async function initializeManager(manager, devices) {
 async function initSimulator(devices) {
   console.log(`\n=== Инициализация Симулятора (режим разработки) ===`);
   console.log(`Устройства: ${devices.map(d => d.name).join(', ')}`);
-  
+
   const manager = new SimulatorManager({
-    timeout: 100,
-    retries: 3,
     pollInterval: 5000
   });
 
   await initializeManager(manager, devices);
-  
+
   console.log('\n✓ Симулятор инициализирован (опрос будет запущен на основе состояния в БД)\n');
   return manager;
 }
@@ -55,10 +55,10 @@ async function initModbusManagers(devicesByPort) {
 
   for (const [portKey, portData] of Object.entries(devicesByPort)) {
     const port = portData.port;
-    
+
     console.log(`\n=== Инициализация Modbus на ${port.port} (${port.baudRate} baud) ===`);
     console.log(`Устройства на порту: ${portData.devices.map(d => d.name).join(', ')}`);
-    
+
     const manager = new ModbusManager({
       connectionType: port.connectionType,
       port: port.port,
@@ -66,8 +66,6 @@ async function initModbusManagers(devicesByPort) {
       dataBits: port.dataBits,
       stopBits: port.stopBits,
       parity: port.parity,
-      timeout: port.timeout,
-      retries: port.retries,
       pollInterval: 5000
     });
 
@@ -84,7 +82,7 @@ async function initModbusManagers(devicesByPort) {
  */
 function groupDevicesByPort(devices) {
   const devicesByPort = {};
-  
+
   devices.forEach(device => {
     const port = device.port;
     const portKey = `${port.port}_${port.connectionType}`;
@@ -108,7 +106,7 @@ export async function initModbus() {
   try {
     // Проверяем наличие устройств в БД
     const hasDevices = await hasDevicesInDB();
-    
+
     if (!hasDevices) {
       console.warn('⚠ В БД нет устройств. Запустите скрипт миграции или добавьте устройства через API.');
       console.warn('⚠ Modbus не инициализирован.');
@@ -117,7 +115,7 @@ export async function initModbus() {
 
     // Загружаем устройства из БД
     const devices = await loadDevicesFromDB();
-    
+
     if (devices.length === 0) {
       console.warn('⚠ Нет активных устройств для инициализации.');
       return null;

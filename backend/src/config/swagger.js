@@ -77,6 +77,22 @@ const options = {
                                 { $ref: '#/components/schemas/Port' },
                             ],
                         },
+                        timeout: {
+                            type: 'integer',
+                            description: 'Таймаут соединения (мс)',
+                            default: 500,
+                            minimum: 100,
+                            maximum: 10000,
+                            example: 500,
+                        },
+                        retries: {
+                            type: 'integer',
+                            description: 'Количество повторных попыток',
+                            default: 3,
+                            minimum: 1,
+                            maximum: 10,
+                            example: 3,
+                        },
                         tags: {
                             type: 'array',
                             description: 'Массив тэгов устройства',
@@ -130,6 +146,22 @@ const options = {
                             type: 'string',
                             example: '65f1234567890abcdef12345',
                         },
+                        timeout: {
+                            type: 'integer',
+                            description: 'Таймаут соединения (мс)',
+                            default: 500,
+                            minimum: 100,
+                            maximum: 10000,
+                            example: 500,
+                        },
+                        retries: {
+                            type: 'integer',
+                            description: 'Количество повторных попыток',
+                            default: 3,
+                            minimum: 1,
+                            maximum: 10,
+                            example: 3,
+                        },
                         saveInterval: {
                             type: 'integer',
                             default: 60,
@@ -164,18 +196,6 @@ const options = {
                             type: 'string',
                             enum: ['RTU', 'TCP'],
                             example: 'RTU',
-                        },
-                        timeout: {
-                            type: 'integer',
-                            description: 'Таймаут соединения (мс)',
-                            default: 1000,
-                            example: 1000,
-                        },
-                        retries: {
-                            type: 'integer',
-                            description: 'Количество повторных попыток',
-                            default: 3,
-                            example: 3,
                         },
                         port: {
                             type: 'string',
@@ -240,16 +260,6 @@ const options = {
                             enum: ['RTU'],
                             example: 'RTU',
                         },
-                        timeout: {
-                            type: 'integer',
-                            default: 1000,
-                            example: 1000,
-                        },
-                        retries: {
-                            type: 'integer',
-                            default: 3,
-                            example: 3,
-                        },
                         port: {
                             type: 'string',
                             example: 'COM3',
@@ -289,16 +299,6 @@ const options = {
                             enum: ['TCP'],
                             example: 'TCP',
                         },
-                        timeout: {
-                            type: 'integer',
-                            default: 1000,
-                            example: 1000,
-                        },
-                        retries: {
-                            type: 'integer',
-                            default: 3,
-                            example: 3,
-                        },
                         host: {
                             type: 'string',
                             example: '192.168.0.10',
@@ -312,7 +312,7 @@ const options = {
                 },
                 Tag: {
                     type: 'object',
-                    required: ['deviceId', 'address', 'length', 'name', 'dataType'],
+                    required: ['deviceId', 'address', 'name', 'dataType'],
                     properties: {
                         _id: {
                             type: 'string',
@@ -332,7 +332,7 @@ const options = {
                         },
                         length: {
                             type: 'integer',
-                            description: 'Длина в регистрах',
+                            description: 'Длина в регистрах. Обязателен только для типа "string". Для остальных типов вычисляется автоматически: int16/uint16/bool/bits=1, int32/uint32/float32=2, double=4',
                             minimum: 1,
                             maximum: 125,
                             example: 2,

@@ -3,16 +3,15 @@
  * Имитирует чтение из Modbus устройств
  */
 class SimulatorReader {
-  constructor(connection, timeout) {
+  constructor(connection) {
     this.connection = connection;
-    this.timeout = timeout;
     // Кэш последних значений для более плавных изменений
     this.lastValues = new Map();
   }
 
   generateValue(register) {
     const key = `${register.address}_${register.bitIndex || 0}`;
-    
+
     // Для битовых полей
     if (register.dataType === 'bits' && typeof register.bitIndex === 'number') {
       // Случайное булево с вероятностью 30% измениться
@@ -38,7 +37,7 @@ class SimulatorReader {
 
     // Для числовых типов - используем уставки если есть
     let min, max;
-    
+
     if (register.minValue !== undefined && register.maxValue !== undefined) {
       // Генерируем с небольшим выходом за границы (10% шанс аварии)
       const range = register.maxValue - register.minValue;
@@ -78,7 +77,7 @@ class SimulatorReader {
     // Генерируем значение с небольшим изменением от предыдущего для плавности
     const lastValue = this.lastValues.get(key);
     let newValue;
-    
+
     if (lastValue !== undefined && Math.random() > 0.1) {
       // 90% времени меняем на небольшую величину
       const change = (max - min) * 0.05 * (Math.random() * 2 - 1);
@@ -91,7 +90,7 @@ class SimulatorReader {
     }
 
     this.lastValues.set(key, newValue);
-    
+
     // Применяем масштабирование
     const scale = register.scale !== undefined ? register.scale : 1;
     newValue = newValue * scale;

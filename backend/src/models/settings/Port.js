@@ -65,18 +65,6 @@ const portSchema = new mongoose.Schema({
   },
   
   // === Общие параметры ===
-  timeout: {
-    type: Number,
-    default: 500,
-    min: 100,
-    max: 10000
-  },
-  retries: {
-    type: Number,
-    default: 3,
-    min: 1,
-    max: 10
-  },
   isActive: {
     type: Boolean,
     default: true

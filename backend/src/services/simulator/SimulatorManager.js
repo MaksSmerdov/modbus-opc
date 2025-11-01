@@ -10,18 +10,17 @@ import ModbusSaver from '../modbus/ModbusSaver.js';
 class SimulatorManager {
   constructor(config = {}) {
     // Настройки
-    this.retries = config.retries || 3;
     this.pollInterval = config.pollInterval || 1000;
-    
+
     // Инициализация модулей
     this.connection = new SimulatorConnection(config);
-    this.reader = new SimulatorReader(this.connection, config.timeout || 100);
-    this.poller = new ModbusPoller(this.reader, this.retries);
-    this.saver = new ModbusSaver(this.retries);
-    
+    this.reader = new SimulatorReader(this.connection);
+    this.poller = new ModbusPoller(this.reader);
+    this.saver = new ModbusSaver();
+
     // Список устройств
     this.devices = [];
-    
+
     // Состояние опроса
     this.isPolling = false;
     this.pollTimer = null;
@@ -46,6 +45,10 @@ class SimulatorManager {
       slaveId: device.slaveId,
       name: device.name || `Device_${device.slaveId}`,
       registers: device.registers || [],
+      isActive: device.isActive ?? true,
+      portIsActive: device.portIsActive ?? true,
+      timeout: device.timeout || 500,
+      retries: device.retries || 3,
       saveInterval: device.saveInterval || 30000,
       logData: device.logData || false,
       failCount: 0,
@@ -59,10 +62,10 @@ class SimulatorManager {
 
     this.devices.push(deviceConfig);
     console.log(`✓ Добавлено устройство (симуляция): ${deviceConfig.name} (ID: ${device.slaveId})`);
-    
+
     // Запускаем таймер сохранения в БД
     this.saver.startDeviceSaving(deviceConfig);
-    
+
     return deviceConfig;
   }
 
@@ -75,9 +78,9 @@ class SimulatorManager {
 
     const poll = async () => {
       if (!this.isPolling) return;
-      
+
       await this.poller.pollAllDevices(this.devices);
-      
+
       if (this.isPolling) {
         this.pollTimer = setTimeout(poll, this.pollInterval);
       }

@@ -188,6 +188,8 @@ router.post('/', async (req, res) => {
       name,
       slaveId,
       portId,
+      timeout,
+      retries,
       saveInterval,
       logData,
       isActive
@@ -216,6 +218,8 @@ router.post('/', async (req, res) => {
       name,
       slaveId,
       portId,
+      timeout,
+      retries,
       saveInterval,
       logData,
       isActive
@@ -310,6 +314,8 @@ router.put('/:id', async (req, res) => {
       name,
       slaveId,
       portId,
+      timeout,
+      retries,
       saveInterval,
       logData,
       isActive
@@ -332,6 +338,8 @@ router.put('/:id', async (req, res) => {
         name,
         slaveId,
         portId,
+        timeout,
+        retries,
         saveInterval,
         logData,
         isActive

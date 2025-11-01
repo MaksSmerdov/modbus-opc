@@ -22,6 +22,18 @@ const deviceSchema = new mongoose.Schema({
     ref: 'Port',
     required: true
   },
+  timeout: {
+    type: Number,
+    default: 500,
+    min: 500,
+    max: 30000
+  },
+  retries: {
+    type: Number,
+    default: 3,
+    min: 1,
+    max: 15
+  },
   saveInterval: {
     type: Number,
     default: 30000,

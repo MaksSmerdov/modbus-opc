@@ -8,19 +8,17 @@ import ModbusSaver from './modbus/ModbusSaver.js';
  */
 class ModbusManager {
   constructor(config = {}) {
-    // Настройки
-    this.retries = config.retries || 3;
     this.pollInterval = config.pollInterval || 1000;
-    
+
     // Инициализация модулей
     this.connection = new ModbusConnection(config);
-    this.reader = new ModbusReader(this.connection, config.timeout || 1000);
-    this.poller = new ModbusPoller(this.reader, this.retries);
-    this.saver = new ModbusSaver(this.retries);
-    
+    this.reader = new ModbusReader(this.connection);
+    this.poller = new ModbusPoller(this.reader);
+    this.saver = new ModbusSaver();
+
     // Список устройств
     this.devices = [];
-    
+
     // Состояние опроса
     this.isPolling = false;
     this.pollTimer = null;
@@ -45,6 +43,10 @@ class ModbusManager {
       slaveId: device.slaveId,
       name: device.name || `Device_${device.slaveId}`,
       registers: device.registers || [],
+      isActive: device.isActive ?? true,
+      portIsActive: device.portIsActive ?? true,
+      timeout: device.timeout || 500,
+      retries: device.retries || 3,
       saveInterval: device.saveInterval || 30000,
       logData: device.logData || false,
       failCount: 0,
@@ -58,10 +60,10 @@ class ModbusManager {
 
     this.devices.push(deviceConfig);
     console.log(`✓ Добавлено устройство: ${deviceConfig.name} (ID: ${device.slaveId})`);
-    
+
     // Запускаем таймер сохранения в БД
     this.saver.startDeviceSaving(deviceConfig);
-    
+
     return deviceConfig;
   }
 
@@ -76,6 +78,45 @@ class ModbusManager {
     return false;
   }
 
+  /**
+   * Обновляет состояние активности устройства
+   * @param {string} deviceName - Имя устройства
+   * @param {boolean} isActive - Новое состояние активности устройства
+   * @param {boolean} portIsActive - Новое состояние активности порта
+   */
+  updateDeviceStatus(deviceName, isActive, portIsActive) {
+    const device = this.devices.find(d => d.name === deviceName);
+    if (device) {
+      device.isActive = isActive ?? device.isActive;
+      if (portIsActive !== undefined) {
+        device.portIsActive = portIsActive;
+      }
+      console.log(`✓ Обновлено состояние устройства ${deviceName}: isActive=${device.isActive}, portIsActive=${device.portIsActive}`);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Обновляет состояние активности порта для всех устройств на этом порту
+   * @param {string} portName - Имя порта (используется для поиска устройств через связь с портом)
+   * @param {boolean} portIsActive - Новое состояние активности порта
+   */
+  updatePortStatusForDevices(portIsActive) {
+    // Обновляем portIsActive для всех устройств (т.к. на одном ModbusManager обычно один порт)
+    let updated = 0;
+    this.devices.forEach(device => {
+      if (device.portIsActive !== portIsActive) {
+        device.portIsActive = portIsActive;
+        updated++;
+      }
+    });
+    if (updated > 0) {
+      console.log(`✓ Обновлено состояние порта для ${updated} устройств: portIsActive=${portIsActive}`);
+    }
+    return updated;
+  }
+
   startPolling() {
     if (this.isPolling) {
       return;
@@ -85,9 +126,9 @@ class ModbusManager {
 
     const poll = async () => {
       if (!this.isPolling) return;
-      
+
       await this.poller.pollAllDevices(this.devices);
-      
+
       if (this.isPolling) {
         this.pollTimer = setTimeout(poll, this.pollInterval);
       }
@@ -111,7 +152,7 @@ class ModbusManager {
       failCount: device.failCount,
       lastSuccess: device.lastSuccess,
       lastError: device.lastError,
-      isResponding: device.failCount < this.retries,
+      isResponding: device.failCount < device.retries,
       data: device.data
     }));
   }

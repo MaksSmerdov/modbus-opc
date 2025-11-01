@@ -4,9 +4,8 @@ import { logDeviceData } from '../../utils/deviceLogger.js';
  * Класс для опроса Modbus устройств
  */
 class ModbusPoller {
-  constructor(reader, retries) {
+  constructor(reader) {
     this.reader = reader;
-    this.retries = retries;
   }
 
   async pollDevice(device) {
@@ -18,11 +17,11 @@ class ModbusPoller {
     try {
       const results = [];
       let hasError = false;
-      
+
       for (const register of device.registers) {
         const result = await this.reader.readRegister(device, register);
         results.push(result);
-        
+
         if (!result.success && results.length === 1) {
           hasError = true;
           break;
@@ -32,15 +31,15 @@ class ModbusPoller {
       if (hasError) {
         device.failCount++;
         device.lastError = results[0].error;
-        
-        if (device.failCount > this.retries) {
+
+        if (device.failCount > device.retries) {
           console.warn(`⊘ ${device.name} не отвечает, ожидание переподключения...`);
         } else {
-          console.warn(`⚠ ${device.name} не отвечает (${device.failCount}/${this.retries})`);
+          console.warn(`⚠ ${device.name} не отвечает (${device.failCount}/${device.retries})`);
         }
-        
+
         await this.delay(100);
-        
+
         return { success: false, device, error: results[0].error };
       }
 
@@ -50,7 +49,7 @@ class ModbusPoller {
           if (!device.data[r.category]) {
             device.data[r.category] = {};
           }
-          
+
           if (r.dataType === 'bool' || (r.dataType === 'bits' && typeof r.bitIndex === 'number')) {
             device.data[r.category][r.key] = {
               value: r.value
@@ -60,11 +59,11 @@ class ModbusPoller {
               value: r.value,
               unit: r.unit || ''
             };
-            
+
             // Проверяем уставки, если они заданы 
             if ((r.minValue !== null && r.minValue !== undefined) || (r.maxValue !== null && r.maxValue !== undefined)) {
               let isAlarm = false;
-              
+
               if (r.value !== null && typeof r.value === 'number') {
                 if (r.minValue !== undefined && r.value < r.minValue) {
                   isAlarm = true;
@@ -73,10 +72,10 @@ class ModbusPoller {
                   isAlarm = true;
                 }
               }
-              
+
               paramData.isAlarm = isAlarm;
             }
-            
+
             device.data[r.category][r.key] = paramData;
           }
         }
@@ -86,26 +85,26 @@ class ModbusPoller {
       if (device.failCount > 0) {
         console.log(`✓ ${device.name} - связь восстановлена`);
       }
-      
+
       device.failCount = 0;
       device.lastSuccess = new Date();
       device.lastError = null;
-      
+
       // Выводим данные в консоль, если включен флаг logData
       if (device.logData) {
         logDeviceData(device);
       }
-      
+
       return { success: true, device, results };
 
     } catch (error) {
       device.failCount++;
       device.lastError = error.message;
-      
-      if (device.failCount > this.retries) {
+
+      if (device.failCount > device.retries) {
         console.warn(`⊘ ${device.name} не отвечает, ожидание переподключения...`);
       } else {
-        console.warn(`⚠ ${device.name} не отвечает (${device.failCount}/${this.retries})`);
+        console.warn(`⚠ ${device.name} не отвечает (${device.failCount}/${device.retries})`);
       }
 
       return { success: false, device, error: error.message };
@@ -127,18 +126,23 @@ class ModbusPoller {
     }
 
     for (const device of devices) {
-      if (device.failCount >= this.retries) {
+      // Проверяем активность устройства и порта
+      if (!device.isActive || !device.portIsActive) {
+        continue;
+      }
+
+      if (device.failCount >= device.retries) {
         const now = Date.now();
-        const shouldRetry = !device.lastRetryAttempt || 
-                            (now - device.lastRetryAttempt >= 60000); 
-        
+        const shouldRetry = !device.lastRetryAttempt ||
+          (now - device.lastRetryAttempt >= 60000);
+
         if (!shouldRetry) {
           continue;
         }
-        
+
         device.lastRetryAttempt = now;
       }
-    
+
       try {
         await this.pollDevice(device);
       } catch (error) {
@@ -146,7 +150,7 @@ class ModbusPoller {
         device.lastError = error.message;
         await this.delay(200);
       }
-      
+
       await this.delay(100);
     }
   }

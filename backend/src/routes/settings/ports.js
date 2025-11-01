@@ -1,5 +1,6 @@
 import express from 'express';
 import { Port, Device } from '../../models/settings/index.js';
+import { reinitializeModbus } from '../../utils/modbusReloader.js';
 
 const router = express.Router();
 
@@ -11,9 +12,7 @@ function formatPort(port) {
     _id: port._id,
     name: port.name,
     connectionType: port.connectionType,
-    timeout: port.timeout,
-    retries: port.retries,
-    isActive: port.isActive ?? true, // Дефолт для старых портов
+    isActive: port.isActive ?? true,
     createdAt: port.createdAt,
     updatedAt: port.updatedAt
   };
@@ -303,6 +302,10 @@ router.put('/:id', async (req, res) => {
   try {
     const portData = req.body;
 
+    // Проверяем, изменился ли isActive
+    const oldPort = await Port.findById(req.params.id).lean();
+    const isActiveChanged = oldPort && 'isActive' in portData && oldPort.isActive !== portData.isActive;
+
     const port = await Port.findByIdAndUpdate(
       req.params.id,
       portData,
@@ -314,6 +317,16 @@ router.put('/:id', async (req, res) => {
         success: false,
         error: 'Порт не найден'
       });
+    }
+
+    // Реинициализируем Modbus, если изменился isActive или другие критичные параметры
+    const criticalParamsChanged = isActiveChanged ||
+      portData.connectionType !== oldPort?.connectionType ||
+      (port.connectionType === 'RTU' && (portData.port !== oldPort?.port || portData.baudRate !== oldPort?.baudRate)) ||
+      (port.connectionType === 'TCP' && (portData.host !== oldPort?.host || portData.tcpPort !== oldPort?.tcpPort));
+
+    if (criticalParamsChanged) {
+      await reinitializeModbus();
     }
 
     res.json({

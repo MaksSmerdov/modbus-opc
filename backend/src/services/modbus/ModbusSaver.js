@@ -5,8 +5,7 @@ import { formatDate } from '../../utils/dateFormatter.js';
  * Класс для сохранения данных Modbus устройств в БД
  */
 class ModbusSaver {
-  constructor(retries) {
-    this.retries = retries;
+  constructor() {
   }
 
   async saveDeviceData(device) {
@@ -14,13 +13,13 @@ class ModbusSaver {
       return;
     }
 
-    if (device.failCount >= this.retries) {
+    if (device.failCount >= device.retries) {
       return;
     }
 
     try {
       const DeviceModel = getDeviceModel(device.name);
-      
+
       const now = new Date();
       const deviceData = new DeviceModel({
         slaveId: device.slaveId,
@@ -43,7 +42,7 @@ class ModbusSaver {
 
     const save = async () => {
       await this.saveDeviceData(device);
-      
+
       // Планируем следующее сохранение
       device.saveTimer = setTimeout(save, device.saveInterval);
     };

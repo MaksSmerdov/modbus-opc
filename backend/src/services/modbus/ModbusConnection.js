@@ -14,7 +14,6 @@ class ModbusConnection {
     this.parity = config.parity || 'none';
     this.tcpHost = config.tcpHost || '127.0.0.1';
     this.tcpPort = config.tcpPort || 502;
-    this.timeout = config.timeout || 1000;
     this.isConnected = false;
   }
 
@@ -35,7 +34,6 @@ class ModbusConnection {
         throw new Error(`Неизвестный тип подключения: ${this.connectionType}`);
       }
 
-      this.client.setTimeout(this.timeout);
       this.isConnected = true;
       return true;
     } catch (error) {

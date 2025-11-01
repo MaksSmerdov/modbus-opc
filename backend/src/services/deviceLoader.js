@@ -37,6 +37,8 @@ export async function loadDevicesFromDB() {
         return {
           name: device.name,
           slaveId: device.slaveId,
+          isActive: device.isActive ?? true,
+          portIsActive: port.isActive ?? true,
           port: {
             connectionType: port.connectionType,
             // RTU параметры
@@ -48,9 +50,6 @@ export async function loadDevicesFromDB() {
             // TCP параметры
             host: port.host,
             tcpPort: port.tcpPort,
-            // Общие параметры
-            timeout: port.timeout,
-            retries: port.retries
           },
           registers: tags.map(tag => ({
             address: tag.address,
@@ -69,6 +68,8 @@ export async function loadDevicesFromDB() {
             maxValue: tag.maxValue,
             description: tag.description
           })),
+          timeout: device.timeout,
+          retries: device.retries,
           saveInterval: device.saveInterval,
           logData: device.logData
         };

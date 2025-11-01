@@ -18,9 +18,26 @@ const tagSchema = new mongoose.Schema({
   },
   length: {
     type: Number,
-    required: true,
+    required: function () {
+      // Обязателен только для string
+      return this.dataType === 'string';
+    },
     min: 1,
-    max: 125
+    max: 125,
+    default: function () {
+      // Автоматически вычисляем для типов с фиксированной длиной
+      const typeMap = {
+        'bool': 1,
+        'int16': 1,
+        'uint16': 1,
+        'bits': 1,
+        'int32': 2,
+        'uint32': 2,
+        'float32': 2,
+        'double': 4
+      };
+      return typeMap[this.dataType];
+    }
   },
   name: {
     type: String,
@@ -30,7 +47,7 @@ const tagSchema = new mongoose.Schema({
     type: String,
     default: 'general'
   },
-  
+
   // Тип функции Modbus
   functionCode: {
     type: String,
@@ -39,14 +56,14 @@ const tagSchema = new mongoose.Schema({
     lowercase: true,
     default: 'holding'
   },
-  
+
   dataType: {
     type: String,
     required: true,
     enum: ['int16', 'uint16', 'int32', 'uint32', 'float32', 'string', 'bits'],
     lowercase: true
   },
-  
+
   // Индекс бита в регистре (только для типа 'bits')
   bitIndex: {
     type: Number,
@@ -54,7 +71,7 @@ const tagSchema = new mongoose.Schema({
     max: 15,
     default: null,
     validate: {
-      validator: function(value) {
+      validator: function (value) {
         // bitIndex обязателен только если dataType === 'bits'
         if (this.dataType === 'bits' && (value === null || value === undefined)) {
           return false;
@@ -68,7 +85,7 @@ const tagSchema = new mongoose.Schema({
       message: 'bitIndex обязателен для типа "bits" и должен быть null для других типов'
     }
   },
-  
+
   // Порядок байтов для многобайтовых типов
   byteOrder: {
     type: String,
@@ -76,7 +93,7 @@ const tagSchema = new mongoose.Schema({
     enum: ['BE', 'LE', 'ABCD', 'CDAB', 'BADC', 'DCBA'],
     uppercase: true
   },
-  
+
   scale: {
     type: Number,
     default: 1
@@ -85,7 +102,7 @@ const tagSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  
+
   // Количество знаков после запятой для округления
   decimals: {
     type: Number,
@@ -93,12 +110,12 @@ const tagSchema = new mongoose.Schema({
     min: 0,
     max: 10
   },
-  
+
   unit: {
     type: String,
     default: ''
   },
-  
+
   // Уставки (лимиты значений)
   minValue: {
     type: Number,
@@ -108,7 +125,7 @@ const tagSchema = new mongoose.Schema({
     type: Number,
     default: null
   },
-  
+
   description: {
     type: String,
     default: ''

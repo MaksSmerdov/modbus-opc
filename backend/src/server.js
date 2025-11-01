@@ -41,9 +41,13 @@ async function reinitializeModbusInternal() {
     // Применяем состояние опроса из БД
     if (modbusManager) {
       const settings = await getServerSettings();
-      if (settings.isPollingEnabled && !modbusManager.isPolling) {
-        modbusManager.startPolling();
-        console.log('✓ Опрос запущен (состояние из БД: включено)');
+      if (settings.isPollingEnabled) {
+        if (!modbusManager.isPolling) {
+          modbusManager.startPolling();
+          console.log('✓ Опрос запущен после реинициализации (глобальный опрос включен)');
+        }
+      } else {
+        console.log('⏸ Опрос не запущен после реинициализации (глобальный опрос выключен)');
       }
     }
 
@@ -63,7 +67,7 @@ setTimeout(async () => {
   try {
     modbusManager = await initModbus();
     setModbusManager(modbusManager);
-    
+
     // Читаем состояние опроса из БД и применяем его
     if (modbusManager) {
       const settings = await getServerSettings();
