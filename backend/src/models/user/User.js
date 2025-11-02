@@ -62,6 +62,31 @@ userSchema.pre('save', async function(next) {
   }
 });
 
+userSchema.pre('save', async function(next) {
+  // Проверяем только при создании нового пользователя (isNew)
+  if (!this.isNew) return next();
+  
+  // Если роль уже явно указана, не меняем её
+  if (this.role && this.role !== 'viewer') return next();
+  
+  try {
+    // Считаем количество существующих пользователей
+    const userCount = await User.countDocuments();
+    
+    // Если это первый пользователь, назначаем роль admin
+    if (userCount === 0) {
+      this.role = 'admin';
+    } else {
+      // Для остальных пользователей роль остается 'viewer' (дефолт)
+      this.role = this.role || 'viewer';
+    }
+    
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Метод для сравнения паролей
 userSchema.methods.comparePassword = async function(candidatePassword) {
   if (!this.password) {

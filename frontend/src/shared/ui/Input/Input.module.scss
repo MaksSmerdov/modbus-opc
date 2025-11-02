@@ -1,0 +1,64 @@
+.input {
+  &__root {
+    margin-bottom: 16px;
+  }
+
+  &_error {
+    :global(.MuiOutlinedInput-root) {
+      &:hover :global(.MuiOutlinedInput-notchedOutline) {
+        border-color: var(--error-color, #d32f2f);
+      }
+    }
+  }
+
+  &_fullWidth {
+    width: 100%;
+  }
+
+  // Стилизация для состояния фокуса
+  :global(.MuiOutlinedInput-root) {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: green;
+    }
+
+    &:global(.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
+      border-width: 2px;
+      border-color: green;
+    }
+  }
+
+  // Стилизация label
+  :global(.MuiInputLabel-root) {
+    font-weight: 500;
+  }
+
+  // Стилизация helper text - всегда резервируем место
+  :global(.MuiFormHelperText-root) {
+    margin-top: 4px;
+    margin-bottom: 0;
+    font-size: 0.75rem;
+    min-height: 20px;
+    display: block;
+    line-height: 1.43;
+    box-sizing: border-box;
+  }
+
+  // Когда helper text это пробел-заглушка, скрываем визуально но оставляем место
+  &__helperPlaceholder {
+    visibility: hidden !important;
+    min-height: 20px;
+    display: block;
+  }
+
+  // Убеждаемся, что контейнер всегда резервирует место
+  :global(.MuiFormControl-root) {
+
+    // Гарантируем минимальную высоту для области helper text
+    :global(.MuiFormHelperText-root) {
+      min-height: 20px;
+      display: block;
+    }
+  }
+}

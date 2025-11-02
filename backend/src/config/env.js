@@ -19,7 +19,9 @@ export const config = {
     // БД для конфигурации устройств
     configUri: process.env.MONGODB_CONFIG_URI || 'mongodb://localhost:27017/modbus-config',
     // БД для исторических данных
-    dataUri: process.env.MONGODB_DATA_URI || 'mongodb://localhost:27017/modbus-data'
+    dataUri: process.env.MONGODB_DATA_URI || 'mongodb://localhost:27017/modbus-data',
+    // БД для пользователей
+    usersUri: process.env.MONGODB_USERS_URI || 'mongodb://localhost:27017/modbus-users'
   },
 };
 

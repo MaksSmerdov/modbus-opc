@@ -13,7 +13,7 @@ async function connectDB() {
     await dataDB.openUri(config.database.dataUri);
     console.log('✓ MongoDB Data DB подключена');
 
-    await usersDB.openUri(config.database.dataUri);
+    await usersDB.openUri(config.database.usersUri);
     console.log('✓ MongoDB Users DB подключена');
 
   } catch (error) {

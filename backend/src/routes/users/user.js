@@ -50,9 +50,18 @@ router.get('/', adminOnlyMiddleware, async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
+    const normalizedUsers = users.map(user => ({
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    }));
+
     res.json({
       success: true,
-      data: users
+      data: normalizedUsers
     });
   } catch (error) {
     console.error('Ошибка получения списка пользователей:', error);
