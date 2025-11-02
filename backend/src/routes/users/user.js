@@ -1,8 +1,11 @@
 import express from 'express';
 import { User } from '../../models/user/User.js';
-import { authMiddleware, adminOnlyMiddleware } from '../../middleware/auth.js';
+import { adminOnlyMiddleware } from '../../middleware/auth.js';
+import meRouter from './me.js';
 
 const router = express.Router();
+
+router.use('/me', meRouter);
 
 /**
  * @swagger
@@ -40,7 +43,7 @@ const router = express.Router();
  *                       updatedAt:
  *                         type: string
  */
-router.get('/', authMiddleware, adminOnlyMiddleware, async (req, res) => {
+router.get('/', adminOnlyMiddleware, async (req, res) => {
   try {
     const users = await User.find()
       .select('-password')
@@ -95,7 +98,7 @@ router.get('/', authMiddleware, adminOnlyMiddleware, async (req, res) => {
  *       404:
  *         description: Пользователь не найден
  */
-router.put('/:userId/role', authMiddleware, adminOnlyMiddleware, async (req, res) => {
+router.put('/:userId/role', adminOnlyMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     const { role } = req.body;
@@ -169,7 +172,7 @@ router.put('/:userId/role', authMiddleware, adminOnlyMiddleware, async (req, res
  *       404:
  *         description: Пользователь не найден
  */
-router.delete('/:userId', authMiddleware, adminOnlyMiddleware, async (req, res) => {
+router.delete('/:userId', adminOnlyMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
 

@@ -24,7 +24,7 @@ const options = {
             },
             {
                 name: 'Users',
-                description: 'Управление пользователями (только admin)',
+                description: 'Управление пользователями. /users/me - доступен всем авторизованным, остальные роуты - только admin',
             },
             {
                 name: 'Devices',
@@ -96,6 +96,9 @@ const options = {
                             enum: ['admin', 'operator', 'viewer'],
                             description: 'Роль пользователя: admin - полный доступ, operator - редактирование конфигурации, viewer - только просмотр данных',
                             example: 'viewer',
+                        },
+                        settings: {
+                            $ref: '#/components/schemas/UserSettings'
                         },
                         createdAt: {
                             type: 'string',
@@ -222,6 +225,29 @@ const options = {
                             example: 'operator',
                         },
                     },
+                },
+                UserSettings: {
+                    type: 'object',
+                    properties: {
+                        theme: {
+                            type: 'string',
+                            enum: ['light', 'dark', 'auto'],
+                            description: 'Тема приложения: light - светлая, dark - темная, auto - автоматическая',
+                            default: 'light',
+                            example: 'light'
+                        }
+                    }
+                },
+                UserSettingsUpdate: {
+                    type: 'object',
+                    properties: {
+                        theme: {
+                            type: 'string',
+                            enum: ['light', 'dark', 'auto'],
+                            description: 'Тема приложения: light - светлая, dark - темная, auto - автоматическая',
+                            example: 'dark'
+                        }
+                    }
                 },
                 Device: {
                     type: 'object',

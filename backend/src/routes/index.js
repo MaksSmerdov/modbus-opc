@@ -11,8 +11,10 @@ const router = express.Router();
 // API аутентификации (публичные роуты)
 router.use('/auth', authRouter);
 
-// API управления пользователями - только для admin
-router.use('/users', authMiddleware, adminOnlyMiddleware, usersRouter);
+// API управления пользователями
+// /users/me - доступен всем авторизованным
+// /users/* - только для admin (проверка внутри user.js)
+router.use('/users', authMiddleware, usersRouter);
 
 // API конфигурации - только для admin и operator
 router.use('/config', authMiddleware, adminOrOperatorMiddleware, configRouter);

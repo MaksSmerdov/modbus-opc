@@ -2,6 +2,18 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { usersDB } from '../../utils/database.js';
 
+// Схема настроек пользователя
+const userSettingsSchema = new mongoose.Schema({
+  theme: {
+    type: String,
+    enum: ['light', 'dark', 'auto'],
+    default: 'light',
+  }
+}, {
+  _id: false, 
+  strict: false
+});
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -27,6 +39,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['admin', 'operator', 'viewer'],
     default: 'viewer',
+  },
+  settings: {
+    type: userSettingsSchema,
+    default: () => ({})
   }
 }, {
   timestamps: true

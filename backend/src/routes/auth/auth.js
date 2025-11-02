@@ -336,47 +336,6 @@ router.post('/refresh', async (req, res) => {
 
 /**
  * @swagger
- * /api/auth/me:
- *   get:
- *     summary: Получить информацию о текущем пользователе
- *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Информация о пользователе
- */
-router.get('/me', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: 'Пользователь не найден'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
-  } catch (error) {
-    console.error('Ошибка получения данных пользователя:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Ошибка получения данных пользователя'
-    });
-  }
-});
-
-/**
- * @swagger
  * /api/auth/logout:
  *   post:
  *     summary: Выход из системы
