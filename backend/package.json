@@ -17,9 +17,11 @@
   "license": "ISC",
   "description": "Modbus RTU polling application",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "modbus-serial": "^8.0.23",
     "mongoose": "^8.19.2",
     "swagger-jsdoc": "^6.2.8",

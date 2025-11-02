@@ -19,6 +19,14 @@ const options = {
         ],
         tags: [
             {
+                name: 'Auth',
+                description: 'Аутентификация и авторизация пользователей',
+            },
+            {
+                name: 'Users',
+                description: 'Управление пользователями (только admin)',
+            },
+            {
                 name: 'Devices',
                 description: 'Управление устройствами',
             },
@@ -44,6 +52,14 @@ const options = {
             },
         ],
         components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    description: 'JWT токен доступа. Формат: Bearer {token}. Также можно передать refresh токен в заголовке X-Refresh-Token для автоматического обновления access токена.',
+                },
+            },
             schemas: {
                 Error: {
                     type: 'object',
@@ -55,6 +71,155 @@ const options = {
                         error: {
                             type: 'string',
                             example: 'Описание ошибки',
+                        },
+                    },
+                },
+                User: {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'string',
+                            description: 'MongoDB ObjectId',
+                            example: '65f1234567890abcdef12345',
+                        },
+                        name: {
+                            type: 'string',
+                            example: 'Иван Иванов',
+                        },
+                        email: {
+                            type: 'string',
+                            format: 'email',
+                            example: 'ivan@example.com',
+                        },
+                        role: {
+                            type: 'string',
+                            enum: ['admin', 'operator', 'viewer'],
+                            description: 'Роль пользователя: admin - полный доступ, operator - редактирование конфигурации, viewer - только просмотр данных',
+                            example: 'viewer',
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                        },
+                    },
+                },
+                RegisterInput: {
+                    type: 'object',
+                    required: ['name', 'email', 'password'],
+                    properties: {
+                        name: {
+                            type: 'string',
+                            example: 'Иван Иванов',
+                        },
+                        email: {
+                            type: 'string',
+                            format: 'email',
+                            example: 'ivan@example.com',
+                        },
+                        password: {
+                            type: 'string',
+                            format: 'password',
+                            minLength: 8,
+                            maxLength: 32,
+                            example: 'password123',
+                        },
+                        role: {
+                            type: 'string',
+                            enum: ['admin', 'operator', 'viewer'],
+                            example: 'viewer',
+                        },
+                    },
+                },
+                LoginInput: {
+                    type: 'object',
+                    required: ['email', 'password'],
+                    properties: {
+                        email: {
+                            type: 'string',
+                            format: 'email',
+                            example: 'ivan@example.com',
+                        },
+                        password: {
+                            type: 'string',
+                            format: 'password',
+                            example: 'password123',
+                        },
+                    },
+                },
+                RefreshTokenInput: {
+                    type: 'object',
+                    required: ['refreshToken'],
+                    properties: {
+                        refreshToken: {
+                            type: 'string',
+                            description: 'Refresh token для обновления access token',
+                            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                        },
+                    },
+                },
+                AuthResponse: {
+                    type: 'object',
+                    properties: {
+                        success: {
+                            type: 'boolean',
+                            example: true,
+                        },
+                        data: {
+                            type: 'object',
+                            properties: {
+                                user: {
+                                    $ref: '#/components/schemas/User',
+                                },
+                                accessToken: {
+                                    type: 'string',
+                                    description: 'JWT access token (срок действия: 15 минут)',
+                                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                                },
+                                refreshToken: {
+                                    type: 'string',
+                                    description: 'JWT refresh token (срок действия: 14 дней)',
+                                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                                },
+                            },
+                        },
+                    },
+                },
+                TokenResponse: {
+                    type: 'object',
+                    properties: {
+                        success: {
+                            type: 'boolean',
+                            example: true,
+                        },
+                        data: {
+                            type: 'object',
+                            properties: {
+                                accessToken: {
+                                    type: 'string',
+                                    description: 'Новый JWT access token',
+                                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                                },
+                                refreshToken: {
+                                    type: 'string',
+                                    description: 'Новый JWT refresh token',
+                                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                                },
+                            },
+                        },
+                    },
+                },
+                UpdateRoleInput: {
+                    type: 'object',
+                    required: ['role'],
+                    properties: {
+                        role: {
+                            type: 'string',
+                            enum: ['admin', 'operator', 'viewer'],
+                            example: 'operator',
                         },
                     },
                 },
@@ -576,4 +741,3 @@ const options = {
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
-

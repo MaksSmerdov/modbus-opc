@@ -1,19 +1,27 @@
 import express from 'express';
 import configRouter from './settings/index.js';
 import dataRouter from './data/index.js';
-import pollingRouter from './polling.js';
+import pollingRouter from './polling/polling.js';
+import authRouter from './auth/auth.js';
+import usersRouter from './users/user.js';
+import { authMiddleware, adminOrOperatorMiddleware, adminOnlyMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// API конфигурации (CRUD)
-router.use('/config', configRouter);
+// API аутентификации (публичные роуты)
+router.use('/auth', authRouter);
 
-// API данных (real-time и история)
-router.use('/data', dataRouter);
+// API управления пользователями - только для admin
+router.use('/users', authMiddleware, adminOnlyMiddleware, usersRouter);
 
-// API управления опросом
-router.use('/polling', pollingRouter);
+// API конфигурации - только для admin и operator
+router.use('/config', authMiddleware, adminOrOperatorMiddleware, configRouter);
+
+// API данных (real-time и история) - доступны всем авторизованным
+router.use('/data', authMiddleware, dataRouter);
+
+// API управления опросом - только для admin и operator
+router.use('/polling', authMiddleware, adminOrOperatorMiddleware, pollingRouter);
 
 export default router;
 export { setModbusManager } from './data/index.js';
-

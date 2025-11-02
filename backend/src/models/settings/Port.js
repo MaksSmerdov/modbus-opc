@@ -30,7 +30,8 @@ const portSchema = new mongoose.Schema({
     required: function() {
       return this.connectionType === 'RTU';
     },
-    enum: [9600, 19200, 38400, 57600, 115200]
+    default: 9600,
+    enum: [9600, 19200, 38400, 57600, 115200],
   },
   dataBits: {
     type: Number,
@@ -61,7 +62,6 @@ const portSchema = new mongoose.Schema({
     required: function() {
       return this.connectionType === 'TCP';
     },
-    default: 502
   },
   
   // === Общие параметры ===
