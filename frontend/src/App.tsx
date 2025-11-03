@@ -6,7 +6,8 @@ import { checkAuth, LoginPage, logout, RegisterPage } from './features/auth';
 import { loadThemeFromServer, setThemeLocal } from './app/slices/themeSlice';
 import { useAppDispatch, useAppSelector } from './app/hooks/hooks';
 import type { Theme } from './shared/types';
-import { AdminPage } from './features/admin/components/AdminPage';
+import { AdminPage } from '@/features/admin';
+import { ThemeToggle } from './features/theme';
 
 const AppContent = () => {
   const dispatch = useAppDispatch();
@@ -52,6 +53,7 @@ const AppContent = () => {
             isAuthenticated ? (
               <div>
                 <div onClick={handleLogout}>Главная страница</div>
+                <ThemeToggle />
                 {user?.role === 'admin' && (
                   <Link to="/admin" style={{ display: 'block', marginTop: '20px' }}>
                     Панель администратора

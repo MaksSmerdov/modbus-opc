@@ -1,0 +1,48 @@
+@use "@/shared/styles/variables" as vars;
+
+.admin {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: vars.$bg-primary-light;
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: vars.$bg-secondary-light;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 2px 8px rgba(vars.$black, 0.1);
+  }
+
+  &__title {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 600;
+    color: vars.$text-primary-light;
+  }
+
+  &__subtitle {
+    margin: 0 0 32px 0;
+    font-size: 16px;
+    color: vars.$text-secondary-light;
+  }
+}
+
+:global(.dark) {
+  .admin {
+    background-color: vars.$bg-primary-dark;
+
+    &__container {
+      background-color: vars.$bg-secondary-dark;
+      box-shadow: 0 2px 8px rgba(vars.$black, 0.4);
+    }
+
+    &__title {
+      color: vars.$text-primary-dark;
+    }
+
+    &__subtitle {
+      color: vars.$text-secondary-dark;
+    }
+  }
+}

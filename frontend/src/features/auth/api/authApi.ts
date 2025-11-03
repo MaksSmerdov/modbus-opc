@@ -1,4 +1,4 @@
-import { api } from '../../../shared/api/api';
+import { api } from '@/shared/api/api.ts';
 import type { AuthResponse, LoginCredentials, RegisterCredentials, User } from '../types';
 
 export const authApi = {

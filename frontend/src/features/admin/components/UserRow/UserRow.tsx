@@ -1,18 +1,22 @@
 import { useState } from 'react';
-import { useAppSelector } from '../../../app/hooks/hooks';
-import type { User, UserRole } from '../../../shared/types';
+import { useAppSelector } from '../../../../app/hooks/hooks';
+import type { User, UserRole } from '../../../../shared/types';
 import styles from './UserRow.module.scss';
+import { Button } from '@/shared/ui/Button/Button';
 
 interface UserRowProps {
   user: User;
   onRoleUpdate: (userId: string, role: UserRole) => Promise<void>;
+  onDelete: (userId: string) => Promise<void>;
 }
 
-export const UserRow = ({ user, onRoleUpdate }: UserRowProps) => {
+export const UserRow = ({ user, onRoleUpdate, onDelete }: UserRowProps) => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const [selectedRole, setSelectedRole] = useState<UserRole>(user.role);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Нельзя изменить роль самому себе
   const isCurrentUser = currentUser?.id === user.id;
@@ -31,6 +35,19 @@ export const UserRow = ({ user, onRoleUpdate }: UserRowProps) => {
       setSelectedRole(user.role); // Возвращаем предыдущее значение
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (isCurrentUser) return; // доп. защита на фронте
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await onDelete(user.id);
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Ошибка удаления пользователя');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -70,6 +87,14 @@ export const UserRow = ({ user, onRoleUpdate }: UserRowProps) => {
       </td>
       <td className={styles['userRow__date']}>
         {user.createdAt ? formatDate(user.createdAt) : '-'}
+      </td>
+      <td className={styles['userRow__actions']}>
+        <Button variant="outlined" size="small" onClick={handleDelete} disabled={isCurrentUser || isDeleting}>
+          Удалить
+        </Button>
+        {deleteError && (
+          <span className={styles['userRow__error']}>{deleteError}</span>
+        )}
       </td>
     </tr>
   );

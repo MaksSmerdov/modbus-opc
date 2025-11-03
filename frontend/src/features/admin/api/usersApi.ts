@@ -15,4 +15,9 @@ export const usersApi = {
   updateUserRole: async (userId: string, role: UserRole) => {
     return api.put<User>(`/users/${userId}/role`, { role });
   },
+
+  // Удалить пользователя
+  deleteUser: async (userId: string) => {
+    return api.delete<User>(`/users/${userId}`);
+  },
 };

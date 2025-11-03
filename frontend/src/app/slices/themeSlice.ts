@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import { authApi } from '../../shared/api/auth';
-import type { Theme } from '../../shared/types';
+import type { Theme } from '@/shared/types';
+import {authApi} from "@/features/auth/api/authApi.ts";
 
 interface ThemeState {
   theme: Theme;
@@ -27,12 +27,24 @@ const initialState: ThemeState = {
 const applyTheme = (theme: Theme) => {
   const root = document.documentElement;
 
+  // Удаляем старые классы
+  root.classList.remove('dark', 'light');
+
   if (theme === 'auto') {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    root.classList.toggle('dark', prefersDark);
+    root.classList.add(prefersDark ? 'dark' : 'light');
+    
+    // Слушаем изменения системной темы
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      root.classList.toggle('dark', e.matches);
+      root.classList.toggle('light', !e.matches);
+    };
+    
+    // Очищаем предыдущие слушатели перед добавлением нового
+    mediaQuery.addEventListener('change', handleChange);
   } else {
-    root.classList.toggle('dark', theme === 'dark');
-    root.classList.toggle('light', theme === 'light');
+    root.classList.add(theme);
   }
 };
 
@@ -71,7 +83,10 @@ export const loadThemeFromServer = createAsyncThunk(
 
     const response = await authApi.getMe();
     if (response.success && response.data.settings?.theme) {
-      return response.data.settings.theme;
+      const theme = response.data.settings.theme;
+      if (theme === 'light' || theme === 'dark' || theme === 'auto') {
+        return theme as Theme;
+      }
     }
 
     return rejectWithValue('Тема не найдена на сервере');

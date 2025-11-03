@@ -1,3 +1,5 @@
+@use "variables" as vars;
+
 *,
 *::before,
 *::after {
@@ -8,9 +10,15 @@ body {
   margin: 0 auto;
   font-family: "Bitter", sans-serif;
   font-size: 16px;
-  color: #333;
-  background-color: rgb(238, 235, 235);
+  color: vars.$text-primary-light;
+  background-color: vars.$bg-primary-light;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+html.dark body {
+  color: vars.$text-primary-dark;
+  background-color: vars.$bg-primary-dark;
+} 
 
 .list-reset {
   margin: 0;

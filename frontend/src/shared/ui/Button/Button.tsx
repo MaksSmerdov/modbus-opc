@@ -5,7 +5,7 @@ import styles from './Button.module.scss';
 
 export interface ButtonProps extends Omit<MuiButtonProps, 'variant' | 'className'> {
   className?: string;
-  variant?: 'contained' | 'outlined' | 'text';
+  variant?: 'contained' | 'outlined' | 'text' ;
   size?: 'small' | 'medium' | 'large';
   fullWidth?: boolean;
 }

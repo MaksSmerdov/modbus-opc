@@ -1,0 +1,98 @@
+@use "@/shared/styles/variables" as vars;
+
+.usersList {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: vars.$text-primary-light;
+  }
+
+  &__loading,
+  &__error {
+    padding: 40px;
+    text-align: center;
+    color: vars.$text-secondary-light;
+  }
+
+  &__error {
+    color: vars.$error-color-light;
+  }
+
+  &__table {
+    overflow-x: auto;
+  }
+
+  &__table-content {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background-color: vars.$table-header-bg-light;
+
+      th {
+        padding: 8px 12px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+        color: vars.$text-primary-light;
+        border-bottom: 2px solid vars.$table-border-light;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid vars.$table-border-light;
+
+        &:hover {
+          background-color: vars.$table-row-hover-light;
+        }
+      }
+    }
+  }
+}
+
+:global(.dark) {
+  .usersList {
+    &__title {
+      color: vars.$text-primary-dark;
+    }
+
+    &__loading,
+    &__error {
+      color: vars.$text-secondary-dark;
+    }
+
+    &__error {
+      color: vars.$error-color-dark;
+    }
+
+    &__table-content {
+      thead {
+        background-color: vars.$table-header-bg-dark;
+
+        th {
+          color: vars.$text-primary-dark;
+          border-bottom: 2px solid vars.$table-border-dark;
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid vars.$border-color-dark;
+
+          &:hover {
+            background-color: vars.$table-row-hover-dark;
+          }
+        }
+      }
+    }
+  }
+}

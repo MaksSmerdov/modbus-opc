@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
-import { useAppSelector } from '../../../app/hooks/hooks';
-import { UsersList } from './UsersList';
+import { useAppSelector } from '@/app/hooks/hooks.ts';
+import { UsersList } from '../../features/admin/components/UsersList/UsersList';
 import styles from './AdminPage.module.scss';
 
 export const AdminPage = () => {

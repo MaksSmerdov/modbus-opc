@@ -1,0 +1,88 @@
+@use "@/shared/styles/variables" as vars;
+
+.userRow {
+  &__name,
+  &__email,
+  &__role,
+  &__date,
+  &__actions {
+    padding: 14px;
+    font-size: 14px;
+    color: vars.$text-primary-light;
+    text-align: center;
+  }
+
+  &__email {
+    color: vars.$text-secondary-light;
+  }
+
+  &__select {
+    padding: 4px 6px;
+    border: 1px solid vars.$steam;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: vars.$bg-secondary-light;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      border-color: vars.$select-border-hover;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: vars.$select-border-hover;
+      box-shadow: 0 0 0 3px vars.$select-focus-shadow;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__current-user {
+    color: vars.$current-user-color;
+    font-weight: 500;
+  }
+
+  &__error {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: vars.$error-color-light;
+  }
+}
+
+:global(.dark) {
+  .userRow {
+    &__name,
+    &__email,
+    &__role,
+    &__date {
+      color: vars.$text-primary-dark;
+    }
+
+    &__email {
+      color: vars.$text-secondary-dark;
+    }
+
+    &__select {
+      background-color: vars.$bg-secondary-dark;
+      border-color: vars.$border-color-dark;
+      color: vars.$text-primary-dark;
+
+      &:hover:not(:disabled) {
+        border-color: vars.$select-border-hover;
+      }
+    }
+
+    &__current-user {
+      color: vars.$select-border-hover;
+    }
+
+    &__error {
+      color: vars.$error-color-dark;
+    }
+  }
+}

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { usersApi } from '../api/usersApi';
-import { UserRow } from './UserRow';
-import { Button } from '../../../shared/ui/Button/Button';
-import type { User } from '../../../shared/types';
+import { usersApi } from '../../api/usersApi';
+import { UserRow } from '../UserRow/UserRow';
+import { Button } from '../../../../shared/ui/Button/Button';
+import type { User } from '../../../../shared/types';
 import styles from './UsersList.module.scss';
 
 export const UsersList = () => {
@@ -14,7 +14,7 @@ export const UsersList = () => {
     setIsLoading(true);
     setError(null);
     const response = await usersApi.getAllUsers();
-    
+
     if (response.success) {
       setUsers(response.data);
     } else {
@@ -29,7 +29,7 @@ export const UsersList = () => {
 
   const handleRoleUpdate = async (userId: string, newRole: User['role']) => {
     const response = await usersApi.updateUserRole(userId, newRole);
-    
+
     if (response.success) {
       // Обновляем список пользователей
       setUsers((prevUsers) =>
@@ -39,6 +39,16 @@ export const UsersList = () => {
       );
     } else {
       setError(response.error);
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    const response = await usersApi.deleteUser(userId);
+    if (response.success) {
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+    } else {
+      setError(response.error);
+      throw new Error(response.error);
     }
   };
 
@@ -65,7 +75,7 @@ export const UsersList = () => {
           Обновить
         </Button>
       </div>
-      
+
       <div className={styles['usersList__table']}>
         <table className={styles['usersList__table-content']}>
           <thead>
@@ -74,6 +84,7 @@ export const UsersList = () => {
               <th>Email</th>
               <th>Роль</th>
               <th>Дата регистрации</th>
+              <th>Действия</th>
             </tr>
           </thead>
           <tbody>
@@ -82,6 +93,7 @@ export const UsersList = () => {
                 key={user.id}
                 user={user}
                 onRoleUpdate={handleRoleUpdate}
+                onDelete={handleDelete}
               />
             ))}
           </tbody>

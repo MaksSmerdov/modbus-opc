@@ -1,0 +1,72 @@
+$hunter-green: #0a3b0a;
+$hulk: #008000;
+$spring-forth: #0ac529;
+$intoxicate: #11b851;
+$nordic-grass-green: #21aa55;
+$ulva-lactuca-green: #90ee90;
+$hobgoblin: #00ac92;
+$orange: #ffa500;
+$blue: #0000ff;
+$carbon: #333333;
+$black: #000000;
+$red: #ff0000;
+$grey: #808080;
+$cerebral-grey: #cccccc;
+$steam: #dddddd;
+$white: #fff;
+$white-smoke: #f5f5f5;
+$coconut-white: #e7eef4;
+$vanilla-strawberry: #ffe6e6;
+$doctor: #f9f9f9;
+$beluga: #f1f1f1;
+$snowflake: #f0f0f0;
+$sharp-pebbles: #dad7d7;
+
+
+// Светлая тема
+$bg-primary-light: $snowflake; // или rgb(238, 235, 235)
+$bg-secondary-light: $white;
+$text-primary-light: $carbon;
+$text-secondary-light: $grey;
+$text-muted-light: $grey;
+$border-color-light: rgba($black, 0.12);
+
+// Тёмная тема
+$bg-primary-dark: #1a1a1a;
+$bg-secondary-dark: #2d2d2d;
+$text-primary-dark: #e0e0e0;
+$text-secondary-dark: #b0b0b0;
+$text-muted-dark: #808080;
+$border-color-dark: rgba($white, 0.12);
+
+// Переменные для ThemeToggle
+$theme-toggle-bg-light: rgba($black, 0.05);
+$theme-toggle-border-light: rgba($black, 0.1);
+$theme-toggle-icon-light: $grey;
+$theme-toggle-icon-hover-light: $carbon;
+$theme-toggle-hover-light: rgba($black, 0.08);
+$theme-toggle-active-bg-light: rgba($black, 0.1);
+$theme-toggle-active-icon-light: $black;
+
+$theme-toggle-bg-dark: rgba($white, 0.1);
+$theme-toggle-border-dark: rgba($white, 0.2);
+$theme-toggle-icon-dark: $cerebral-grey;
+$theme-toggle-icon-hover-dark: $white;
+$theme-toggle-hover-dark: rgba($white, 0.15);
+$theme-toggle-active-bg-dark: rgba($white, 0.2);
+$theme-toggle-active-icon-dark: $white;
+
+// Дополнительные переменные для админ-компонентов
+$select-border-hover: #667eea;
+$select-focus-shadow: rgba(102, 126, 234, 0.1);
+$current-user-color: #667eea;
+$error-color-light: #d32f2f;
+$error-color-dark: #ef5350;
+
+// Переменные для таблицы
+$table-header-bg-light: $white-smoke;
+$table-header-bg-dark: #2a2a2a;
+$table-border-light: $cerebral-grey;
+$table-border-dark: rgba($white, 0.15);
+$table-row-hover-light: $doctor;
+$table-row-hover-dark: #242424;
