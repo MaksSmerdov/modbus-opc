@@ -1,0 +1,25 @@
+.appLayout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+
+    &__content {
+        display: flex;
+        flex: 1;
+        margin-top: 79px;
+        position: relative;
+    }
+
+    &__main {
+        flex: 1;
+        margin-left: 240px;
+        padding: 16px;
+        overflow-y: auto;
+        transition: margin-left 0.3s ease;
+        height: calc(100vh - 79px);
+
+        &_collapsed {
+            margin-left: 64px;
+        }
+    }
+}

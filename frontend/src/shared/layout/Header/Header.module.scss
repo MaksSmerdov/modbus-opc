@@ -1,0 +1,36 @@
+@use "@/shared/styles/variables" as vars;
+
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1100; // выше sidebar
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: vars.$bg-primary-light;
+    color: vars.$text-primary-light;
+    border-bottom: 1px solid vars.$border-color-light;
+    height: 79px;
+
+    &__left {
+        display: flex;
+        align-items: center;
+    }
+
+    &__right {
+        display: flex;
+        align-items: center;
+    }
+}
+
+:global(.dark) {
+    .header {
+        background-color: vars.$bg-primary-dark;
+        color: vars.$text-primary-dark;
+        border-bottom: 1px solid vars.$border-color-dark;
+    }
+}

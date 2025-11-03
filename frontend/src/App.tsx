@@ -1,17 +1,20 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store/store';
-import { checkAuth, LoginPage, logout, RegisterPage } from './features/auth';
+import { checkAuth } from './features/auth';
+import { LoginPage } from './pages/auth/LoginPage';
+import { RegisterPage } from './pages/auth/RegisterPage';
 import { loadThemeFromServer, setThemeLocal } from './app/slices/themeSlice';
 import { useAppDispatch, useAppSelector } from './app/hooks/hooks';
 import type { Theme } from './shared/types';
 import { AdminPage } from '@/features/admin';
-import { ThemeToggle } from './features/theme';
+import { AppLayout } from '@/shared/layout';
+import { Loader } from '@/shared/ui/Loader/Loader';
 
 const AppContent = () => {
   const dispatch = useAppDispatch();
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(checkAuth());
@@ -28,9 +31,9 @@ const AppContent = () => {
     }
   }, [dispatch, isAuthenticated]);
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+  if (isLoading) {
+    return <Loader size={80} fullScreen />;
+  }
 
   return (
     <BrowserRouter>
@@ -44,27 +47,18 @@ const AppContent = () => {
           element={isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />}
         />
         <Route
-          path="/admin"
-          element={<AdminPage />}
-        />
-        <Route
           path="*"
           element={
             isAuthenticated ? (
-              <div>
-                <div onClick={handleLogout}>Главная страница</div>
-                <ThemeToggle />
-                {user?.role === 'admin' && (
-                  <Link to="/admin" style={{ display: 'block', marginTop: '20px' }}>
-                    Панель администратора
-                  </Link>
-                )}
-              </div>
+              <AppLayout />
             ) : (
               <Navigate to="/login" replace />
             )
           }
-        />
+        >
+          <Route index element={<div style={{ padding: '16px' }}>Главная страница</div>} />
+          <Route path="admin" element={<AdminPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

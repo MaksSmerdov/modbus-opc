@@ -1,8 +1,6 @@
 @use "@/shared/styles/variables" as vars;
 
 .admin {
-  min-height: 100vh;
-  padding: 40px 20px;
   background-color: vars.$bg-primary-light;
 
   &__container {

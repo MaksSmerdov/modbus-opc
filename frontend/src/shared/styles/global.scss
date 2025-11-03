@@ -6,24 +6,33 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-y: hidden;
+  height: 100%;
+}
+
 body {
+  height: 100%;
   margin: 0 auto;
   font-family: "Bitter", sans-serif;
   font-size: 16px;
   color: vars.$text-primary-light;
   background-color: vars.$bg-primary-light;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 html.dark body {
   color: vars.$text-primary-dark;
   background-color: vars.$bg-primary-dark;
-} 
+}
 
 .list-reset {
   margin: 0;
   padding: 0;
   list-style-type: none;
+}
+
+.title-reset {
+  margin: 0;
 }
 
 .btn-reset {

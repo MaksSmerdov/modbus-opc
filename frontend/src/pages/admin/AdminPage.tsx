@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '@/app/hooks/hooks.ts';
 import { UsersList } from '../../features/admin/components/UsersList/UsersList';
 import styles from './AdminPage.module.scss';
+import { Loader } from '@/shared/ui/Loader/Loader';
 
 export const AdminPage = () => {
   const { user, isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
@@ -11,7 +12,7 @@ export const AdminPage = () => {
     return (
       <div className={styles['admin']}>
         <div className={styles['admin__container']}>
-          <div>Загрузка...</div>
+          <Loader fullScreen />
         </div>
       </div>
     );
