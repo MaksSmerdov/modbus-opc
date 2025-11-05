@@ -1,48 +1,78 @@
-import { api } from '@/shared/api/api.ts';
+import { baseApi } from '@/shared/api/baseApi';
 import type { AuthResponse, LoginCredentials, RegisterCredentials, User } from '../types';
 
-export const authApi = {
-  login: async (credentials: LoginCredentials) => {
-    const response = await api.post<AuthResponse>('/auth/login', credentials);
-    if (response.success) {
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-    }
-    return response;
-  },
+export const authApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation<AuthResponse, LoginCredentials>({
+      query: (credentials) => ({
+        url: '/auth/login',
+        method: 'POST',
+        body: credentials,
+      }),
+      transformResponse: (response: { data: AuthResponse }) => {
+        const data = response.data;
+        if (data.accessToken) {
+          localStorage.setItem('accessToken', data.accessToken);
+          localStorage.setItem('refreshToken', data.refreshToken);
+        }
+        return data;
+      },
+      invalidatesTags: ['User'],
+    }),
 
-  register: async (credentials: RegisterCredentials) => {
-    const response = await api.post<AuthResponse>('/auth/register', credentials);
-    if (response.success) {
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-    }
-    return response;
-  },
+    register: builder.mutation<AuthResponse, RegisterCredentials>({
+      query: (credentials) => ({
+        url: '/auth/register',
+        method: 'POST',
+        body: credentials,
+      }),
+      transformResponse: (response: { data: AuthResponse }) => {
+        const data = response.data;
+        if (data.accessToken) {
+          localStorage.setItem('accessToken', data.accessToken);
+          localStorage.setItem('refreshToken', data.refreshToken);
+        }
+        return data;
+      },
+      invalidatesTags: ['User'],
+    }),
 
-  logout: async () => {
-    await api.post('/auth/logout');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-  },
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+      }),
+      async onQueryStarted(_, { dispatch }) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        dispatch(authApi.util.resetApiState());
+      },
+      invalidatesTags: ['User'],
+    }),
 
-  refreshToken: async (refreshToken: string) => {
-    const response = await api.post<{ accessToken: string; refreshToken: string }>(
-      '/auth/refresh',
-      { refreshToken }
-    );
-    if (response.success) {
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-    }
-    return response;
-  },
+    getMe: builder.query<User, void>({
+      query: () => '/users/me',
+      providesTags: ['User'],
+      transformResponse: (response: { data: User }) => response.data,
+    }),
 
-  getMe: async () => {
-    return api.get<User>('/users/me');
-  },
+    updateSettings: builder.mutation<{ theme: string }, { theme?: string }>({
+      query: (settings) => ({
+        url: '/users/me/settings',
+        method: 'PUT',
+        body: settings,
+      }),
+      transformResponse: (response: { data: { theme: string } }) => response.data,
+      invalidatesTags: ['User', 'Theme'],
+    }),
+  }),
+});
 
-  updateSettings: async (settings: { theme?: string }) => {
-    return api.put<{ theme: string }>('/users/me/settings', settings);
-  },
-};
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useLogoutMutation,
+  useGetMeQuery,
+  useLazyGetMeQuery,
+  useUpdateSettingsMutation,
+} = authApi;

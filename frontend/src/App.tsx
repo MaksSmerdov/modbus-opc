@@ -1,37 +1,23 @@
-import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store/store';
-import { checkAuth } from './features/auth';
-import { LoginPage } from './pages/auth/LoginPage';
-import { RegisterPage } from './pages/auth/RegisterPage';
-import { loadThemeFromServer, setThemeLocal } from './app/slices/themeSlice';
-import { useAppDispatch, useAppSelector } from './app/hooks/hooks';
-import type { Theme } from './shared/types';
+import { useGetMeQuery } from './features/auth/api/authApi';
+import { useAppSelector } from './app/hooks/hooks';
 import { AdminPage } from '@/features/admin';
 import { AppLayout } from '@/shared/layout';
 import { Loader } from '@/shared/ui/Loader/Loader';
+import { AuthPage } from './pages/auth/AuthPage';
 
 const AppContent = () => {
-  const dispatch = useAppDispatch();
-  const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const hasToken = !!localStorage.getItem('accessToken');
 
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
+  // Проверяем авторизацию только если есть токен
+  const { isLoading } = useGetMeQuery(undefined, {
+    skip: !hasToken,
+  });
 
-  useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') as Theme | null;
-    if (storedTheme && ['light', 'dark', 'auto'].includes(storedTheme)) {
-      dispatch(setThemeLocal(storedTheme));
-    }
-
-    if (isAuthenticated) {
-      dispatch(loadThemeFromServer());
-    }
-  }, [dispatch, isAuthenticated]);
-
-  if (isLoading) {
+  if (hasToken && isLoading) {
     return <Loader size={80} fullScreen />;
   }
 
@@ -40,11 +26,11 @@ const AppContent = () => {
       <Routes>
         <Route
           path="/login"
-          element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+          element={isAuthenticated ? <Navigate to="/" replace /> : <AuthPage />}
         />
         <Route
           path="/register"
-          element={isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />}
+          element={isAuthenticated ? <Navigate to="/" replace /> : <AuthPage />}
         />
         <Route
           path="*"

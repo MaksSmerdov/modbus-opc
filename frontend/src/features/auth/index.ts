@@ -1,2 +1,2 @@
-export { login, register, logout, checkAuth, clearError, setUser } from './store/authSlice';
-export type { User, LoginCredentials, RegisterCredentials } from './types';
+export { clearError, setUser, logout } from './store/authSlice';
+export { authApi, useLoginMutation, useRegisterMutation, useLogoutMutation, useGetMeQuery, useLazyGetMeQuery, useUpdateSettingsMutation } from './api/authApi';

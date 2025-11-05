@@ -1,21 +1,13 @@
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks/hooks';
-import { login, clearError } from '../store/authSlice';
+import { useLoginMutation } from '../api/authApi';
 import { Input } from '../../../shared/ui/Input/Input';
 import { Button } from '../../../shared/ui/Button/Button';
 import { loginSchema, type LoginFormData } from '../schemas/authSchemas';
 import styles from './AuthForms.module.scss';
 
 export const LoginForm = () => {
-  const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector((state) => state.auth);
-
-  // Очищаем ошибку при монтировании компонента
-  useEffect(() => {
-    dispatch(clearError());
-  }, [dispatch]);
+  const [login, { isLoading, error: loginError, reset }] = useLoginMutation();
 
   const {
     register,
@@ -30,15 +22,25 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    dispatch(clearError());
-    await dispatch(login(data));
+    reset();
+    try {
+      await login(data).unwrap();
+    } catch (error) {
+      // Ошибка обрабатывается через loginError
+    }
   };
+
+  const errorMessage = loginError && 'data' in loginError
+    ? (loginError.data as { error?: string })?.error || 'Произошла ошибка'
+    : loginError && 'error' in loginError
+      ? String(loginError.error)
+      : null;
 
   return (
     <form className={styles['authForm']} onSubmit={handleSubmit(onSubmit)}>
-      {error && (
+      {errorMessage && (
         <div className={styles['authForm__error']}>
-          {error}
+          {errorMessage}
         </div>
       )}
 

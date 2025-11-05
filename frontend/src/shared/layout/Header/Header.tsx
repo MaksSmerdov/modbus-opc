@@ -1,20 +1,24 @@
 import React from 'react';
-import { useAppDispatch, useAppSelector } from '@/app/hooks/hooks';
-import { logout } from '@/features/auth';
+import { useAppSelector } from '@/app/hooks/hooks';
+import { useLogoutMutation } from '@/features/auth/api/authApi';
 import { ThemeToggle } from '@/features/theme';
 import styles from './Header.module.scss';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 export const Header: React.FC = () => {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+    const [logout] = useLogoutMutation();
 
     const isAdmin = user?.role === 'admin';
 
-    const handleLogout = () => {
-        dispatch(logout());
+    const handleLogout = async () => {
+        try {
+            await logout().unwrap();
+        } catch (error) {
+            // Ошибка обрабатывается автоматически
+        }
     };
 
     const handleAdmin = () => {

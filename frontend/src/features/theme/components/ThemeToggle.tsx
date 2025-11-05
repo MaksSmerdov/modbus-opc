@@ -1,20 +1,32 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks/hooks';
-import { setTheme } from '@/app/slices/themeSlice';
+import { setThemeLocal } from '@/features/theme/store/themeSlice';
+import { useUpdateSettingsMutation } from '@/features/auth/api/authApi';
 import type { Theme } from '@/shared/types';
 import styles from './ThemeToggle.module.scss';
 
 export const ThemeToggle = () => {
   const dispatch = useAppDispatch();
-  const { theme, isLoading } = useAppSelector((state) => state.theme);
+  const { theme } = useAppSelector((state) => state.theme);
+  const [updateSettings] = useUpdateSettingsMutation();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const handleThemeChange = (newTheme: Theme) => {
-    dispatch(setTheme(newTheme));
+  const handleThemeChange = async (newTheme: Theme) => {
+    dispatch(setThemeLocal(newTheme));
+
+    // Сохраняем на сервере, если пользователь авторизован
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      try {
+        await updateSettings({ theme: newTheme }).unwrap();
+      } catch (error) {
+        console.warn('Не удалось сохранить тему на сервере:', error);
+      }
+    }
   };
 
   if (!isMounted) {
@@ -26,7 +38,6 @@ export const ThemeToggle = () => {
       <button
         className={`${styles.themeButton} ${theme === 'light' ? styles.themeButton_active : ''}`}
         onClick={() => handleThemeChange('light')}
-        disabled={isLoading}
         title="Светлая тема"
         aria-label="Светлая тема"
       >
@@ -38,7 +49,6 @@ export const ThemeToggle = () => {
       <button
         className={`${styles.themeButton} ${theme === 'dark' ? styles.themeButton_active : ''}`}
         onClick={() => handleThemeChange('dark')}
-        disabled={isLoading}
         title="Тёмная тема"
         aria-label="Тёмная тема"
       >
@@ -49,7 +59,6 @@ export const ThemeToggle = () => {
       <button
         className={`${styles.themeButton} ${theme === 'auto' ? styles.themeButton_active : ''}`}
         onClick={() => handleThemeChange('auto')}
-        disabled={isLoading}
         title="Автоматическая тема (системная)"
         aria-label="Автоматическая тема"
       >

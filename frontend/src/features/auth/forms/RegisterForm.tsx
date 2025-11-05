@@ -1,21 +1,13 @@
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks/hooks';
-import { register, clearError } from '../store/authSlice';
+import { useRegisterMutation } from '../api/authApi';
 import { Input } from '../../../shared/ui/Input/Input';
 import { Button } from '../../../shared/ui/Button/Button';
 import { registerSchema, type RegisterFormData } from '../schemas/authSchemas';
 import styles from './AuthForms.module.scss';
 
 export const RegisterForm = () => {
-  const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector((state) => state.auth);
-
-  // Очищаем ошибку при монтировании компонента
-  useEffect(() => {
-    dispatch(clearError());
-  }, [dispatch]);
+  const [register, { isLoading, error: registerError, reset }] = useRegisterMutation();
 
   const {
     register: registerField,
@@ -31,15 +23,25 @@ export const RegisterForm = () => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    dispatch(clearError());
-    await dispatch(register(data));
+    reset();
+    try {
+      await register(data).unwrap();
+    } catch (error) {
+      // Ошибка обрабатывается через registerError
+    }
   };
+
+  const errorMessage = registerError && 'data' in registerError
+    ? (registerError.data as { error?: string })?.error || 'Произошла ошибка'
+    : registerError && 'error' in registerError
+      ? String(registerError.error)
+      : null;
 
   return (
     <form className={styles['authForm']} onSubmit={handleSubmit(onSubmit)}>
-      {error && (
+      {errorMessage && (
         <div className={styles['authForm__error']}>
-          {error}
+          {errorMessage}
         </div>
       )}
 
