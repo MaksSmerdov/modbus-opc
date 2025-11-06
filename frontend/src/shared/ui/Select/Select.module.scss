@@ -1,0 +1,189 @@
+@use "@/shared/styles/variables" as vars;
+
+.select {
+    &__root {
+        margin-bottom: 16px;
+    }
+
+    &_error {
+        :global(.MuiOutlinedInput-root) {
+            &:hover :global(.MuiOutlinedInput-notchedOutline) {
+                border-color: vars.$error-color-light;
+            }
+        }
+    }
+
+    &_fullWidth {
+        width: 100%;
+    }
+
+    // Стилизация для состояния фокуса - применяем напрямую как в Input
+    :global(.MuiOutlinedInput-root) {
+        transition: border-color 0.3s ease;
+        background-color: vars.$bg-secondary-light;
+
+        :global(.MuiOutlinedInput-notchedOutline) {
+            border-color: rgba(vars.$intoxicate, 0.5);
+            transition: border-color 0.3s ease;
+        }
+
+        &:hover :global(.MuiOutlinedInput-notchedOutline) {
+            border-color: vars.$intoxicate;
+            transition: border-color 0.3s ease;
+        }
+
+        &:global(.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
+            border-width: 2px;
+            border-color: vars.$intoxicate;
+        }
+    }
+
+    // Стилизация label - применяем напрямую как в Input
+    :global(.MuiInputLabel-root) {
+        font-weight: 500;
+        color: vars.$text-secondary-light !important;
+
+        &:global(.Mui-focused) {
+            color: vars.$intoxicate !important;
+        }
+
+        &:global(.Mui-error) {
+            color: vars.$error-color-light !important;
+        }
+    }
+
+    &__input {
+        :global(.MuiSelect-select) {
+            color: vars.$text-primary-light;
+        }
+
+        // Стилизация иконки стрелки
+        :global(.MuiSelect-icon) {
+            color: vars.$text-secondary-light;
+        }
+
+        &:global(.Mui-focused) {
+            :global(.MuiSelect-icon) {
+                color: vars.$intoxicate;
+            }
+        }
+    }
+
+    &__selectRoot {
+
+        :global(.MuiSelect-icon) {
+            color: vars.$text-secondary-light;
+        }
+
+        &:global(.Mui-focused) {
+            :global(.MuiSelect-icon) {
+                color: vars.$intoxicate;
+            }
+        }
+    }
+
+    &__helperText {
+        margin-top: 4px;
+        margin-bottom: 0;
+        font-size: 0.75rem;
+        min-height: 20px;
+        display: block;
+        line-height: 1.43;
+        box-sizing: border-box;
+        color: vars.$text-secondary-light;
+
+        &:global(.Mui-error) {
+            color: vars.$error-color-light;
+        }
+    }
+
+    &__helperPlaceholder {
+        visibility: hidden !important;
+        min-height: 20px;
+        display: block;
+        margin-top: 4px;
+        margin-bottom: 0;
+        font-size: 0.75rem;
+        line-height: 1.43;
+        box-sizing: border-box;
+    }
+}
+
+:global(.dark) {
+    .select {
+        &_error {
+            :global(.MuiOutlinedInput-root) {
+                &:hover :global(.MuiOutlinedInput-notchedOutline) {
+                    border-color: vars.$error-color-dark;
+                }
+            }
+        }
+
+        :global(.MuiOutlinedInput-root) {
+            background-color: vars.$bg-secondary-dark;
+
+            :global(.MuiOutlinedInput-notchedOutline) {
+                border-color: rgba(vars.$intoxicate, 0.5);
+                transition: border-color 0.3s ease;
+            }
+
+            &:hover :global(.MuiOutlinedInput-notchedOutline) {
+                border-color: vars.$intoxicate;
+                transition: border-color 0.3s ease;
+            }
+
+            &:global(.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
+                border-width: 2px;
+                border-color: vars.$intoxicate;
+            }
+        }
+
+        :global(.MuiInputLabel-root) {
+            color: vars.$text-secondary-dark !important;
+
+            &:global(.Mui-focused) {
+                color: vars.$intoxicate !important;
+            }
+
+            &:global(.Mui-error) {
+                color: vars.$error-color-dark !important;
+            }
+        }
+
+        &__input {
+            :global(.MuiSelect-select) {
+                color: vars.$text-primary-dark;
+            }
+
+            :global(.MuiSelect-icon) {
+                color: vars.$text-secondary-dark;
+            }
+
+            &:global(.Mui-focused) {
+                :global(.MuiSelect-icon) {
+                    color: vars.$intoxicate;
+                }
+            }
+        }
+
+        &__selectRoot {
+            :global(.MuiSelect-icon) {
+                color: vars.$text-secondary-dark;
+            }
+
+            &:global(.Mui-focused) {
+                :global(.MuiSelect-icon) {
+                    color: vars.$intoxicate;
+                }
+            }
+        }
+
+        &__helperText {
+            color: vars.$text-secondary-dark;
+
+            &:global(.Mui-error) {
+                color: vars.$error-color-dark;
+            }
+        }
+    }
+}

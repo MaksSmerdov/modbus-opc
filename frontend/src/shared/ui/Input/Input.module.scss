@@ -1,3 +1,5 @@
+@use "@/shared/styles/variables" as vars;
+
 .input {
   &__root {
     margin-bottom: 16px;
@@ -6,7 +8,7 @@
   &_error {
     :global(.MuiOutlinedInput-root) {
       &:hover :global(.MuiOutlinedInput-notchedOutline) {
-        border-color: var(--error-color, #d32f2f);
+        border-color: vars.$error-color-light;
       }
     }
   }
@@ -17,21 +19,49 @@
 
   // Стилизация для состояния фокуса
   :global(.MuiOutlinedInput-root) {
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: border-color 0.3s ease;
+    background-color: vars.$bg-secondary-light;
+
+    :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: rgba(vars.$intoxicate, 0.5);
+      transition: border-color 0.3s ease;
+    }
 
     &:hover :global(.MuiOutlinedInput-notchedOutline) {
-      border-color: green;
+      border-color: vars.$intoxicate;
+      transition: border-color 0.3s ease;
     }
 
     &:global(.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
       border-width: 2px;
-      border-color: green;
+      border-color: vars.$intoxicate;
+    }
+  }
+
+  // Стилизация input текста
+  :global(.MuiOutlinedInput-input) {
+    color: vars.$text-primary-light;
+
+    // Переопределение стилей автозаполнения браузера
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px vars.$bg-secondary-light inset !important;
+      -webkit-text-fill-color: vars.$text-primary-light !important;
+      box-shadow: 0 0 0 30px vars.$bg-secondary-light inset !important;
+      caret-color: vars.$text-primary-light;
     }
   }
 
   // Стилизация label
   :global(.MuiInputLabel-root) {
     font-weight: 500;
+    color: vars.$text-secondary-light;
+
+    &:global(.Mui-focused) {
+      color: vars.$intoxicate;
+    }
   }
 
   // Стилизация helper text - всегда резервируем место
@@ -43,6 +73,11 @@
     display: block;
     line-height: 1.43;
     box-sizing: border-box;
+    color: vars.$text-secondary-light;
+
+    &:global(.Mui-error) {
+      color: vars.$error-color-light;
+    }
   }
 
   // Когда helper text это пробел-заглушка, скрываем визуально но оставляем место
@@ -59,6 +94,67 @@
     :global(.MuiFormHelperText-root) {
       min-height: 20px;
       display: block;
+    }
+  }
+}
+
+:global(.dark) {
+  .input {
+    &_error {
+      :global(.MuiOutlinedInput-root) {
+        &:hover :global(.MuiOutlinedInput-notchedOutline) {
+          border-color: vars.$error-color-dark;
+        }
+      }
+    }
+
+    :global(.MuiOutlinedInput-root) {
+      background-color: vars.$bg-secondary-dark;
+
+      :global(.MuiOutlinedInput-notchedOutline) {
+        border-color: rgba(vars.$intoxicate, 0.5);
+        transition: border-color 0.3s ease;
+      }
+
+      &:hover :global(.MuiOutlinedInput-notchedOutline) {
+        border-color: vars.$intoxicate;
+        transition: border-color 0.3s ease;
+      }
+
+      &:global(.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
+        border-color: vars.$intoxicate;
+      }
+    }
+
+    :global(.MuiOutlinedInput-input) {
+      color: vars.$text-primary-dark;
+
+      // Переопределение стилей автозаполнения для темной темы
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus,
+      &:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px vars.$bg-secondary-dark inset !important;
+        -webkit-text-fill-color: vars.$text-primary-dark !important;
+        box-shadow: 0 0 0 30px vars.$bg-secondary-dark inset !important;
+        caret-color: vars.$text-primary-dark;
+      }
+    }
+
+    :global(.MuiInputLabel-root) {
+      color: vars.$text-secondary-dark;
+
+      &:global(.Mui-focused) {
+        color: vars.$intoxicate;
+      }
+    }
+
+    :global(.MuiFormHelperText-root) {
+      color: vars.$text-secondary-dark;
+
+      &:global(.Mui-error) {
+        color: vars.$error-color-dark;
+      }
     }
   }
 }

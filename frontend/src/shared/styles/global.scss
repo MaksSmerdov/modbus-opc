@@ -25,6 +25,34 @@ html.dark body {
   background-color: vars.$bg-primary-dark;
 }
 
+// Стили для выпадающего меню Select в темной теме
+html.dark {
+  .MuiMenu-paper {
+    background-color: vars.$bg-secondary-dark !important;
+    color: vars.$text-primary-dark !important;
+  }
+
+  .MuiMenuItem-root {
+    color: vars.$text-primary-dark !important;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    &.Mui-selected {
+      background-color: rgba(255, 255, 255, 0.12) !important;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.16) !important;
+      }
+    }
+
+    &.Mui-focusVisible {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+  }
+}
+
 .list-reset {
   margin: 0;
   padding: 0;

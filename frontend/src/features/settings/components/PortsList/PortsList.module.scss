@@ -1,0 +1,29 @@
+@use "@/shared/styles/variables" as vars;
+
+.portsList {
+    &__error {
+        padding: 16px;
+        text-align: center;
+        color: vars.$error-color-light;
+        font-size: 0.875rem;
+    }
+
+    &__empty {
+        padding: 16px;
+        text-align: center;
+        color: vars.$text-secondary-light;
+        font-size: 0.875rem;
+    }
+}
+
+:global(.dark) {
+    .portsList {
+        &__error {
+            color: vars.$error-color-dark;
+        }
+
+        &__empty {
+            color: vars.$text-secondary-dark;
+        }
+    }
+}

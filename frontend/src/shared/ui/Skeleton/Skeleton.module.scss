@@ -1,0 +1,41 @@
+@use "@/shared/styles/variables" as vars;
+
+.skeleton {
+    background-color: rgba(vars.$intoxicate, 0.1) !important;
+
+    &::after {
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(vars.$intoxicate, 0.2),
+                transparent) !important;
+    }
+
+    &_text {
+        // Стили для текстового варианта
+    }
+
+    &_rectangular {
+        // Стили для прямоугольного варианта
+    }
+
+    &_rounded {
+        border-radius: 8px;
+    }
+
+    &_circular {
+        // Стили для круглого варианта
+    }
+}
+
+:global(.dark) {
+    .skeleton {
+        background-color: rgba(vars.$intoxicate, 0.15) !important;
+
+        &::after {
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(vars.$intoxicate, 0.3),
+                    transparent) !important;
+        }
+    }
+}

@@ -1,0 +1,107 @@
+@use "@/shared/styles/variables" as vars;
+
+.modal {
+    &__paper {
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        transition: all 0.3s ease;
+        background-color: vars.$bg-secondary-light;
+        max-height: calc(100vh - 64px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        font-weight: 600;
+        font-size: 1.25rem;
+        border-bottom: 1px solid vars.$border-color-light;
+        position: relative;
+        color: vars.$text-primary-light;
+        flex-shrink: 0;
+
+        :global(.MuiDialogTitle-root) {
+            padding: 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        span {
+            flex: 1;
+            padding-right: 40px;
+        }
+    }
+
+    &__closeButton {
+        color: vars.$text-muted-light;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+            color: vars.$text-primary-light;
+        }
+    }
+
+    &__content {
+        padding: 24px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        color: vars.$text-primary-light;
+        flex: 1;
+        min-height: 0;
+
+        :global(.MuiDialogContent-root) {
+            padding: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    }
+
+    &__actions {
+        padding: 16px 24px;
+        border-top: 1px solid vars.$border-color-light;
+        gap: 8px;
+        flex-shrink: 0;
+
+        :global(.MuiDialogActions-root) {
+            padding: 0;
+        }
+    }
+}
+
+:global(.dark) {
+    .modal {
+        &__paper {
+            background-color: vars.$bg-secondary-dark;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        &__title {
+            border-bottom: 1px solid vars.$border-color-dark;
+            color: vars.$text-primary-dark;
+        }
+
+        &__closeButton {
+            color: vars.$text-muted-dark;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.08);
+                color: vars.$text-primary-dark;
+            }
+        }
+
+        &__content {
+            color: vars.$text-primary-dark;
+        }
+
+        &__actions {
+            border-top: 1px solid vars.$border-color-dark;
+        }
+    }
+}

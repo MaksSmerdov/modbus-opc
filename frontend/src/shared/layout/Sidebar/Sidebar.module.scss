@@ -16,16 +16,25 @@
 
     &_collapsed {
         width: 64px;
+        overflow: none;
+
     }
 
     &__header {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
         align-items: center;
         padding: 8px;
         border-bottom: 1px solid vars.$border-color-light;
         transition: border-bottom-color 0.3s ease;
         flex-shrink: 0;
+    }
+
+    &__title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: vars.$text-primary-light;
+        padding: 0 8px;
     }
 
     &__toggle {
@@ -66,6 +75,18 @@
         padding: 16px;
         overflow-y: auto;
         overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__addButton {
+        margin-bottom: 16px;
+        flex-shrink: 0;
+    }
+
+    &__ports {
+        flex: 1;
+        overflow-y: auto;
     }
 }
 
@@ -76,6 +97,10 @@
 
         &__header {
             border-bottom: 1px solid vars.$border-color-dark;
+        }
+
+        &__title {
+            color: vars.$text-primary-dark;
         }
 
         &__toggle {
