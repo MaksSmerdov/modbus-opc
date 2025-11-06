@@ -1,5 +1,7 @@
 import { Settings, Delete, Edit } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import type { Port } from '../../types';
+import { transliterate } from '@/shared/utils/transliterate';
 import styles from './PortCard.module.scss';
 
 interface PortCardProps {
@@ -10,6 +12,7 @@ interface PortCardProps {
 }
 
 export const PortCard = ({ port, onEdit, onDelete, isCollapsed = false }: PortCardProps) => {
+    const navigate = useNavigate();
 
     const getPortInfo = () => {
         if (port.connectionType === 'RTU') {
@@ -19,9 +22,22 @@ export const PortCard = ({ port, onEdit, onDelete, isCollapsed = false }: PortCa
         }
     };
 
+    const handleCardClick = (e: React.MouseEvent) => {
+        // Не переходим, если клик был по кнопке редактирования/удаления
+        if ((e.target as HTMLElement).closest('button')) {
+            return;
+        }
+        const slug = transliterate(port.name);
+        navigate(`/${slug}`);
+    };
+
     if (isCollapsed) {
         return (
-            <div className={styles['portCard']} title={port.name}>
+            <div
+                className={styles['portCard']}
+                title={port.name}
+                onClick={handleCardClick}
+            >
                 <div className={styles['portCard__icon']}>
                     <Settings />
                 </div>
@@ -30,12 +46,17 @@ export const PortCard = ({ port, onEdit, onDelete, isCollapsed = false }: PortCa
     }
 
     return (
-        <div className={styles['portCard']}>
+        <div
+            className={styles['portCard']}
+            onClick={handleCardClick}
+        >
             <div className={styles['portCard__header']}>
                 <div className={styles['portCard__title']}>
-                    <h4 className={styles['portCard__name']}>{port.name}</h4>
+                    <h4 className={styles['portCard__name']} title={port.name}>
+                        {port.name}
+                    </h4>
                     {(onEdit || onDelete) && (
-                        <div className={styles['portCard__actions']}>
+                        <div className={styles['portCard__actions']} onClick={(e) => e.stopPropagation()}>
                             {onEdit && (
                                 <button
                                     className={styles['portCard__actionButton']}
@@ -61,7 +82,6 @@ export const PortCard = ({ port, onEdit, onDelete, isCollapsed = false }: PortCa
             <div className={styles['portCard__info']}>
                 <span className={styles['portCard__infoText']}>{getPortInfo()}</span>
             </div>
-
         </div>
     );
 };

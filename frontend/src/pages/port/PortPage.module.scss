@@ -1,0 +1,153 @@
+@use "@/shared/styles/variables" as vars;
+
+.portPage {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid vars.$border-color-light;
+    }
+
+    &__title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: vars.$text-primary-light;
+        margin: 0;
+    }
+
+    &__status {
+        display: flex;
+        align-items: center;
+    }
+
+    &__statusBadge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background-color: rgba(0, 0, 0, 0.1);
+        color: vars.$text-secondary-light;
+
+        &_active {
+            background-color: rgba(vars.$intoxicate, 0.2);
+            color: vars.$intoxicate;
+        }
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    &__section {
+        background-color: vars.$bg-secondary-light;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    &__sectionTitle {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: vars.$text-primary-light;
+        margin: 0 0 12px 0;
+    }
+
+    &__sectionValue {
+        font-size: 1rem;
+        color: vars.$text-secondary-light;
+        margin: 0;
+    }
+
+    &__config {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__configItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid vars.$border-color-light;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    &__configKey {
+        font-weight: 500;
+        color: vars.$text-primary-light;
+    }
+
+    &__configValue {
+        color: vars.$text-secondary-light;
+    }
+
+    &__error {
+        text-align: center;
+        padding: 48px;
+        color: vars.$error-color-light;
+        font-size: 1.125rem;
+    }
+}
+
+:global(.dark) {
+    .portPage {
+        &__header {
+            border-bottom-color: vars.$border-color-dark;
+        }
+
+        &__title {
+            color: vars.$text-primary-dark;
+        }
+
+        &__statusBadge {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: vars.$text-secondary-dark;
+
+            &_active {
+                background-color: rgba(vars.$intoxicate, 0.3);
+                color: vars.$intoxicate;
+            }
+        }
+
+        &__section {
+            background-color: vars.$bg-secondary-dark;
+            border-color: vars.$border-color-dark;
+        }
+
+        &__sectionTitle {
+            color: vars.$text-primary-dark;
+        }
+
+        &__sectionValue {
+            color: vars.$text-secondary-dark;
+        }
+
+        &__configItem {
+            border-bottom-color: vars.$border-color-dark;
+        }
+
+        &__configKey {
+            color: vars.$text-primary-dark;
+        }
+
+        &__configValue {
+            color: vars.$text-secondary-dark;
+        }
+
+        &__error {
+            color: vars.$error-color-dark;
+        }
+    }
+}

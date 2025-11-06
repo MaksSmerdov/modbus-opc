@@ -3,15 +3,18 @@ import { useAppSelector } from '@/app/hooks/hooks';
 import { useLogoutMutation } from '@/features/auth/api/authApi';
 import { ThemeToggle } from '@/features/theme';
 import styles from './Header.module.scss';
-import { Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { IconButton, Tooltip } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Logout, AdminPanelSettings, Person } from '@mui/icons-material';
 
 export const Header: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { isAuthenticated, user } = useAppSelector((state) => state.auth);
     const [logout] = useLogoutMutation();
 
     const isAdmin = user?.role === 'admin';
+    const isAdminPage = location.pathname === '/admin';
 
     const handleLogout = async () => {
         try {
@@ -34,15 +37,30 @@ export const Header: React.FC = () => {
                 <ThemeToggle />
                 {isAuthenticated && (
                     <div className={styles['header__user']}>
-                        <span className={styles['header__user-name']}>{user?.name}</span>
+                        <div className={styles['header__userInfo']}>
+                            <Person className={styles['header__userIcon']} />
+                            <span className={styles['header__userName']}>{user?.name}</span>
+                        </div>
                         {isAdmin && (
-                            <Button variant="contained" className={styles['header__user-admin']} onClick={handleAdmin}>
-                                Админ панель
-                            </Button>
+                            <Tooltip title="Админ панель" arrow>
+                                <IconButton
+                                    onClick={handleAdmin}
+                                    className={`${styles['header__adminButton']} ${isAdminPage ? styles['header__adminButton_active'] : ''}`}
+                                    size="small"
+                                >
+                                    <AdminPanelSettings />
+                                </IconButton>
+                            </Tooltip>
                         )}
-                        <Button variant="contained" className={styles['header__user-logout']} onClick={handleLogout}>
-                            Выйти
-                        </Button>
+                        <Tooltip title="Выйти" arrow>
+                            <IconButton
+                                onClick={handleLogout}
+                                className={styles['header__logoutButton']}
+                                size="small"
+                            >
+                                <Logout />
+                            </IconButton>
+                        </Tooltip>
                     </div>
                 )}
             </div>

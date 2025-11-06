@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Button } from '@/shared/ui/Button/Button';
 import { Modal } from '@/shared/ui/Modal/Modal';
-import { PortsList, AddPortForm } from '@/features/settings';
-import { useCreatePortMutation } from '@/features/settings/api/portsApi';
+import { PortsList, AddPortForm } from '@/features/settings/port';
+import { useCreatePortMutation } from '@/features/settings/port/api/portsApi';
 import styles from './Sidebar.module.scss';
 
 interface SidebarProps {

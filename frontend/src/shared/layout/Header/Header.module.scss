@@ -1,36 +1,121 @@
 @use "@/shared/styles/variables" as vars;
 
-
 .header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1100; // выше sidebar
+    z-index: 1100;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px;
-    background-color: vars.$bg-primary-light;
+    padding: 12px 24px;
+    background-color: vars.$bg-secondary-light;
     color: vars.$text-primary-light;
     border-bottom: 1px solid vars.$border-color-light;
     height: 79px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
     &__left {
         display: flex;
         align-items: center;
     }
 
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: vars.$intoxicate;
+        margin: 0;
+    }
+
     &__right {
         display: flex;
         align-items: center;
+        gap: 12px;
+    }
+
+    &__user {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-left: 16px;
+        border-left: 1px solid vars.$border-color-light;
+        margin-left: 8px;
+    }
+
+    &__userInfo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        background-color: rgba(vars.$intoxicate, 0.1);
+    }
+
+    &__userIcon {
+        font-size: 18px !important;
+        color: vars.$intoxicate;
+    }
+
+    &__userName {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: vars.$text-primary-light;
+    }
+
+    &__adminButton,
+    &__logoutButton {
+        color: vars.$text-secondary-light !important;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-color: rgba(vars.$intoxicate, 0.1) !important;
+            color: vars.$intoxicate !important;
+        }
+    }
+
+    &__adminButton_active {
+        background-color: rgba(vars.$intoxicate, 0.15) !important;
+        color: vars.$intoxicate !important;
     }
 }
 
 :global(.dark) {
     .header {
-        background-color: vars.$bg-primary-dark;
+        background-color: vars.$bg-secondary-dark;
         color: vars.$text-primary-dark;
         border-bottom: 1px solid vars.$border-color-dark;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+        &__title {
+            color: vars.$intoxicate;
+        }
+
+        &__user {
+            border-left-color: vars.$border-color-dark;
+        }
+
+        &__userInfo {
+            background-color: rgba(vars.$intoxicate, 0.15);
+        }
+
+        &__userName {
+            color: vars.$text-primary-dark;
+        }
+
+        &__adminButton,
+        &__logoutButton {
+            color: vars.$text-secondary-dark !important;
+
+            &:hover {
+                background-color: rgba(vars.$intoxicate, 0.2) !important;
+                color: vars.$intoxicate !important;
+            }
+        }
+
+        &__adminButton_active {
+            background-color: rgba(vars.$intoxicate, 0.25) !important;
+            color: vars.$intoxicate !important;
+        }
     }
 }

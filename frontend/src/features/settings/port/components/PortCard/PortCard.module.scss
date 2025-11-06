@@ -7,6 +7,7 @@
     border-radius: 8px;
     padding: 8px;
     transition: all 0.2s ease;
+    cursor: pointer; // Добавляем курсор
 
     &:hover {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -31,6 +32,8 @@
         justify-content: space-between;
         align-items: center;
         flex: 1;
+        min-width: 0; // Важно для работы ellipsis в flex
+        gap: 8px; // Добавляем отступ между названием и кнопками
     }
 
     &__name {
@@ -41,6 +44,8 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        min-width: 0; // Важно для работы ellipsis
+        flex: 1; // Занимает доступное пространство
     }
 
     &__status {

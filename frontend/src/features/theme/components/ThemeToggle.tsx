@@ -3,6 +3,8 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks/hooks';
 import { setThemeLocal } from '@/features/theme/store/themeSlice';
 import { useUpdateSettingsMutation } from '@/features/auth/api/authApi';
 import type { Theme } from '@/shared/types';
+import { IconButton } from '@mui/material';
+import { LightMode, DarkMode } from '@mui/icons-material';
 import styles from './ThemeToggle.module.scss';
 
 export const ThemeToggle = () => {
@@ -15,7 +17,11 @@ export const ThemeToggle = () => {
     setIsMounted(true);
   }, []);
 
-  const handleThemeChange = async (newTheme: Theme) => {
+  const handleThemeToggle = async () => {
+    // Переключаем только между light и dark
+    const currentTheme = theme === 'light' || theme === 'auto' ? 'dark' : 'light';
+    const newTheme: Theme = currentTheme;
+
     dispatch(setThemeLocal(newTheme));
 
     // Сохраняем на сервере, если пользователь авторизован
@@ -29,44 +35,24 @@ export const ThemeToggle = () => {
     }
   };
 
+  // Определяем, какая тема активна (если auto, показываем текущую системную)
+  const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
   if (!isMounted) {
-    return null;
+    return (
+      <IconButton className={styles['themeToggle']} disabled>
+        <LightMode />
+      </IconButton>
+    );
   }
 
   return (
-    <div className={styles.themeToggle}>
-      <button
-        className={`${styles.themeButton} ${theme === 'light' ? styles.themeButton_active : ''}`}
-        onClick={() => handleThemeChange('light')}
-        title="Светлая тема"
-        aria-label="Светлая тема"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" />
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      </button>
-      <button
-        className={`${styles.themeButton} ${theme === 'dark' ? styles.themeButton_active : ''}`}
-        onClick={() => handleThemeChange('dark')}
-        title="Тёмная тема"
-        aria-label="Тёмная тема"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-      <button
-        className={`${styles.themeButton} ${theme === 'auto' ? styles.themeButton_active : ''}`}
-        onClick={() => handleThemeChange('auto')}
-        title="Автоматическая тема (системная)"
-        aria-label="Автоматическая тема"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
-          <path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      </button>
-    </div>
+    <IconButton
+      onClick={handleThemeToggle}
+      className={styles['themeToggle']}
+      aria-label={isDark ? 'Переключить на светлую тему' : 'Переключить на тёмную тему'}
+    >
+      {isDark ? <DarkMode /> : <LightMode />}
+    </IconButton>
   );
 };
