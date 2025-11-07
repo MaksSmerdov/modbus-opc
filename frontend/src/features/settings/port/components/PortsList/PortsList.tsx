@@ -1,27 +1,63 @@
-import { useGetPortsQuery, useDeletePortMutation } from '../../api/portsApi';
+import { useState } from 'react';
+import { useGetPortsQuery, useDeletePortMutation, useUpdatePortMutation } from '../../api/portsApi';
+import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
+import { useAppSelector } from '@/app/hooks/hooks';
 import { PortCard } from '../PortCard/PortCard';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
+import type { Port } from '../../types';
 import styles from './PortsList.module.scss';
 import portCardStyles from '../PortCard/PortCard.module.scss';
 
 interface PortsListProps {
     isCollapsed?: boolean;
-    onEdit?: (portId: string) => void;
+    onEdit?: (port: Port) => void;
 }
 
 export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
     const { data: ports, isLoading, error } = useGetPortsQuery();
-    const [deletePort] = useDeletePortMutation();
+    const { data: pollingStatus } = useGetPollingStatusQuery();
+    const { user } = useAppSelector((state) => state.auth);
+    const [deletePort, { isLoading: isDeleting }] = useDeletePortMutation();
+    const [updatePort] = useUpdatePortMutation();
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [portToDelete, setPortToDelete] = useState<string | null>(null);
 
-    const handleDelete = async (portId: string) => {
-        if (window.confirm('Вы уверены, что хотите удалить этот порт?')) {
-            try {
-                await deletePort(portId).unwrap();
-            } catch (error) {
-                console.error('Ошибка удаления порта:', error);
-                alert('Не удалось удалить порт');
-            }
+    const isPollingActive = pollingStatus?.isPolling ?? false;
+    const canManagePorts = user?.role === 'admin' || user?.role === 'operator';
+
+    const handleTogglePortActive = async (port: Port) => {
+        try {
+            await updatePort({
+                id: port._id,
+                data: { isActive: !port.isActive },
+            }).unwrap();
+        } catch (error) {
+            console.error('Ошибка переключения активности порта:', error);
+            alert('Не удалось изменить статус порта');
         }
+    };
+
+    const handleDeleteClick = (portId: string) => {
+        setPortToDelete(portId);
+        setDeleteConfirmOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!portToDelete) return;
+        try {
+            await deletePort(portToDelete).unwrap();
+            setDeleteConfirmOpen(false);
+            setPortToDelete(null);
+        } catch (error) {
+            console.error('Ошибка удаления порта:', error);
+            alert('Не удалось удалить порт');
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteConfirmOpen(false);
+        setPortToDelete(null);
     };
 
     if (isLoading) {
@@ -61,17 +97,32 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
     }
 
     return (
-        <div className={styles['portsList']}>
-            {ports.map((port) => (
-                <PortCard
-                    key={port._id}
-                    port={port}
-                    onEdit={onEdit ? () => onEdit(port._id) : undefined}
-                    onDelete={handleDelete}
-                    isCollapsed={isCollapsed}
-                />
-            ))}
-        </div>
+        <>
+            <div className={styles['portsList']}>
+                {ports.map((port) => (
+                    <PortCard
+                        key={port._id}
+                        port={port}
+                        onEdit={canManagePorts && onEdit ? () => onEdit(port) : undefined}
+                        onDelete={canManagePorts ? handleDeleteClick : undefined}
+                        onToggleActive={canManagePorts ? handleTogglePortActive : undefined}
+                        isPollingActive={isPollingActive}
+                        isCollapsed={isCollapsed}
+                    />
+                ))}
+            </div>
+            <ConfirmModal
+                open={deleteConfirmOpen}
+                onClose={handleDeleteCancel}
+                onConfirm={handleDeleteConfirm}
+                title="Удаление порта"
+                message="Вы уверены, что хотите удалить этот порт? Это действие нельзя отменить."
+                confirmText="Удалить"
+                cancelText="Отмена"
+                confirmVariant="contained"
+                isLoading={isDeleting}
+            />
+        </>
     );
 };
 

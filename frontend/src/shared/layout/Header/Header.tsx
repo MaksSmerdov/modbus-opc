@@ -2,6 +2,7 @@ import React from 'react';
 import { useAppSelector } from '@/app/hooks/hooks';
 import { useLogoutMutation } from '@/features/auth/api/authApi';
 import { ThemeToggle } from '@/features/theme';
+import { PollingToggle } from '@/features/polling';
 import styles from './Header.module.scss';
 import { IconButton, Tooltip } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -14,6 +15,8 @@ export const Header: React.FC = () => {
     const [logout] = useLogoutMutation();
 
     const isAdmin = user?.role === 'admin';
+    const isOperator = user?.role === 'operator';
+    const canManagePolling = isAdmin || isOperator;
     const isAdminPage = location.pathname === '/admin';
 
     const handleLogout = async () => {
@@ -35,6 +38,11 @@ export const Header: React.FC = () => {
             </div>
             <div className={styles['header__right']}>
                 <ThemeToggle />
+                {isAuthenticated && canManagePolling && (
+                    <div className={styles['header__polling']}>
+                        <PollingToggle />
+                    </div>
+                )}
                 {isAuthenticated && (
                     <div className={styles['header__user']}>
                         <div className={styles['header__userInfo']}>

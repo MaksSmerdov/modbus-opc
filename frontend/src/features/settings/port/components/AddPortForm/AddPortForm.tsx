@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shared/ui/Input/Input';
@@ -20,10 +20,53 @@ interface AddPortFormProps {
     onSubmit: (data: CreatePortData) => void;
     onCancel: () => void;
     isLoading?: boolean;
+    initialData?: CreatePortData;
+    mode?: 'create' | 'edit';
 }
 
-export const AddPortForm = ({ onSubmit, onCancel, isLoading = false }: AddPortFormProps) => {
-    const [connectionType, setConnectionType] = useState<ConnectionType>('RTU');
+export const AddPortForm = ({
+    onSubmit,
+    onCancel,
+    isLoading = false,
+    initialData,
+    mode = 'create',
+}: AddPortFormProps) => {
+    const [connectionType, setConnectionType] = useState<ConnectionType>(
+        initialData?.connectionType || 'RTU'
+    );
+
+    const getDefaultValues = (): Partial<PortFormData> => {
+        if (initialData) {
+            if (initialData.connectionType === 'RTU') {
+                return {
+                    connectionType: 'RTU',
+                    name: initialData.name,
+                    port: initialData.port,
+                    baudRate: initialData.baudRate || 9600,
+                    dataBits: initialData.dataBits || 8,
+                    stopBits: initialData.stopBits || 1,
+                    parity: initialData.parity || 'none',
+                    isActive: initialData.isActive !== undefined ? initialData.isActive : true,
+                };
+            } else {
+                return {
+                    connectionType: 'TCP',
+                    name: initialData.name,
+                    host: initialData.host,
+                    tcpPort: initialData.tcpPort,
+                    isActive: initialData.isActive !== undefined ? initialData.isActive : true,
+                };
+            }
+        }
+        return {
+            connectionType: 'RTU',
+            isActive: true,
+            baudRate: 9600,
+            dataBits: 8,
+            stopBits: 1,
+            parity: 'none',
+        };
+    };
 
     const {
         register,
@@ -34,17 +77,50 @@ export const AddPortForm = ({ onSubmit, onCancel, isLoading = false }: AddPortFo
         reset,
     } = useForm<PortFormData>({
         resolver: zodResolver(portSchema),
-        defaultValues: {
-            connectionType: 'RTU',
-            isActive: true,
-            baudRate: 9600,
-            dataBits: 8,
-            stopBits: 1,
-            parity: 'none',
-        },
+        defaultValues: getDefaultValues(),
     });
 
     const watchedConnectionType = watch('connectionType');
+
+    // Обновляем форму при изменении initialData
+    useEffect(() => {
+        if (initialData) {
+            if (initialData.connectionType === 'RTU') {
+                const defaultValues = {
+                    connectionType: 'RTU' as const,
+                    name: initialData.name,
+                    port: initialData.port,
+                    baudRate: initialData.baudRate || 9600,
+                    dataBits: initialData.dataBits || 8,
+                    stopBits: initialData.stopBits || 1,
+                    parity: (initialData.parity || 'none') as 'none' | 'even' | 'odd',
+                    isActive: initialData.isActive !== undefined ? initialData.isActive : true,
+                };
+                reset(defaultValues);
+                setConnectionType('RTU');
+            } else {
+                const defaultValues = {
+                    connectionType: 'TCP' as const,
+                    name: initialData.name,
+                    host: initialData.host,
+                    tcpPort: initialData.tcpPort,
+                    isActive: initialData.isActive !== undefined ? initialData.isActive : true,
+                };
+                reset(defaultValues);
+                setConnectionType('TCP');
+            }
+        } else {
+            reset({
+                connectionType: 'RTU',
+                isActive: true,
+                baudRate: 9600,
+                dataBits: 8,
+                stopBits: 1,
+                parity: 'none',
+            });
+            setConnectionType('RTU');
+        }
+    }, [initialData, reset]);
 
     // Helper функции для безопасного доступа к ошибкам с правильной типизацией
     const getRTUFieldError = (field: keyof RTUFormData): RTUFieldErrors[keyof RTUFormData] | undefined => {
@@ -206,7 +282,10 @@ export const AddPortForm = ({ onSubmit, onCancel, isLoading = false }: AddPortFo
                     Отмена
                 </Button>
                 <Button type="submit" variant="contained" disabled={isLoading} fullWidth>
-                    {isLoading ? 'Создание...' : 'Создать порт'}
+                    {isLoading
+                        ? (mode === 'edit' ? 'Сохранение...' : 'Создание...')
+                        : (mode === 'edit' ? 'Сохранить изменения' : 'Создать порт')
+                    }
                 </Button>
             </div>
         </form>

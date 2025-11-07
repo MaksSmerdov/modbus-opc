@@ -3,7 +3,8 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { Button } from '@/shared/ui/Button/Button';
 import { Modal } from '@/shared/ui/Modal/Modal';
 import { PortsList, AddPortForm } from '@/features/settings/port';
-import { useCreatePortMutation } from '@/features/settings/port/api/portsApi';
+import { useCreatePortMutation, useUpdatePortMutation } from '@/features/settings/port/api/portsApi';
+import type { Port, CreatePortData } from '@/features/settings/port/types';
 import styles from './Sidebar.module.scss';
 
 interface SidebarProps {
@@ -12,17 +13,42 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
-  const [isAddPortModalOpen, setIsAddPortModalOpen] = useState(false);
+  const [isPortModalOpen, setIsPortModalOpen] = useState(false);
+  const [editingPort, setEditingPort] = useState<Port | null>(null);
   const [createPort, { isLoading: isCreating }] = useCreatePortMutation();
+  const [updatePort, { isLoading: isUpdating }] = useUpdatePortMutation();
 
-  const handleAddPort = async (portData: Parameters<typeof createPort>[0]) => {
+  const handleAddPort = async (portData: CreatePortData) => {
     try {
       await createPort(portData).unwrap();
-      setIsAddPortModalOpen(false);
+      setIsPortModalOpen(false);
+      setEditingPort(null);
     } catch (error) {
       console.error('Ошибка создания порта:', error);
       alert('Не удалось создать порт');
     }
+  };
+
+  const handleEditPort = (port: Port) => {
+    setEditingPort(port);
+    setIsPortModalOpen(true);
+  };
+
+  const handleUpdatePort = async (portData: CreatePortData) => {
+    if (!editingPort) return;
+    try {
+      await updatePort({ id: editingPort._id, data: portData }).unwrap();
+      setIsPortModalOpen(false);
+      setEditingPort(null);
+    } catch (error) {
+      console.error('Ошибка обновления порта:', error);
+      alert('Не удалось обновить порт');
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsPortModalOpen(false);
+    setEditingPort(null);
   };
 
   return (
@@ -49,7 +75,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               variant="contained"
               size="small"
               startIcon={<AddIcon />}
-              onClick={() => setIsAddPortModalOpen(true)}
+              onClick={() => {
+                setEditingPort(null);
+                setIsPortModalOpen(true);
+              }}
               fullWidth
               className={styles['sidebar__addButton']}
             >
@@ -57,22 +86,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             </Button>
           )}
           <div className={styles['sidebar__ports']}>
-            <PortsList isCollapsed={isCollapsed} />
+            <PortsList isCollapsed={isCollapsed} onEdit={handleEditPort} />
           </div>
         </div>
       </aside>
 
       <Modal
-        open={isAddPortModalOpen}
-        onClose={() => setIsAddPortModalOpen(false)}
-        title="Добавить порт"
+        open={isPortModalOpen}
+        onClose={handleModalClose}
+        title={editingPort ? 'Редактировать порт' : 'Добавить порт'}
         maxWidth="sm"
         fullWidth
       >
         <AddPortForm
-          onSubmit={handleAddPort}
-          onCancel={() => setIsAddPortModalOpen(false)}
-          isLoading={isCreating}
+          onSubmit={editingPort ? handleUpdatePort : handleAddPort}
+          onCancel={handleModalClose}
+          isLoading={isCreating || isUpdating}
+          initialData={editingPort || undefined}
+          mode={editingPort ? 'edit' : 'create'}
         />
       </Modal>
     </>

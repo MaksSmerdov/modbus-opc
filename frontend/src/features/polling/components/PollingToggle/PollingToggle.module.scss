@@ -1,0 +1,47 @@
+@use "@/shared/styles/variables" as vars;
+
+.pollingToggle {
+    color: vars.$text-secondary-light !important;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background-color: rgba(vars.$intoxicate, 0.1) !important;
+        color: vars.$intoxicate !important;
+    }
+
+    &_active {
+        background-color: rgba(220, 53, 69, 0.15) !important;
+        color: #dc3545 !important;
+
+        &:hover:not(:disabled) {
+            background-color: rgba(220, 53, 69, 0.25) !important;
+            color: #dc3545 !important;
+        }
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+:global(.dark) {
+    .pollingToggle {
+        color: vars.$text-secondary-dark !important;
+
+        &:hover:not(:disabled) {
+            background-color: rgba(vars.$intoxicate, 0.2) !important;
+            color: vars.$intoxicate !important;
+        }
+
+        &_active {
+            background-color: rgba(220, 53, 69, 0.25) !important;
+            color: #dc3545 !important;
+
+            &:hover:not(:disabled) {
+                background-color: rgba(220, 53, 69, 0.35) !important;
+                color: #dc3545 !important;
+            }
+        }
+    }
+}

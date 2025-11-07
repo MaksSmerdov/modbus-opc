@@ -1,0 +1,23 @@
+@use "@/shared/styles/variables" as vars;
+
+.confirmModal {
+    &__message {
+        margin: 0 0 24px 0;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: vars.$text-primary-light;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 12px;
+    }
+}
+
+:global(.dark) {
+    .confirmModal {
+        &__message {
+            color: vars.$text-primary-dark;
+        }
+    }
+}
