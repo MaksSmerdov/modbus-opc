@@ -1,7 +1,5 @@
 
-
-
-import { useState } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { useGetDevicesQuery, useDeleteDeviceMutation, useUpdateDeviceMutation } from '../../api/devicesApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
@@ -19,9 +17,13 @@ interface DevicesListProps {
     onEdit?: (device: Device) => void;
 }
 
-export const DevicesList = ({ portId, onEdit }: DevicesListProps) => {
+export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
     const { data: devices, isLoading, error } = useGetDevicesQuery();
-    const { data: pollingStatus } = useGetPollingStatusQuery();
+    const { isPolling } = useGetPollingStatusQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            isPolling: data?.isPolling ?? false,
+        }),
+    });
     const { user } = useAppSelector((state) => state.auth);
     const { showSuccess, showError } = useSnackbar();
     const [deleteDevice, { isLoading: isDeleting }] = useDeleteDeviceMutation();
@@ -32,14 +34,17 @@ export const DevicesList = ({ portId, onEdit }: DevicesListProps) => {
     // Получаем portSlug из URL для навигации
     const { portSlug } = useParams<{ portSlug: string }>();
 
-    const isPollingActive = pollingStatus?.isPolling ?? false;
-    const canManageDevices = user?.role === 'admin' || user?.role === 'operator';
-    const isAdmin = user?.role === 'admin';
+    const isPollingActive = useMemo(() => isPolling, [isPolling]);
+    const canManageDevices = useMemo(() => user?.role === 'admin' || user?.role === 'operator', [user?.role]);
+    const isAdmin = useMemo(() => user?.role === 'admin', [user?.role]);
 
     // Фильтруем устройства по порту
-    const portDevices = devices?.filter((device) => device.portId === portId) || [];
+    const portDevices = useMemo(() => 
+        devices?.filter((device) => device.portId === portId) || [],
+        [devices, portId]
+    );
 
-    const handleToggleDeviceActive = async (device: Device) => {
+    const handleToggleDeviceActive = useCallback(async (device: Device) => {
         try {
             await updateDevice({
                 id: device._id,
@@ -50,9 +55,9 @@ export const DevicesList = ({ portId, onEdit }: DevicesListProps) => {
             console.error('Ошибка переключения активности устройства:', error);
             showError('Не удалось изменить статус устройства');
         }
-    };
+    }, [updateDevice, showSuccess, showError]);
 
-    const handleToggleLogData = async (device: Device) => {
+    const handleToggleLogData = useCallback(async (device: Device) => {
         try {
             await updateDevice({
                 id: device._id,
@@ -63,14 +68,14 @@ export const DevicesList = ({ portId, onEdit }: DevicesListProps) => {
             console.error('Ошибка переключения логирования данных:', error);
             showError('Не удалось изменить настройку логирования');
         }
-    };
+    }, [updateDevice, showSuccess, showError]);
 
-    const handleDeleteClick = (deviceId: string) => {
+    const handleDeleteClick = useCallback((deviceId: string) => {
         setDeviceToDelete(deviceId);
         setDeleteConfirmOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!deviceToDelete) return;
         try {
             await deleteDevice(deviceToDelete).unwrap();
@@ -81,12 +86,37 @@ export const DevicesList = ({ portId, onEdit }: DevicesListProps) => {
             console.error('Ошибка удаления устройства:', error);
             showError('Не удалось удалить устройство');
         }
-    };
+    }, [deviceToDelete, deleteDevice, showSuccess, showError]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteConfirmOpen(false);
         setDeviceToDelete(null);
-    };
+    }, []);
+
+    // Мемоизировать обработчики для map
+    const handleEditDevice = useCallback((device: Device) => {
+        if (canManageDevices && onEdit) {
+            onEdit(device);
+        }
+    }, [canManageDevices, onEdit]);
+
+    const handleDeleteDevice = useCallback((deviceId: string) => {
+        if (canManageDevices) {
+            handleDeleteClick(deviceId);
+        }
+    }, [canManageDevices, handleDeleteClick]);
+
+    const handleToggleActive = useCallback((device: Device) => {
+        if (canManageDevices) {
+            handleToggleDeviceActive(device);
+        }
+    }, [canManageDevices, handleToggleDeviceActive]);
+
+    const handleToggleLog = useCallback((device: Device) => {
+        if (isAdmin) {
+            handleToggleLogData(device);
+        }
+    }, [isAdmin, handleToggleLogData]);
 
     if (isLoading) {
         return (
@@ -127,18 +157,25 @@ export const DevicesList = ({ portId, onEdit }: DevicesListProps) => {
     return (
         <>
             <div className={styles['devicesList']}>
-                {portDevices.map((device) => (
-                    <DeviceCard
-                        key={device._id}
-                        device={device}
-                        portSlug={portSlug}
-                        onEdit={canManageDevices && onEdit ? () => onEdit(device) : undefined}
-                        onDelete={canManageDevices ? handleDeleteClick : undefined}
-                        onToggleActive={canManageDevices ? handleToggleDeviceActive : undefined}
-                        onToggleLogData={isAdmin ? handleToggleLogData : undefined}
-                        isPollingActive={isPollingActive}
-                    />
-                ))}
+                {portDevices.map((device) => {
+                    const handleEdit = canManageDevices && onEdit ? () => handleEditDevice(device) : undefined;
+                    const handleDelete = canManageDevices ? () => handleDeleteDevice(device._id) : undefined;
+                    const handleToggle = canManageDevices ? () => handleToggleActive(device) : undefined;
+                    const handleLog = isAdmin ? () => handleToggleLog(device) : undefined;
+                    
+                    return (
+                        <DeviceCard
+                            key={device._id}
+                            device={device}
+                            portSlug={portSlug}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                            onToggleActive={handleToggle}
+                            onToggleLogData={handleLog}
+                            isPollingActive={isPollingActive}
+                        />
+                    );
+                })}
             </div>
             <ConfirmModal
                 open={deleteConfirmOpen}
@@ -153,4 +190,4 @@ export const DevicesList = ({ portId, onEdit }: DevicesListProps) => {
             />
         </>
     );
-};
+});

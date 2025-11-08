@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { useGetPortsQuery, useDeletePortMutation, useUpdatePortMutation } from '../../api/portsApi';
 import { useGetDevicesQuery } from '@/features/settings/device/api/devicesApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
@@ -16,10 +16,14 @@ interface PortsListProps {
     onEdit?: (port: Port) => void;
 }
 
-export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
+export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) => {
     const { data: ports, isLoading, error } = useGetPortsQuery();
     const { data: devices } = useGetDevicesQuery();
-    const { data: pollingStatus } = useGetPollingStatusQuery();
+    const { isPolling } = useGetPollingStatusQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            isPolling: data?.isPolling ?? false,
+        }),
+    });
     const { user } = useAppSelector((state) => state.auth);
     const { showSuccess, showError } = useSnackbar();
     const [deletePort, { isLoading: isDeleting }] = useDeletePortMutation();
@@ -27,8 +31,8 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [portToDelete, setPortToDelete] = useState<string | null>(null);
 
-    const isPollingActive = pollingStatus?.isPolling ?? false;
-    const canManagePorts = user?.role === 'admin' || user?.role === 'operator';
+    const isPollingActive = useMemo(() => isPolling, [isPolling]);
+    const canManagePorts = useMemo(() => user?.role === 'admin' || user?.role === 'operator', [user?.role]);
 
     // Подсчитываем количество устройств для каждого порта
     const devicesCountByPort = useMemo(() => {
@@ -40,7 +44,7 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
         return countMap;
     }, [devices, ports]);
 
-    const handleTogglePortActive = async (port: Port) => {
+    const handleTogglePortActive = useCallback(async (port: Port) => {
         try {
             await updatePort({
                 id: port._id,
@@ -51,14 +55,14 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
             console.error('Ошибка переключения активности порта:', error);
             showError('Не удалось изменить статус порта');
         }
-    };
+    }, [updatePort, showSuccess, showError]);
 
-    const handleDeleteClick = (portId: string) => {
+    const handleDeleteClick = useCallback((portId: string) => {
         setPortToDelete(portId);
         setDeleteConfirmOpen(true);
-    };
+    }, []);
 
-    const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = useCallback(async () => {
         if (!portToDelete) return;
         try {
             await deletePort(portToDelete).unwrap();
@@ -69,12 +73,31 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
             console.error('Ошибка удаления порта:', error);
             showError('Не удалось удалить порт');
         }
-    };
+    }, [portToDelete, deletePort, showSuccess, showError]);
 
-    const handleDeleteCancel = () => {
+    const handleDeleteCancel = useCallback(() => {
         setDeleteConfirmOpen(false);
         setPortToDelete(null);
-    };
+    }, []);
+
+    // Мемоизировать обработчики для map
+    const handleEditPort = useCallback((port: Port) => {
+        if (canManagePorts && onEdit) {
+            onEdit(port);
+        }
+    }, [canManagePorts, onEdit]);
+
+    const handleDeletePort = useCallback((portId: string) => {
+        if (canManagePorts) {
+            handleDeleteClick(portId);
+        }
+    }, [canManagePorts, handleDeleteClick]);
+
+    const handleToggleActive = useCallback((port: Port) => {
+        if (canManagePorts) {
+            handleTogglePortActive(port);
+        }
+    }, [canManagePorts, handleTogglePortActive]);
 
     if (isLoading) {
         return (
@@ -120,9 +143,9 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
                         key={port._id}
                         port={port}
                         devicesCount={devicesCountByPort[port._id] ?? 0}
-                        onEdit={canManagePorts && onEdit ? () => onEdit(port) : undefined}
-                        onDelete={canManagePorts ? handleDeleteClick : undefined}
-                        onToggleActive={canManagePorts ? handleTogglePortActive : undefined}
+                        onEdit={canManagePorts && onEdit ? handleEditPort : undefined}
+                        onDelete={canManagePorts ? handleDeletePort : undefined}
+                        onToggleActive={canManagePorts ? handleToggleActive : undefined}
                         isPollingActive={isPollingActive}
                         isCollapsed={isCollapsed}
                     />
@@ -141,5 +164,5 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
             />
         </>
     );
-};
+});
 

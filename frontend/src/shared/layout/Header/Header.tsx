@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useAppSelector } from '@/app/hooks/hooks';
 import { useLogoutMutation } from '@/features/auth/api/authApi';
 import { ThemeToggle } from '@/features/theme';
@@ -14,22 +14,22 @@ export const Header: React.FC = () => {
     const { isAuthenticated, user } = useAppSelector((state) => state.auth);
     const [logout] = useLogoutMutation();
 
-    const isAdmin = user?.role === 'admin';
-    const isOperator = user?.role === 'operator';
-    const canManagePolling = isAdmin || isOperator;
-    const isAdminPage = location.pathname === '/admin';
+    const isAdmin = useMemo(() => user?.role === 'admin', [user?.role]);
+    const isOperator = useMemo(() => user?.role === 'operator', [user?.role]);
+    const canManagePolling = useMemo(() => isAdmin || isOperator, [isAdmin, isOperator]);
+    const isAdminPage = useMemo(() => location.pathname === '/admin', [location.pathname]);
 
-    const handleLogout = async () => {
+    const handleLogout = useCallback(async () => {
         try {
             await logout().unwrap();
         } catch (error) {
             // Ошибка обрабатывается автоматически
         }
-    };
+    }, [logout]);
 
-    const handleAdmin = () => {
+    const handleAdmin = useCallback(() => {
         navigate('/admin');
-    };
+    }, [navigate]);
 
     return (
         <header className={styles['header']}>

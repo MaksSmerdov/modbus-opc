@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { TagsTableCell } from '../TagsTableCell';
 import { TagsTableActions } from '../TagsTableActions';
 import { shouldShowLength, shouldShowBitIndex, shouldShowByteOrder } from '../utils/tagsTableUtils';
@@ -23,7 +24,7 @@ interface TagsTableRowProps {
     disabled?: boolean;
 }
 
-export const TagsTableRow = ({
+export const TagsTableRow = memo(({
     tag,
     isEditing,
     editingData,
@@ -41,10 +42,14 @@ export const TagsTableRow = ({
     isDeleting = false,
     disabled = false,
 }: TagsTableRowProps) => {
-    const currentDataType = isEditing && editingData?.dataType ? editingData.dataType : tag.dataType;
-    const showLength = shouldShowLength(currentDataType);
-    const showBitIndex = shouldShowBitIndex(currentDataType);
-    const showByteOrder = shouldShowByteOrder(currentDataType);
+    const currentDataType = useMemo(() =>
+        isEditing && editingData?.dataType ? editingData.dataType : tag.dataType,
+        [isEditing, editingData?.dataType, tag.dataType]
+    );
+
+    const showLength = useMemo(() => shouldShowLength(currentDataType), [currentDataType]);
+    const showBitIndex = useMemo(() => shouldShowBitIndex(currentDataType), [currentDataType]);
+    const showByteOrder = useMemo(() => shouldShowByteOrder(currentDataType), [currentDataType]);
 
     return (
         <tr className={isEditing ? styles['tagsTableRow_editing'] : ''}>
@@ -191,5 +196,5 @@ export const TagsTableRow = ({
             )}
         </tr>
     );
-};
+});
 

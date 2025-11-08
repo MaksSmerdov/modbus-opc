@@ -1,35 +1,36 @@
 import { useSnackbar as useNotistackSnackbar } from 'notistack';
+import { useCallback } from 'react';
 
 export const useSnackbar = () => {
     const { enqueueSnackbar, closeSnackbar } = useNotistackSnackbar();
 
-    const showSuccess = (message: string, duration?: number) => {
+    const showSuccess = useCallback((message: string, duration?: number) => {
         enqueueSnackbar(message, {
             variant: 'success',
             autoHideDuration: duration || 6000,
         });
-    };
+    }, [enqueueSnackbar]);
 
-    const showError = (message: string, duration?: number) => {
+    const showError = useCallback((message: string, duration?: number) => {
         enqueueSnackbar(message, {
             variant: 'error',
             autoHideDuration: duration || 6000,
         });
-    };
+    }, [enqueueSnackbar]);
 
-    const showWarning = (message: string, duration?: number) => {
+    const showWarning = useCallback((message: string, duration?: number) => {
         enqueueSnackbar(message, {
             variant: 'warning',
             autoHideDuration: duration || 6000,
         });
-    };
+    }, [enqueueSnackbar]);
 
-    const showInfo = (message: string, duration?: number) => {
+    const showInfo = useCallback((message: string, duration?: number) => {
         enqueueSnackbar(message, {
             variant: 'info',
             autoHideDuration: duration || 6000,
         });
-    };
+    }, [enqueueSnackbar]);
 
     return {
         showSuccess,

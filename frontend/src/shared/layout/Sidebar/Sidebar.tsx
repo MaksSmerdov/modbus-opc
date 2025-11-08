@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Button } from '@/shared/ui/Button/Button';
 import { Modal } from '@/shared/ui/Modal/Modal';
@@ -20,7 +20,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const [updatePort, { isLoading: isUpdating }] = useUpdatePortMutation();
   const { showSuccess, showError } = useSnackbar();
 
-  const handleAddPort = async (portData: CreatePortData) => {
+  const handleAddPort = useCallback(async (portData: CreatePortData) => {
     try {
       await createPort(portData).unwrap();
       setIsPortModalOpen(false);
@@ -30,14 +30,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       console.error('Ошибка создания порта:', error);
       showError('Не удалось создать порт');
     }
-  };
+  }, [createPort, showSuccess, showError]);
 
-  const handleEditPort = (port: Port) => {
+  const handleEditPort = useCallback((port: Port) => {
     setEditingPort(port);
     setIsPortModalOpen(true);
-  };
+  }, []);
 
-  const handleUpdatePort = async (portData: CreatePortData) => {
+  const handleUpdatePort = useCallback(async (portData: CreatePortData) => {
     if (!editingPort) return;
     try {
       await updatePort({ id: editingPort._id, data: portData }).unwrap();
@@ -48,12 +48,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       console.error('Ошибка обновления порта:', error);
       showError('Не удалось обновить порт');
     }
-  };
+  }, [editingPort, updatePort, showSuccess, showError]);
 
-  const handleModalClose = () => {
+  const handleModalClose = useCallback(() => {
     setIsPortModalOpen(false);
     setEditingPort(null);
-  };
+  }, []);
+
+  const handleOpenModal = useCallback(() => {
+    setEditingPort(null);
+    setIsPortModalOpen(true);
+  }, []);
 
   return (
     <>
@@ -79,10 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               variant="contained"
               size="small"
               startIcon={<AddIcon />}
-              onClick={() => {
-                setEditingPort(null);
-                setIsPortModalOpen(true);
-              }}
+              onClick={handleOpenModal}
               fullWidth
               className={styles['sidebar__addButton']}
             >

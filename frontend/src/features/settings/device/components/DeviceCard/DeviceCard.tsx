@@ -1,6 +1,5 @@
 
-
-
+import { memo, useMemo, useCallback } from 'react';
 import { Delete, Edit, PowerSettingsNew, Description } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
@@ -18,7 +17,7 @@ interface DeviceCardProps {
     isPollingActive?: boolean;
 }
 
-export const DeviceCard = ({
+export const DeviceCard = memo(({
     device,
     portSlug,
     onEdit,
@@ -28,9 +27,9 @@ export const DeviceCard = ({
     isPollingActive = false,
 }: DeviceCardProps) => {
     const navigate = useNavigate();
-    const isEditDeleteDisabled = isPollingActive && device.isActive;
+    const isEditDeleteDisabled = useMemo(() => isPollingActive && device.isActive, [isPollingActive, device.isActive]);
 
-    const handleCardClick = (e: React.MouseEvent) => {
+    const handleCardClick = useCallback((e: React.MouseEvent) => {
         // Не переходим, если клик был по кнопке
         if ((e.target as HTMLElement).closest('button')) {
             return;
@@ -39,23 +38,47 @@ export const DeviceCard = ({
             const deviceSlug = transliterate(device.slug || device.name);
             navigate(`/${portSlug}/${deviceSlug}`);
         }
-    };
+    }, [portSlug, device.slug, device.name, navigate]);
 
-    const getEditTooltip = (): string => {
+    const getEditTooltip = useMemo((): string => {
         if (!onEdit) return '';
         if (isEditDeleteDisabled) {
             return 'Сначала выключите устройство, чтобы редактировать его';
         }
         return 'Редактировать';
-    };
+    }, [onEdit, isEditDeleteDisabled]);
 
-    const getDeleteTooltip = (): string => {
+    const getDeleteTooltip = useMemo((): string => {
         if (!onDelete) return '';
         if (isEditDeleteDisabled) {
             return 'Сначала выключите устройство, чтобы удалить его';
         }
         return 'Удалить';
-    };
+    }, [onDelete, isEditDeleteDisabled]);
+
+    const handleEdit = useCallback(() => {
+        if (onEdit) {
+            onEdit(device);
+        }
+    }, [onEdit, device]);
+
+    const handleDelete = useCallback(() => {
+        if (onDelete) {
+            onDelete(device._id);
+        }
+    }, [onDelete, device._id]);
+
+    const handleToggle = useCallback(() => {
+        if (onToggleActive) {
+            onToggleActive(device);
+        }
+    }, [onToggleActive, device]);
+
+    const handleToggleLog = useCallback(() => {
+        if (onToggleLogData) {
+            onToggleLogData(device);
+        }
+    }, [onToggleLogData, device]);
 
     return (
         <div className={styles['deviceCard']} onClick={handleCardClick}>
@@ -69,7 +92,7 @@ export const DeviceCard = ({
                             <Tooltip title={device.isActive ? 'Выключить устройство' : 'Включить устройство'} arrow>
                                 <button
                                     className={`${styles['deviceCard__actionButton']} ${styles['deviceCard__actionButton_power']} ${device.isActive ? styles['deviceCard__actionButton_power_active'] : ''}`}
-                                    onClick={() => onToggleActive(device)}
+                                    onClick={handleToggle}
                                 >
                                     <PowerSettingsNew fontSize="small" />
                                 </button>
@@ -79,32 +102,36 @@ export const DeviceCard = ({
                             <Tooltip title={device.logData ? 'Выключить логирование данных' : 'Включить логирование данных'} arrow>
                                 <button
                                     className={`${styles['deviceCard__actionButton']} ${styles['deviceCard__actionButton_log']} ${device.logData ? styles['deviceCard__actionButton_log_active'] : ''}`}
-                                    onClick={() => onToggleLogData(device)}
+                                    onClick={handleToggleLog}
                                 >
                                     <Description fontSize="small" />
                                 </button>
                             </Tooltip>
                         )}
                         {onEdit && (
-                            <Tooltip title={getEditTooltip()} arrow>
-                                <button
-                                    className={styles['deviceCard__actionButton']}
-                                    onClick={() => onEdit(device)}
-                                    disabled={isEditDeleteDisabled}
-                                >
-                                    <Edit fontSize="small" />
-                                </button>
+                            <Tooltip title={getEditTooltip} arrow>
+                                <span>
+                                    <button
+                                        className={styles['deviceCard__actionButton']}
+                                        onClick={handleEdit}
+                                        disabled={isEditDeleteDisabled}
+                                    >
+                                        <Edit fontSize="small" />
+                                    </button>
+                                </span>
                             </Tooltip>
                         )}
                         {onDelete && (
-                            <Tooltip title={getDeleteTooltip()} arrow>
-                                <button
-                                    className={styles['deviceCard__actionButton']}
-                                    onClick={() => onDelete(device._id)}
-                                    disabled={isEditDeleteDisabled}
-                                >
-                                    <Delete fontSize="small" />
-                                </button>
+                            <Tooltip title={getDeleteTooltip} arrow>
+                                <span>
+                                    <button
+                                        className={styles['deviceCard__actionButton']}
+                                        onClick={handleDelete}
+                                        disabled={isEditDeleteDisabled}
+                                    >
+                                        <Delete fontSize="small" />
+                                    </button>
+                                </span>
                             </Tooltip>
                         )}
                     </div>
@@ -117,4 +144,4 @@ export const DeviceCard = ({
             </div>
         </div>
     );
-};
+});
