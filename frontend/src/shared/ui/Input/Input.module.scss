@@ -42,6 +42,18 @@
   :global(.MuiOutlinedInput-input) {
     color: vars.$text-primary-light;
 
+    // Скрытие стрелок для input[type="number"]
+    &[type="number"] {
+      -moz-appearance: textfield; // Firefox
+      appearance: textfield; // Стандартное свойство
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none; // Chrome, Safari, Edge
+        margin: 0;
+      }
+    }
+
     // Переопределение стилей автозаполнения браузера
     &:-webkit-autofill,
     &:-webkit-autofill:hover,
@@ -128,6 +140,18 @@
 
     :global(.MuiOutlinedInput-input) {
       color: vars.$text-primary-dark;
+
+      // Скрытие стрелок для input[type="number"] в темной теме
+      &[type="number"] {
+        -moz-appearance: textfield; // Firefox
+        appearance: textfield; // Стандартное свойство
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none; // Chrome, Safari, Edge
+          margin: 0;
+        }
+      }
 
       // Переопределение стилей автозаполнения для темной темы
       &:-webkit-autofill,

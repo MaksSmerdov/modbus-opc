@@ -85,7 +85,7 @@ export const AddDeviceForm = ({
                 label="Название устройства"
                 {...register('name', { onChange: handleNameChange })}
                 error={!!errors.name}
-                helperText={errors.name?.message || 'Например: "Датчик температуры №1"'}
+                helperText={errors.name?.message || 'Например: "Объект №1"'}
                 disabled={isLoading}
             />
 
@@ -114,7 +114,7 @@ export const AddDeviceForm = ({
                     type="number"
                     {...register('timeout', { valueAsNumber: true })}
                     error={!!errors.timeout}
-                    helperText={errors.timeout?.message || 'По умолчанию: 500'}
+                    helperText={errors.timeout?.message || 'Макс. время ожидания от устройства'}
                     disabled={isLoading}
                 />
 
@@ -123,7 +123,7 @@ export const AddDeviceForm = ({
                     type="number"
                     {...register('retries', { valueAsNumber: true })}
                     error={!!errors.retries}
-                    helperText={errors.retries?.message || 'По умолчанию: 3'}
+                    helperText={errors.retries?.message || 'Кол-во повторов при ошибке связи'}
                     disabled={isLoading}
                 />
             </div>
@@ -133,7 +133,7 @@ export const AddDeviceForm = ({
                 type="number"
                 {...register('saveInterval', { valueAsNumber: true })}
                 error={!!errors.saveInterval}
-                helperText={errors.saveInterval?.message || 'По умолчанию: 30000'}
+                helperText={errors.saveInterval?.message || 'Периодичность сохранения в базу данных'}
                 disabled={isLoading}
             />
 

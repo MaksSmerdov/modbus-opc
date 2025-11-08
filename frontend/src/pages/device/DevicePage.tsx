@@ -4,7 +4,7 @@ import { useGetTagsQuery } from '@/features/settings/tag/api/tagsApi';
 import { useAppSelector } from '@/app/hooks/hooks';
 import { transliterate } from '@/shared/utils/transliterate';
 import { Button } from '@/shared/ui/Button/Button';
-import { ArrowBack } from '@mui/icons-material';
+import { ArrowBack, Code } from '@mui/icons-material';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { TagsTable } from '@/features/settings/tag';
 import styles from './DevicePage.module.scss';
@@ -67,6 +67,12 @@ export const DevicePage = () => {
         }
     };
 
+    const handleOpenApi = () => {
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+        const apiUrl = `${baseUrl}/data/devices/${device.slug || transliterate(device.name)}`;
+        window.open(apiUrl, '_blank', 'noopener,noreferrer');
+    };
+
     return (
         <div className={styles['devicePage']}>
             <div className={styles['devicePage__header']}>
@@ -80,7 +86,16 @@ export const DevicePage = () => {
                         Назад
                     </Button>
                     <h1 className={styles['devicePage__title']}>{device.name}</h1>
+
                 </div>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<Code />}
+                    onClick={handleOpenApi}
+                >
+                    API JSON
+                </Button>
             </div>
 
             <div className={styles['devicePage__content']}>

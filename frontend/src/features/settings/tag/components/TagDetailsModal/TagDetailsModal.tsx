@@ -54,7 +54,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
         <Modal
             open={open}
             onClose={handleCancel}
-            title={`Дополнительные параметры: ${tag.name}`}
+            title={`Дополнительные параметры`}
             maxWidth="sm"
             fullWidth
         >
@@ -62,7 +62,6 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
                 <Input
                     label="Минимальное значение"
                     type="number"
-                    step="0.01"
                     value={minValue}
                     onChange={(e) => setMinValue(e.target.value)}
                     helperText="Оставьте пустым, чтобы убрать ограничение"
@@ -72,7 +71,6 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
                 <Input
                     label="Максимальное значение"
                     type="number"
-                    step="0.01"
                     value={maxValue}
                     onChange={(e) => setMaxValue(e.target.value)}
                     helperText="Оставьте пустым, чтобы убрать ограничение"

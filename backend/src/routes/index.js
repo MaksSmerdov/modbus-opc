@@ -20,7 +20,7 @@ router.use('/users', authMiddleware, usersRouter);
 router.use('/config', authMiddleware, adminOrOperatorMiddleware, configRouter);
 
 // API данных (real-time и история) - доступны всем авторизованным
-router.use('/data', authMiddleware, dataRouter);
+router.use('/data', dataRouter);
 
 // API управления опросом - только для admin и operator
 router.use('/polling', authMiddleware, adminOrOperatorMiddleware, pollingRouter);

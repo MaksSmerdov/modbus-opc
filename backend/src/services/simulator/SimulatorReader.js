@@ -38,12 +38,45 @@ class SimulatorReader {
     // Для числовых типов - используем уставки если есть
     let min, max;
 
-    if (register.minValue !== undefined && register.maxValue !== undefined) {
-      // Генерируем с небольшим выходом за границы (10% шанс аварии)
+    if (register.minValue !== undefined && register.maxValue !== undefined &&
+      register.minValue !== null && register.maxValue !== null) {
       const range = register.maxValue - register.minValue;
-      const margin = range * 0.1;
-      min = register.minValue - margin;
-      max = register.maxValue + margin;
+
+      // Если диапазон равен 0 или очень маленький, используем дефолтные значения
+      if (range <= 0 || Math.abs(range) < 0.001) {
+        // Используем дефолтные диапазоны по типам
+        switch (register.dataType) {
+          case 'int16':
+            min = -1000;
+            max = 1000;
+            break;
+          case 'uint16':
+            min = 0;
+            max = 1000;
+            break;
+          case 'int32':
+            min = -10000;
+            max = 10000;
+            break;
+          case 'uint32':
+            min = 0;
+            max = 10000;
+            break;
+          case 'float32':
+          case 'double':
+            min = 0;
+            max = 100;
+            break;
+          default:
+            min = 0;
+            max = 100;
+        }
+      } else {
+        // Генерируем с небольшим выходом за границы (10% шанс аварии)
+        const margin = range * 0.1;
+        min = register.minValue - margin;
+        max = register.maxValue + margin;
+      }
     } else {
       // Дефолтные диапазоны по типам
       switch (register.dataType) {

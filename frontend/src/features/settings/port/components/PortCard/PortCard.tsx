@@ -113,24 +113,28 @@ export const PortCard = ({
 
                     {onEdit && (
                         <Tooltip title={getEditTooltip()} arrow>
-                            <button
-                                className={styles['portCard__actionButton']}
-                                onClick={() => onEdit(port)}
-                                disabled={isEditDeleteDisabled}
-                            >
-                                <Edit fontSize="small" />
-                            </button>
+                            <span>
+                                <button
+                                    className={styles['portCard__actionButton']}
+                                    onClick={() => onEdit(port)}
+                                    disabled={isEditDeleteDisabled}
+                                >
+                                    <Edit fontSize="small" />
+                                </button>
+                            </span>
                         </Tooltip>
                     )}
                     {onDelete && (
                         <Tooltip title={getDeleteTooltip()} arrow>
-                            <button
-                                className={styles['portCard__actionButton']}
-                                onClick={() => onDelete(port._id)}
-                                disabled={isEditDeleteDisabled}
-                            >
-                                <Delete fontSize="small" />
-                            </button>
+                            <span>
+                                <button
+                                    className={styles['portCard__actionButton']}
+                                    onClick={() => onDelete(port._id)}
+                                    disabled={isEditDeleteDisabled}
+                                >
+                                    <Delete fontSize="small" />
+                                </button>
+                            </span>
                         </Tooltip>
                     )}
                 </div>
