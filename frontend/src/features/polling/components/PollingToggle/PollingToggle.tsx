@@ -37,7 +37,7 @@ export const PollingToggle = () => {
             return 'Обработка...';
         }
         if (!hasManager) {
-            return 'Менеджер не инициализирован. Добавьте устройства и порты для инициализации.';
+            return 'Modbus не инициализирован.';
         }
         if (isPolling) {
             return 'Остановить опрос устройств';

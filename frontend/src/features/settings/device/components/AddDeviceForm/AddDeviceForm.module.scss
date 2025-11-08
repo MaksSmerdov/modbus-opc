@@ -1,0 +1,20 @@
+@use "@/shared/styles/variables" as vars;
+
+.form {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    &__row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+    }
+}

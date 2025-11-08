@@ -1,0 +1,28 @@
+@use "@/shared/styles/variables" as vars;
+
+.devicesList {
+    &__error {
+        padding: 16px;
+        text-align: center;
+        color: vars.$error-color-light;
+    }
+
+    &__empty {
+        padding: 24px;
+        text-align: center;
+        color: vars.$text-secondary-light;
+        font-size: 0.9375rem;
+    }
+}
+
+:global(.dark) {
+    .devicesList {
+        &__error {
+            color: vars.$error-color-dark;
+        }
+
+        &__empty {
+            color: vars.$text-secondary-dark;
+        }
+    }
+}

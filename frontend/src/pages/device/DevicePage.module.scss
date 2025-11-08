@@ -1,0 +1,166 @@
+@use "@/shared/styles/variables" as vars;
+
+.devicePage {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        gap: 16px;
+    }
+
+    &__headerLeft {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: vars.$text-primary-light;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__content {
+        margin-top: 24px;
+    }
+
+    &__section {
+        background-color: vars.$bg-secondary-light;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    &__sectionHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    &__sectionTitle {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: vars.$text-primary-light;
+    }
+
+    &__loading {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__error {
+        padding: 16px;
+        text-align: center;
+        color: vars.$text-secondary-light;
+    }
+
+    &__empty {
+        padding: 32px;
+        text-align: center;
+        color: vars.$text-secondary-light;
+    }
+
+    &__tagsList {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__tag {
+        background-color: vars.$bg-primary-light;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 6px;
+        padding: 12px;
+        transition: all 0.2s ease;
+
+        &:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-color: vars.$intoxicate;
+        }
+    }
+
+    &__tagHeader {
+        margin-bottom: 8px;
+    }
+
+    &__tagName {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: vars.$text-primary-light;
+    }
+
+    &__tagInfo {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 8px;
+    }
+
+    &__tagInfoItem {
+        font-size: 0.875rem;
+        color: vars.$text-secondary-light;
+    }
+
+    &__tagDescription {
+        font-size: 0.875rem;
+        color: vars.$text-secondary-light;
+        margin-top: 8px;
+    }
+}
+
+:global(.dark) {
+    .devicePage {
+        &__title {
+            color: vars.$text-primary-dark;
+        }
+
+        &__section {
+            background-color: vars.$bg-secondary-dark;
+            border-color: vars.$border-color-dark;
+        }
+
+        &__sectionTitle {
+            color: vars.$text-primary-dark;
+        }
+
+        &__error {
+            color: vars.$text-secondary-dark;
+        }
+
+        &__empty {
+            color: vars.$text-secondary-dark;
+        }
+
+        &__tag {
+            background-color: vars.$bg-primary-dark;
+            border-color: vars.$border-color-dark;
+        }
+
+        &__tagName {
+            color: vars.$text-primary-dark;
+        }
+
+        &__tagInfoItem {
+            color: vars.$text-secondary-dark;
+        }
+
+        &__tagDescription {
+            color: vars.$text-secondary-dark;
+        }
+    }
+}

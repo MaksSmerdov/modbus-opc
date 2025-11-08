@@ -12,7 +12,6 @@ const getInitialTheme = (): Theme => {
   if (stored && ['light', 'dark', 'auto'].includes(stored)) {
     return stored;
   }
-  // По умолчанию используем auto для неавторизованных пользователей
   return 'light';
 };
 

@@ -7,6 +7,7 @@ import styles from './PortCard.module.scss';
 
 interface PortCardProps {
     port: Port;
+    devicesCount?: number;
     onEdit?: (port: Port) => void;
     onDelete?: (portId: string) => void;
     onToggleActive?: (port: Port) => void;
@@ -16,6 +17,7 @@ interface PortCardProps {
 
 export const PortCard = ({
     port,
+    devicesCount = 0,
     onEdit,
     onDelete,
     onToggleActive,
@@ -81,9 +83,11 @@ export const PortCard = ({
         >
             <div className={styles['portCard__header']}>
                 <div className={styles['portCard__title']}>
-                    <h4 className={styles['portCard__name']} title={port.name}>
-                        {port.name}
-                    </h4>
+                    <Tooltip title={port.name} arrow>
+                        <h4 className={styles['portCard__name']}>
+                            {port.name}
+                        </h4>
+                    </Tooltip>
                     <div className={styles['portCard__actions']} onClick={(e) => e.stopPropagation()}>
                         {onToggleActive && (
                             <Tooltip title={port.isActive ? 'Выключить порт' : 'Включить порт'} arrow>
@@ -100,7 +104,13 @@ export const PortCard = ({
             </div>
             <div className={styles['portCard__info']}>
                 <span className={styles['portCard__infoText']}>{getPortInfo()}</span>
+                {devicesCount > 0 && (
+                    <span className={styles['portCard__devicesCount']}>
+                        [{devicesCount} {devicesCount === 1 ? 'уст-во' : devicesCount < 5 ? 'уст-ва' : 'уст-в'}]
+                    </span>
+                )}
                 <div className={styles['portCard__actions']}>
+
                     {onEdit && (
                         <Tooltip title={getEditTooltip()} arrow>
                             <button
@@ -124,7 +134,6 @@ export const PortCard = ({
                         </Tooltip>
                     )}
                 </div>
-
             </div>
         </div>
     );

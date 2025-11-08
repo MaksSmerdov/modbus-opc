@@ -1,24 +1,16 @@
 @use "@/shared/styles/variables" as vars;
 
-.portCard {
+.deviceCard {
     margin-top: 12px;
     background-color: vars.$bg-secondary-light;
     border: 1px solid vars.$border-color-light;
     border-radius: 8px;
     padding: 8px;
     transition: all 0.2s ease;
-    cursor: pointer; // Добавляем курсор
 
     &:hover {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         border-color: vars.$intoxicate;
-    }
-
-    &__icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: vars.$text-primary-light;
     }
 
     &__header {
@@ -38,7 +30,7 @@
 
     &__name {
         margin: 0;
-        font-size: 0.8rem;
+        font-size: 0.9375rem;
         font-weight: 600;
         color: vars.$text-primary-light;
         overflow: hidden;
@@ -48,34 +40,16 @@
         flex: 1;
     }
 
-    &__status {
-        flex-shrink: 0;
-    }
-
-    &__statusChip {
-        font-size: 0.6875rem;
-        height: 20px;
-    }
-
     &__info {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-top: 8px;
     }
 
     &__infoText {
         font-size: 0.8125rem;
         color: vars.$text-secondary-light;
-    }
-
-    &__devicesCount {
-        font-size: 0.75rem;
-        color: vars.$text-secondary-light;
-        margin-right: 8px;
-    }
-
-    &__infoBtns {
-        display: flex;
     }
 
     &__actions {
@@ -109,14 +83,27 @@
         }
 
         &_power {
-            &.portCard__actionButton_power_active {
+            &.deviceCard__actionButton_power_active {
                 color: #4caf50;
             }
 
             &:hover:not(:disabled) {
-                &.portCard__actionButton_power_active {
+                &.deviceCard__actionButton_power_active {
                     background-color: rgba(76, 175, 80, 0.1);
                     color: #4caf50;
+                }
+            }
+        }
+
+        &_log {
+            &.deviceCard__actionButton_log_active {
+                color: #2196f3;
+            }
+
+            &:hover:not(:disabled) {
+                &.deviceCard__actionButton_log_active {
+                    background-color: rgba(33, 150, 243, 0.1);
+                    color: #2196f3;
                 }
             }
         }
@@ -124,7 +111,7 @@
 }
 
 :global(.dark) {
-    .portCard {
+    .deviceCard {
         background-color: vars.$bg-secondary-dark;
         border-color: vars.$border-color-dark;
 
@@ -140,14 +127,6 @@
             color: vars.$text-secondary-dark;
         }
 
-        &__devicesCount {
-            color: vars.$text-secondary-dark;
-        }
-
-        &__actions {
-            border-top-color: vars.$border-color-dark;
-        }
-
         &__actionButton {
             color: vars.$text-secondary-dark;
 
@@ -160,20 +139,28 @@
                 background-color: rgba(255, 255, 255, 0.12);
             }
 
-            &:disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
-            }
-
             &_power {
-                &.portCard__actionButton_power_active {
+                &.deviceCard__actionButton_power_active {
                     color: #4caf50;
                 }
 
                 &:hover:not(:disabled) {
-                    &.portCard__actionButton_power_active {
+                    &.deviceCard__actionButton_power_active {
                         background-color: rgba(76, 175, 80, 0.15);
                         color: #4caf50;
+                    }
+                }
+            }
+
+            &_log {
+                &.deviceCard__actionButton_log_active {
+                    color: #2196f3;
+                }
+
+                &:hover:not(:disabled) {
+                    &.deviceCard__actionButton_log_active {
+                        background-color: rgba(33, 150, 243, 0.15);
+                        color: #2196f3;
                     }
                 }
             }

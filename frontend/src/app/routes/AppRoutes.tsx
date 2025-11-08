@@ -4,6 +4,7 @@ import { AdminPage } from '@/features/admin';
 import { AppLayout } from '@/shared/layout';
 import { AuthPage } from '@/pages/auth/AuthPage';
 import { PortPage } from '@/pages/port/PortPage';
+import { DevicePage } from '@/pages/device/DevicePage';
 
 export const AppRoutes = () => {
     const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -30,6 +31,8 @@ export const AppRoutes = () => {
             >
                 <Route index element={<div style={{ padding: '16px' }}>Главная страница</div>} />
                 <Route path="admin" element={<AdminPage />} />
+                {/* Роут для страницы устройства с тэгами */}
+                <Route path=":portSlug/:deviceSlug" element={<DevicePage />} />
                 {/* Динамический роут для портов - должен быть последним, чтобы не перехватывать зарезервированные пути */}
                 <Route path=":portSlug" element={<PortPage />} />
             </Route>

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useGetPortsQuery, useDeletePortMutation, useUpdatePortMutation } from '../../api/portsApi';
+import { useGetDevicesQuery } from '@/features/settings/device/api/devicesApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
 import { useSnackbar } from '@/shared/ui/SnackbarProvider';
@@ -17,6 +18,7 @@ interface PortsListProps {
 
 export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
     const { data: ports, isLoading, error } = useGetPortsQuery();
+    const { data: devices } = useGetDevicesQuery();
     const { data: pollingStatus } = useGetPollingStatusQuery();
     const { user } = useAppSelector((state) => state.auth);
     const { showSuccess, showError } = useSnackbar();
@@ -27,6 +29,16 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
 
     const isPollingActive = pollingStatus?.isPolling ?? false;
     const canManagePorts = user?.role === 'admin' || user?.role === 'operator';
+
+    // Подсчитываем количество устройств для каждого порта
+    const devicesCountByPort = useMemo(() => {
+        if (!devices || !ports) return {};
+        const countMap: Record<string, number> = {};
+        ports.forEach((port) => {
+            countMap[port._id] = devices.filter((device) => device.portId === port._id).length;
+        });
+        return countMap;
+    }, [devices, ports]);
 
     const handleTogglePortActive = async (port: Port) => {
         try {
@@ -107,6 +119,7 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
                     <PortCard
                         key={port._id}
                         port={port}
+                        devicesCount={devicesCountByPort[port._id] ?? 0}
                         onEdit={canManagePorts && onEdit ? () => onEdit(port) : undefined}
                         onDelete={canManagePorts ? handleDeleteClick : undefined}
                         onToggleActive={canManagePorts ? handleTogglePortActive : undefined}

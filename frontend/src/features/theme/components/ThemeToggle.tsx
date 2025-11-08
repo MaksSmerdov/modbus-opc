@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks/hooks';
 import { setThemeLocal } from '@/features/theme/store/themeSlice';
 import { useUpdateSettingsMutation } from '@/features/auth/api/authApi';
 import type { Theme } from '@/shared/types';
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { LightMode, DarkMode } from '@mui/icons-material';
 import styles from './ThemeToggle.module.scss';
 
@@ -47,12 +47,14 @@ export const ThemeToggle = () => {
   }
 
   return (
-    <IconButton
-      onClick={handleThemeToggle}
-      className={styles['themeToggle']}
-      aria-label={isDark ? 'Переключить на светлую тему' : 'Переключить на тёмную тему'}
-    >
-      {isDark ? <DarkMode /> : <LightMode />}
-    </IconButton>
+    <Tooltip title={isDark ? 'Сменить тему на светлую' : 'Сменить тему на темную'} arrow>
+      <IconButton
+        onClick={handleThemeToggle}
+        className={styles['themeToggle']}
+      >
+        {isDark ? <DarkMode /> : <LightMode />}
+      </IconButton>
+    </Tooltip>
+
   );
 };
