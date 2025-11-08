@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { usersApi } from '../../api/usersApi';
+import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import { UserRow } from '../UserRow/UserRow';
 import { Button } from '../../../../shared/ui/Button/Button';
 import type { User } from '../../../../shared/types';
@@ -9,18 +10,26 @@ export const UsersList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { showSuccess, showError, showInfo } = useSnackbar();
 
   const fetchUsers = async () => {
     setIsLoading(true);
     setError(null);
-    const response = await usersApi.getAllUsers();
-
-    if (response.success) {
-      setUsers(response.data);
-    } else {
-      setError(response.error);
+    try {
+      const response = await usersApi.getAllUsers();
+      if (response.success) {
+        setUsers(response.data);
+      } else {
+        setError(response.error);
+        showError(response.error);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Ошибка загрузки пользователей';
+      setError(errorMessage);
+      showError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -28,28 +37,44 @@ export const UsersList = () => {
   }, []);
 
   const handleRoleUpdate = async (userId: string, newRole: User['role']) => {
-    const response = await usersApi.updateUserRole(userId, newRole);
-
-    if (response.success) {
-      // Обновляем список пользователей
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === userId ? response.data : user
-        )
-      );
-    } else {
-      setError(response.error);
+    try {
+      const response = await usersApi.updateUserRole(userId, newRole);
+      if (response.success) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId ? response.data : user
+          )
+        );
+        showSuccess('Роль пользователя успешно обновлена');
+      } else {
+        showError(response.error);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Ошибка обновления роли';
+      showError(errorMessage);
     }
   };
 
   const handleDelete = async (userId: string) => {
-    const response = await usersApi.deleteUser(userId);
-    if (response.success) {
-      setUsers((prev) => prev.filter((u) => u.id !== userId));
-    } else {
-      setError(response.error);
-      throw new Error(response.error);
+    try {
+      const response = await usersApi.deleteUser(userId);
+      if (response.success) {
+        setUsers((prev) => prev.filter((u) => u.id !== userId));
+        showSuccess('Пользователь успешно удален');
+      } else {
+        showError(response.error);
+        throw new Error(response.error);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Ошибка удаления пользователя';
+      showError(errorMessage);
+      throw err;
     }
+  };
+
+  const handleRefresh = () => {
+    showInfo('Обновление списка пользователей...');
+    fetchUsers();
   };
 
   if (isLoading) {
@@ -60,7 +85,7 @@ export const UsersList = () => {
     return (
       <div className={styles['usersList__error']}>
         <p>{error}</p>
-        <Button onClick={fetchUsers} variant="outlined" size="small">
+        <Button onClick={handleRefresh} variant="outlined" size="small">
           Попробовать снова
         </Button>
       </div>
@@ -71,7 +96,7 @@ export const UsersList = () => {
     <div className={styles['usersList']}>
       <div className={styles['usersList__header']}>
         <h2 className={styles['usersList__title']}>Список пользователей</h2>
-        <Button onClick={fetchUsers} variant="outlined" size="small">
+        <Button onClick={handleRefresh} variant="outlined" size="small">
           Обновить
         </Button>
       </div>

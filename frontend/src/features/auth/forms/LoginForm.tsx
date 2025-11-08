@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLoginMutation } from '../api/authApi';
+import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import { Input } from '../../../shared/ui/Input/Input';
 import { Button } from '../../../shared/ui/Button/Button';
 import { loginSchema, type LoginFormData } from '../schemas/authSchemas';
@@ -8,6 +9,7 @@ import styles from './AuthForms.module.scss';
 
 export const LoginForm = () => {
   const [login, { isLoading, error: loginError, reset }] = useLoginMutation();
+  const { showError, showSuccess } = useSnackbar();
 
   const {
     register,
@@ -25,25 +27,19 @@ export const LoginForm = () => {
     reset();
     try {
       await login(data).unwrap();
+      showSuccess('Вход выполнен успешно');
     } catch (error) {
-      // Ошибка обрабатывается через loginError
+      const errorMessage = loginError && 'data' in loginError
+        ? (loginError.data as { error?: string })?.error || 'Произошла ошибка'
+        : loginError && 'error' in loginError
+          ? String(loginError.error)
+          : 'Не удалось войти';
+      showError(errorMessage);
     }
   };
 
-  const errorMessage = loginError && 'data' in loginError
-    ? (loginError.data as { error?: string })?.error || 'Произошла ошибка'
-    : loginError && 'error' in loginError
-      ? String(loginError.error)
-      : null;
-
   return (
     <form className={styles['authForm']} onSubmit={handleSubmit(onSubmit)}>
-      {errorMessage && (
-        <div className={styles['authForm__error']}>
-          {errorMessage}
-        </div>
-      )}
-
       <Input
         {...register('email')}
         label="Email"

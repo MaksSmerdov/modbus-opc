@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGetPortsQuery, useDeletePortMutation, useUpdatePortMutation } from '../../api/portsApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
+import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import { PortCard } from '../PortCard/PortCard';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
@@ -18,6 +19,7 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
     const { data: ports, isLoading, error } = useGetPortsQuery();
     const { data: pollingStatus } = useGetPollingStatusQuery();
     const { user } = useAppSelector((state) => state.auth);
+    const { showSuccess, showError } = useSnackbar();
     const [deletePort, { isLoading: isDeleting }] = useDeletePortMutation();
     const [updatePort] = useUpdatePortMutation();
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -32,9 +34,10 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
                 id: port._id,
                 data: { isActive: !port.isActive },
             }).unwrap();
+            showSuccess(port.isActive ? 'Порт выключен' : 'Порт включен');
         } catch (error) {
             console.error('Ошибка переключения активности порта:', error);
-            alert('Не удалось изменить статус порта');
+            showError('Не удалось изменить статус порта');
         }
     };
 
@@ -49,9 +52,10 @@ export const PortsList = ({ isCollapsed = false, onEdit }: PortsListProps) => {
             await deletePort(portToDelete).unwrap();
             setDeleteConfirmOpen(false);
             setPortToDelete(null);
+            showSuccess('Порт успешно удален');
         } catch (error) {
             console.error('Ошибка удаления порта:', error);
-            alert('Не удалось удалить порт');
+            showError('Не удалось удалить порт');
         }
     };
 

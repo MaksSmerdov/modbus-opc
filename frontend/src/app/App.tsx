@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { useGetMeQuery } from '../features/auth/api/authApi';
 import { Loader } from '@/shared/ui/Loader/Loader';
+import { SnackbarProvider } from '@/shared/ui/SnackbarProvider/provider/SnackbarProvider';
 import { AppRoutes } from './routes/AppRoutes';
 
 const AppContent = () => {
@@ -24,7 +25,9 @@ const App = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <AppContent />
+        <SnackbarProvider>
+          <AppContent />
+        </SnackbarProvider>
       </BrowserRouter>
     </Provider>
   );

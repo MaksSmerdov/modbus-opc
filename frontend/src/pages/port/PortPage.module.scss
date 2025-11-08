@@ -66,33 +66,6 @@
         margin: 0;
     }
 
-    &__config {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    &__configItem {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid vars.$border-color-light;
-
-        &:last-child {
-            border-bottom: none;
-        }
-    }
-
-    &__configKey {
-        font-weight: 500;
-        color: vars.$text-primary-light;
-    }
-
-    &__configValue {
-        color: vars.$text-secondary-light;
-    }
-
     &__error {
         text-align: center;
         padding: 48px;
@@ -131,18 +104,6 @@
         }
 
         &__sectionValue {
-            color: vars.$text-secondary-dark;
-        }
-
-        &__configItem {
-            border-bottom-color: vars.$border-color-dark;
-        }
-
-        &__configKey {
-            color: vars.$text-primary-dark;
-        }
-
-        &__configValue {
             color: vars.$text-secondary-dark;
         }
 

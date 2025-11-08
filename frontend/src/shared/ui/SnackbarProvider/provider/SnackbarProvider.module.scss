@@ -1,0 +1,56 @@
+@use "@/shared/styles/variables" as vars;
+
+:global {
+    .SnackbarContainer-root {
+        top: 100px !important;
+        right: 24px !important;
+    }
+
+    .SnackbarContent-root {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        border-radius: 8px !important;
+        font-family: inherit !important;
+    }
+
+    // Светлая тема
+    .SnackbarContent-root {
+        background-color: vars.$bg-secondary-light !important;
+        color: vars.$text-primary-light !important;
+    }
+
+    // Темная тема
+    :global(.dark) {
+        .SnackbarContent-root {
+            background-color: vars.$bg-secondary-dark !important;
+            color: vars.$text-primary-dark !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+    }
+
+    // Варианты уведомлений
+    .SnackbarContent-root[class*="variant-success"] {
+        background-color: #4caf50 !important;
+        color: #fff !important;
+    }
+
+    .SnackbarContent-root[class*="variant-error"] {
+        background-color: vars.$error-color-light !important;
+        color: #fff !important;
+    }
+
+    :global(.dark) {
+        .SnackbarContent-root[class*="variant-error"] {
+            background-color: vars.$error-color-dark !important;
+        }
+    }
+
+    .SnackbarContent-root[class*="variant-warning"] {
+        background-color: #ff9800 !important;
+        color: #fff !important;
+    }
+
+    .SnackbarContent-root[class*="variant-info"] {
+        background-color: #2196f3 !important;
+        color: #fff !important;
+    }
+}

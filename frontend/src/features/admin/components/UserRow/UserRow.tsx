@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAppSelector } from '../../../../app/hooks/hooks';
+import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import type { User, UserRole } from '../../../../shared/types';
 import styles from './UserRow.module.scss';
 import { Button } from '@/shared/ui/Button/Button';
@@ -12,11 +13,10 @@ interface UserRowProps {
 
 export const UserRow = ({ user, onRoleUpdate, onDelete }: UserRowProps) => {
   const { user: currentUser } = useAppSelector((state) => state.auth);
+  const { showError } = useSnackbar();
   const [selectedRole, setSelectedRole] = useState<UserRole>(user.role);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Нельзя изменить роль самому себе
   const isCurrentUser = currentUser?.id === user.id;
@@ -25,13 +25,13 @@ export const UserRow = ({ user, onRoleUpdate, onDelete }: UserRowProps) => {
     if (newRole === user.role) return;
 
     setIsUpdating(true);
-    setError(null);
     setSelectedRole(newRole);
 
     try {
       await onRoleUpdate(user.id, newRole);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка обновления роли');
+      const errorMessage = err instanceof Error ? err.message : 'Ошибка обновления роли';
+      showError(errorMessage);
       setSelectedRole(user.role); // Возвращаем предыдущее значение
     } finally {
       setIsUpdating(false);
@@ -41,11 +41,11 @@ export const UserRow = ({ user, onRoleUpdate, onDelete }: UserRowProps) => {
   const handleDelete = async () => {
     if (isCurrentUser) return; // доп. защита на фронте
     setIsDeleting(true);
-    setDeleteError(null);
     try {
       await onDelete(user.id);
     } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : 'Ошибка удаления пользователя');
+      const errorMessage = err instanceof Error ? err.message : 'Ошибка удаления пользователя';
+      showError(errorMessage);
     } finally {
       setIsDeleting(false);
     }
@@ -81,9 +81,6 @@ export const UserRow = ({ user, onRoleUpdate, onDelete }: UserRowProps) => {
             <option value="admin">Admin</option>
           </select>
         )}
-        {error && (
-          <span className={styles['userRow__error']}>{error}</span>
-        )}
       </td>
       <td className={styles['userRow__date']}>
         {user.createdAt ? formatDate(user.createdAt) : '-'}
@@ -92,9 +89,6 @@ export const UserRow = ({ user, onRoleUpdate, onDelete }: UserRowProps) => {
         <Button variant="outlined" size="small" onClick={handleDelete} disabled={isCurrentUser || isDeleting}>
           Удалить
         </Button>
-        {deleteError && (
-          <span className={styles['userRow__error']}>{deleteError}</span>
-        )}
       </td>
     </tr>
   );

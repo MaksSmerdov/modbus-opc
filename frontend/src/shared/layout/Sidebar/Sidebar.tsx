@@ -4,6 +4,7 @@ import { Button } from '@/shared/ui/Button/Button';
 import { Modal } from '@/shared/ui/Modal/Modal';
 import { PortsList, AddPortForm } from '@/features/settings/port';
 import { useCreatePortMutation, useUpdatePortMutation } from '@/features/settings/port/api/portsApi';
+import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import type { Port, CreatePortData } from '@/features/settings/port/types';
 import styles from './Sidebar.module.scss';
 
@@ -17,15 +18,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const [editingPort, setEditingPort] = useState<Port | null>(null);
   const [createPort, { isLoading: isCreating }] = useCreatePortMutation();
   const [updatePort, { isLoading: isUpdating }] = useUpdatePortMutation();
+  const { showSuccess, showError } = useSnackbar();
 
   const handleAddPort = async (portData: CreatePortData) => {
     try {
       await createPort(portData).unwrap();
       setIsPortModalOpen(false);
       setEditingPort(null);
+      showSuccess('Порт успешно создан');
     } catch (error) {
       console.error('Ошибка создания порта:', error);
-      alert('Не удалось создать порт');
+      showError('Не удалось создать порт');
     }
   };
 
@@ -40,9 +43,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       await updatePort({ id: editingPort._id, data: portData }).unwrap();
       setIsPortModalOpen(false);
       setEditingPort(null);
+      showSuccess('Порт успешно обновлен');
     } catch (error) {
       console.error('Ошибка обновления порта:', error);
-      alert('Не удалось обновить порт');
+      showError('Не удалось обновить порт');
     }
   };
 

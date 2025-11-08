@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRegisterMutation } from '../api/authApi';
+import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import { Input } from '../../../shared/ui/Input/Input';
 import { Button } from '../../../shared/ui/Button/Button';
 import { registerSchema, type RegisterFormData } from '../schemas/authSchemas';
@@ -8,6 +9,7 @@ import styles from './AuthForms.module.scss';
 
 export const RegisterForm = () => {
   const [register, { isLoading, error: registerError, reset }] = useRegisterMutation();
+  const { showError, showSuccess } = useSnackbar();
 
   const {
     register: registerField,
@@ -26,25 +28,19 @@ export const RegisterForm = () => {
     reset();
     try {
       await register(data).unwrap();
+      showSuccess('Регистрация выполнена успешно');
     } catch (error) {
-      // Ошибка обрабатывается через registerError
+      const errorMessage = registerError && 'data' in registerError
+        ? (registerError.data as { error?: string })?.error || 'Произошла ошибка'
+        : registerError && 'error' in registerError
+          ? String(registerError.error)
+          : 'Не удалось зарегистрироваться';
+      showError(errorMessage);
     }
   };
 
-  const errorMessage = registerError && 'data' in registerError
-    ? (registerError.data as { error?: string })?.error || 'Произошла ошибка'
-    : registerError && 'error' in registerError
-      ? String(registerError.error)
-      : null;
-
   return (
     <form className={styles['authForm']} onSubmit={handleSubmit(onSubmit)}>
-      {errorMessage && (
-        <div className={styles['authForm__error']}>
-          {errorMessage}
-        </div>
-      )}
-
       <Input
         {...registerField('name')}
         label="Имя"
