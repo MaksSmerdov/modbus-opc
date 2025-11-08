@@ -4,8 +4,9 @@ import { useGetTagsQuery } from '@/features/settings/tag/api/tagsApi';
 import { useAppSelector } from '@/app/hooks/hooks';
 import { transliterate } from '@/shared/utils/transliterate';
 import { Button } from '@/shared/ui/Button/Button';
-import { Add as AddIcon, ArrowBack } from '@mui/icons-material';
+import { ArrowBack } from '@mui/icons-material';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
+import { TagsTable } from '@/features/settings/tag';
 import styles from './DevicePage.module.scss';
 
 const RESERVED_PATHS = ['admin', 'login', 'register'];
@@ -15,6 +16,15 @@ export const DevicePage = () => {
     const navigate = useNavigate();
     const { data: devices, isLoading: devicesLoading, error: devicesError } = useGetDevicesQuery();
     const { user } = useAppSelector((state) => state.auth);
+
+    // Находим устройство заранее для использования в хуке
+    const device = devices?.find((d) => transliterate(d.slug || d.name) === deviceSlug);
+
+    // Вызываем хук всегда, но передаем undefined если устройство не найдено
+    // RTK Query не выполнит запрос если deviceId undefined
+    const { data: tags, isLoading: tagsLoading, error: tagsError } = useGetTagsQuery(device?._id ?? '', {
+        skip: !device?._id, // Пропускаем запрос если устройство не найдено
+    });
 
     const canManageTags = user?.role === 'admin' || user?.role === 'operator';
 
@@ -45,13 +55,9 @@ export const DevicePage = () => {
         );
     }
 
-    const device = devices.find((d) => transliterate(d.slug || d.name) === deviceSlug);
-
     if (!device) {
         return <Navigate to={portSlug ? `/${portSlug}` : '/'} replace />;
     }
-
-    const { data: tags, isLoading: tagsLoading, error: tagsError } = useGetTagsQuery(device._id);
 
     const handleBack = () => {
         if (portSlug) {
@@ -75,18 +81,6 @@ export const DevicePage = () => {
                     </Button>
                     <h1 className={styles['devicePage__title']}>{device.name}</h1>
                 </div>
-                {canManageTags && (
-                    <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<AddIcon />}
-                        onClick={() => {
-                            // TODO: Открыть модальное окно для добавления тэга
-                        }}
-                    >
-                        Добавить тэг
-                    </Button>
-                )}
             </div>
 
             <div className={styles['devicePage__content']}>
@@ -97,46 +91,18 @@ export const DevicePage = () => {
 
                     {tagsLoading ? (
                         <div className={styles['devicePage__loading']}>
-                            <Skeleton width="100%" height={60} />
-                            <Skeleton width="100%" height={60} />
-                            <Skeleton width="100%" height={60} />
+                            <Skeleton width="100%" height={200} />
                         </div>
                     ) : tagsError ? (
                         <div className={styles['devicePage__error']}>
                             Ошибка загрузки тэгов
                         </div>
-                    ) : !tags || tags.length === 0 ? (
-                        <div className={styles['devicePage__empty']}>
-                            Нет тэгов для этого устройства
-                        </div>
                     ) : (
-                        <div className={styles['devicePage__tagsList']}>
-                            {tags.map((tag) => (
-                                <div key={tag._id} className={styles['devicePage__tag']}>
-                                    <div className={styles['devicePage__tagHeader']}>
-                                        <h4 className={styles['devicePage__tagName']}>{tag.name}</h4>
-                                    </div>
-                                    <div className={styles['devicePage__tagInfo']}>
-                                        <span className={styles['devicePage__tagInfoItem']}>
-                                            Адрес: {tag.address}
-                                        </span>
-                                        <span className={styles['devicePage__tagInfoItem']}>
-                                            Тип: {tag.dataType}
-                                        </span>
-                                        {tag.unit && (
-                                            <span className={styles['devicePage__tagInfoItem']}>
-                                                Ед. изм.: {tag.unit}
-                                            </span>
-                                        )}
-                                    </div>
-                                    {tag.description && (
-                                        <div className={styles['devicePage__tagDescription']}>
-                                            {tag.description}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+                        <TagsTable
+                            deviceId={device._id}
+                            tags={tags || []}
+                            canEdit={canManageTags}
+                        />
                     )}
                 </div>
             </div>

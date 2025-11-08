@@ -1,0 +1,42 @@
+@use "sass:color";
+@use "@/shared/styles/variables" as vars;
+
+.tagsTableToolbar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 0;
+
+    &__addButton {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: vars.$intoxicate;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+            background-color: color.adjust(vars.$intoxicate, $lightness: -10%);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+}
+
+:global(.dark) {
+    .tagsTableToolbar {
+        &__addButton {
+            &:hover:not(:disabled) {
+                background-color: color.adjust(vars.$intoxicate, $lightness: 10%);
+            }
+        }
+    }
+}

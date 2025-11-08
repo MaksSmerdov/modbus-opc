@@ -1,0 +1,221 @@
+@use "sass:color";
+@use "@/shared/styles/variables" as vars;
+
+.tagsTable {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    &__toolbar {
+        display: flex;
+        justify-content: flex-end;
+        padding: 8px 0;
+    }
+
+    &__addButton {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: vars.$intoxicate;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+            background-color: color.adjust(vars.$intoxicate, $lightness: -10%);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__wrapper {
+        overflow-x: auto;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 8px;
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: vars.$bg-primary-light;
+        font-size: 0.875rem;
+
+        th {
+            background-color: vars.$bg-secondary-light;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: vars.$text-primary-light;
+            border-bottom: 2px solid vars.$border-color-light;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        td {
+            padding: 8px;
+            border-bottom: 1px solid vars.$border-color-light;
+            color: vars.$text-primary-light;
+        }
+
+        tr {
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: vars.$bg-secondary-light;
+            }
+
+            &_editing {
+                background-color: rgba(vars.$intoxicate, 0.1);
+            }
+        }
+    }
+
+    &__input {
+        width: 100%;
+        padding: 4px 8px;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 4px;
+        background-color: vars.$bg-primary-light;
+        color: vars.$text-primary-light;
+        font-size: 0.875rem;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: vars.$intoxicate;
+        }
+    }
+
+    &__select {
+        width: 100%;
+        padding: 4px 8px;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 4px;
+        background-color: vars.$bg-primary-light;
+        color: vars.$text-primary-light;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: vars.$intoxicate;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+    }
+
+    &__actionButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+        background: transparent;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        color: vars.$text-secondary-light;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: vars.$text-primary-light;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    }
+
+    &__empty {
+        color: vars.$text-secondary-light;
+        font-style: italic;
+    }
+}
+
+:global(.dark) {
+    .tagsTable {
+        &__addButton {
+            &:hover:not(:disabled) {
+                background-color: color.adjust(vars.$intoxicate, $lightness: 10%);
+            }
+        }
+
+        &__wrapper {
+            border-color: vars.$border-color-dark;
+        }
+
+        &__table {
+            background-color: vars.$bg-primary-dark;
+
+            th {
+                background-color: vars.$bg-secondary-dark;
+                color: vars.$text-primary-dark;
+                border-bottom-color: vars.$border-color-dark;
+            }
+
+            td {
+                border-bottom-color: vars.$border-color-dark;
+                color: vars.$text-primary-dark;
+            }
+
+            tr {
+                &:hover {
+                    background-color: vars.$bg-secondary-dark;
+                }
+
+                &_editing {
+                    background-color: rgba(vars.$intoxicate, 0.2);
+                }
+            }
+        }
+
+        &__input {
+            border-color: vars.$border-color-dark;
+            background-color: vars.$bg-secondary-dark;
+            color: vars.$text-primary-dark;
+
+            &:focus {
+                border-color: vars.$intoxicate;
+            }
+        }
+
+        &__select {
+            border-color: vars.$border-color-dark;
+            background-color: vars.$bg-secondary-dark;
+            color: vars.$text-primary-dark;
+
+            &:focus {
+                border-color: vars.$intoxicate;
+            }
+        }
+
+        &__actionButton {
+            color: vars.$text-secondary-dark;
+
+            &:hover:not(:disabled) {
+                background-color: rgba(255, 255, 255, 0.08);
+                color: vars.$text-primary-dark;
+            }
+        }
+
+        &__empty {
+            color: vars.$text-secondary-dark;
+        }
+    }
+}

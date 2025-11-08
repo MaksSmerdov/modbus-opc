@@ -1,0 +1,2 @@
+export { TagsTableActions } from './TagsTableActions';
+

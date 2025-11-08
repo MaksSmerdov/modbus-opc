@@ -1,0 +1,70 @@
+@use "@/shared/styles/variables" as vars;
+
+.tagsTableCell {
+    &__input {
+        width: 100%;
+        padding: 4px 8px;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 4px;
+        background-color: vars.$bg-primary-light;
+        color: vars.$text-primary-light;
+        font-size: 0.875rem;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: vars.$intoxicate;
+        }
+    }
+
+    &__select {
+        width: 100%;
+        padding: 4px 8px;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 4px;
+        background-color: vars.$bg-primary-light;
+        color: vars.$text-primary-light;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: vars.$intoxicate;
+        }
+    }
+
+    &__empty {
+        color: vars.$text-secondary-light;
+        font-style: italic;
+    }
+}
+
+:global(.dark) {
+    .tagsTableCell {
+        &__input {
+            border-color: vars.$border-color-dark;
+            background-color: vars.$bg-secondary-dark;
+            color: vars.$text-primary-dark;
+
+            &:focus {
+                border-color: vars.$intoxicate;
+            }
+        }
+
+        &__select {
+            border-color: vars.$border-color-dark;
+            background-color: vars.$bg-secondary-dark;
+            color: vars.$text-primary-dark;
+
+            &:focus {
+                border-color: vars.$intoxicate;
+            }
+        }
+
+        &__empty {
+            color: vars.$text-secondary-dark;
+        }
+    }
+}
+

@@ -26,7 +26,8 @@ export const tagsApi = baseApi.injectEndpoints({
         }),
 
         // Создать новый тэг
-        createTag: builder.mutation<Tag, { deviceId: string; data: CreateTagData }>({
+        // deviceId передается в URL, а не в теле запроса
+        createTag: builder.mutation<Tag, { deviceId: string; data: Omit<CreateTagData, 'deviceId'> }>({
             query: ({ deviceId, data }) => ({
                 url: `/config/devices/${deviceId}/tags`,
                 method: 'POST',

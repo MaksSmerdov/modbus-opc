@@ -1,0 +1,2 @@
+export { TagsTableRow } from './TagsTableRow';
+
