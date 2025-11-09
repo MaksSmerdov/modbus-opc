@@ -1,8 +1,9 @@
-import { MenuItem } from '@mui/material';
+import { MenuItem, Tooltip } from '@mui/material';
+import { Edit } from '@mui/icons-material';
 import { Input } from '@/shared/ui/Input/Input';
 import { Select } from '@/shared/ui/Select/Select';
 import type { Tag, CreateTagData } from '../../../types'
-import { shouldShowLength, shouldShowBitIndex, shouldShowByteOrder } from '../utils/tagsTableUtils';
+import { shouldShowLength, shouldShowBitIndex } from '../utils/tagsTableUtils';
 import styles from './TagsTableCell.module.scss';
 
 interface TagsTableCellProps {
@@ -11,6 +12,7 @@ interface TagsTableCellProps {
     editingData?: Partial<CreateTagData>;
     isEditing: boolean;
     onFieldChange: (field: keyof CreateTagData, value: unknown) => void;
+    onByteOrderClick?: () => void;
 }
 
 export const TagsTableCell = ({
@@ -19,6 +21,7 @@ export const TagsTableCell = ({
     editingData,
     isEditing,
     onFieldChange,
+    onByteOrderClick,
 }: TagsTableCellProps) => {
     if (isEditing && editingData) {
         const value = editingData[field as keyof CreateTagData];
@@ -26,6 +29,18 @@ export const TagsTableCell = ({
 
         switch (field) {
             case 'name':
+                return (
+                    <div className={styles['tagsTableCell__inputWrapper']}>
+                        <Input
+                            type="text"
+                            value={value ?? ''}
+                            onChange={(e) => onFieldChange('name', e.target.value)}
+                            fullWidth={true}
+                            helperText=""
+                            className={styles['tagsTableCell__input']}
+                        />
+                    </div>
+                );
             case 'category':
             case 'unit':
                 return (
@@ -41,6 +56,34 @@ export const TagsTableCell = ({
                     </div>
                 );
             case 'address':
+                const addressValue = value === null || value === undefined ? 0 : Number(value);
+                const hexAddress = addressValue.toString(16).toUpperCase().padStart(4, '0');
+                return (
+                    <div className={styles['tagsTableCell__addressWrapper']}>
+                        <Input
+                            type="number"
+                            value={addressValue}
+                            onChange={(e) => {
+                                const inputValue = e.target.value;
+                                if (inputValue === '') {
+                                    onFieldChange('address', 0);
+                                } else {
+                                    const parsedValue = parseInt(inputValue, 10);
+                                    if (!isNaN(parsedValue) && parsedValue >= 0) {
+                                        onFieldChange('address', parsedValue);
+                                    }
+                                }
+                            }}
+                            fullWidth={true}
+                            helperText=""
+                            className={styles['tagsTableCell__addressInput']}
+                            placeholder="0"
+                        />
+                        <span className={styles['tagsTableCell__addressHex']}>
+                            (0x{hexAddress})
+                        </span>
+                    </div>
+                );
             case 'scale':
             case 'offset':
             case 'decimals':
@@ -101,25 +144,21 @@ export const TagsTableCell = ({
                     </div>
                 );
             case 'byteOrder':
-                if (!shouldShowByteOrder(currentDataType)) {
-                    return <span className={styles['tagsTableCell__empty']}>—</span>;
-                }
                 return (
-                    <div className={styles['tagsTableCell__selectWrapper']}>
-                        <Select
-                            value={value ?? 'BE'}
-                            onChange={(e) => onFieldChange('byteOrder', e.target.value)}
-                            fullWidth={true}
-                            helperText=""
-                            className={styles['tagsTableCell__select']}
-                        >
-                            <MenuItem value="BE">BE</MenuItem>
-                            <MenuItem value="LE">LE</MenuItem>
-                            <MenuItem value="ABCD">ABCD</MenuItem>
-                            <MenuItem value="CDAB">CDAB</MenuItem>
-                            <MenuItem value="BADC">BADC</MenuItem>
-                            <MenuItem value="DCBA">DCBA</MenuItem>
-                        </Select>
+                    <div className={styles['tagsTableCell__byteOrderWrapper']}>
+                        <span className={styles['tagsTableCell__byteOrderValue']}>
+                            {String(value ?? 'ABCD')}
+                        </span>
+                        {onByteOrderClick && (
+                            <button
+                                type="button"
+                                className={styles['tagsTableCell__byteOrderButton']}
+                                onClick={onByteOrderClick}
+                                title="Изменить порядок байтов"
+                            >
+                                <Edit fontSize="small" />
+                            </button>
+                        )}
                     </div>
                 );
             case 'functionCode':
@@ -162,6 +201,38 @@ export const TagsTableCell = ({
             default:
                 return <span>{String(tag[field] ?? '')}</span>;
         }
+    }
+
+    // Для byteOrder в режиме просмотра всегда показываем значение
+    if (field === 'byteOrder') {
+        const byteOrderValue = tag.byteOrder ?? 'ABCD';
+        return <span>{byteOrderValue}</span>;
+    }
+
+    // Для адреса показываем в формате число (0x0000)
+    if (field === 'address') {
+        const address = tag.address;
+        if (address === null || address === undefined) {
+            return <span className={styles['tagsTableCell__empty']}>—</span>;
+        }
+        const hexValue = address.toString(16).toUpperCase().padStart(4, '0');
+        return <span>{address} (0x{hexValue})</span>;
+    }
+
+    // Для названия показываем с обрезкой и тултипом
+    if (field === 'name') {
+        const name = tag.name;
+        if (!name) {
+            return <span className={styles['tagsTableCell__empty']}>—</span>;
+        }
+        return (
+            <Tooltip title={name} arrow>
+                <span className={styles['tagsTableCell__name']} >
+                    {name}
+                </span>
+            </Tooltip>
+
+        );
     }
 
     const displayValue = tag[field];

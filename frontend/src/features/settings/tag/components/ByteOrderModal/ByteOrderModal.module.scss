@@ -1,0 +1,190 @@
+@use "@/shared/styles/variables" as vars;
+
+.byteOrderModal {
+    &__options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__option {
+        border: 2px solid vars.$border-color-light;
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: vars.$bg-secondary-light;
+
+        &:hover {
+            border-color: vars.$intoxicate;
+        }
+
+        &_selected {
+            border-color: vars.$intoxicate;
+        }
+    }
+
+    &__optionHeader {
+        margin-bottom: 12px;
+    }
+
+    &__optionLabel {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    &__radio {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: vars.$intoxicate;
+    }
+
+    &__label {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: vars.$text-primary-light;
+    }
+
+    &__example {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
+        background-color: vars.$bg-secondary-light;
+        border-radius: 6px;
+    }
+
+    &__exampleRow {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    &__exampleBytes {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    &__exampleLabel {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: vars.$text-secondary-light;
+    }
+
+    &__bytes {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    &__byte {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 6px 8px;
+        background-color: vars.$bg-primary-light;
+        border-radius: 4px;
+        border: 1px solid vars.$border-color-light;
+        min-width: 50px;
+    }
+
+    &__byteLabel {
+        font-size: 0.75rem;
+        color: vars.$text-muted-light;
+        margin-bottom: 2px;
+        font-weight: 500;
+    }
+
+    &__byteValue {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: vars.$text-primary-light;
+        font-family: 'Courier New', monospace;
+    }
+
+    &__exampleResult {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 0 0 auto;
+    }
+
+    &__result {
+        font-family: 'Courier New', monospace;
+        font-size: 1rem;
+        font-weight: 600;
+        color: vars.$intoxicate;
+        padding: 6px 10px;
+        background-color: vars.$bg-primary-light;
+        border-radius: 4px;
+        border: 1px solid vars.$border-color-light;
+        display: inline-block;
+        width: fit-content;
+    }
+
+    &__explanation {
+        font-size: 0.85rem;
+        color: vars.$text-secondary-light;
+        font-style: italic;
+        padding-top: 6px;
+        border-top: 1px solid vars.$border-color-light;
+    }
+}
+
+:global(.dark) {
+    .byteOrderModal {
+        &__option {
+            border-color: vars.$border-color-dark;
+            background-color: vars.$bg-primary-dark;
+
+            &:hover {
+                border-color: vars.$intoxicate;
+            }
+
+            &_selected {
+                border-color: vars.$intoxicate;
+            }
+        }
+
+        &__label {
+            color: vars.$text-primary-dark;
+        }
+
+        &__example {
+            background-color: vars.$bg-primary-dark;
+        }
+
+        &__exampleLabel {
+            color: vars.$text-secondary-dark;
+        }
+
+        &__byte {
+            background-color: vars.$bg-primary-dark;
+            border-color: vars.$border-color-dark;
+        }
+
+        &__byteLabel {
+            color: vars.$text-muted-dark;
+        }
+
+        &__byteValue {
+            color: vars.$text-primary-dark;
+        }
+
+        &__result {
+            background-color: vars.$bg-primary-dark;
+            border-color: vars.$border-color-dark;
+        }
+
+        &__explanation {
+            color: vars.$text-secondary-dark;
+            border-top-color: vars.$border-color-dark;
+        }
+    }
+}

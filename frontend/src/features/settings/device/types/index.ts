@@ -23,7 +23,7 @@ export interface CreateDeviceData {
     retries?: number; 
     saveInterval?: number; 
     logData?: boolean; 
-    isActive?: boolean; 
+    isActive?: boolean;
 }
 
 // Данные для обновления устройства (все поля опциональны)

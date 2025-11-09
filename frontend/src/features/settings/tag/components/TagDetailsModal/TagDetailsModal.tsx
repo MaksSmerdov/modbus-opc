@@ -77,7 +77,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
                         type="number"
                         value={minValue}
                         onChange={(e) => setMinValue(e.target.value)}
-                        helperText="Оставьте пустым, чтобы убрать ограничение"
+                        helperText="Нижняя уставка"
                         disabled={isLoading}
                     />
 
@@ -86,16 +86,15 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
                         type="number"
                         value={maxValue}
                         onChange={(e) => setMaxValue(e.target.value)}
-                        helperText="Оставьте пустым, чтобы убрать ограничение"
+                        helperText="Верхняя уставка"
                         disabled={isLoading}
                     />
                 </div>
 
                 <div className={styles['tagDetailsModal__row']}>
                     <Input
-                        label="Scale"
+                        label="Масштабирование"
                         type="number"
-                        inputProps={{ step: 0.01 }}
                         value={scale}
                         onChange={(e) => setScale(e.target.value)}
                         helperText="Коэффициент масштабирования"
@@ -103,9 +102,8 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
                     />
 
                     <Input
-                        label="Offset"
+                        label="Смещение"
                         type="number"
-                        inputProps={{ step: 0.01 }}
                         value={offset}
                         onChange={(e) => setOffset(e.target.value)}
                         helperText="Смещение значения"
@@ -114,7 +112,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
                 </div>
 
                 <Input
-                    label="Decimals"
+                    label="Округление"
                     type="number"
                     value={decimals}
                     onChange={(e) => setDecimals(e.target.value)}

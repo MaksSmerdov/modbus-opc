@@ -92,6 +92,98 @@
         color: vars.$text-secondary-light;
         font-style: italic;
     }
+
+    &__name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+        display: inline-block;
+    }
+
+    &__byteOrderWrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    &__byteOrderValue {
+        flex: 1;
+        font-weight: 500;
+    }
+
+    &__byteOrderButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+        background: transparent;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 4px;
+        cursor: pointer;
+        color: vars.$text-secondary-light;
+        transition: all 0.2s ease;
+        min-width: 24px;
+        height: 24px;
+
+        &:hover {
+            background-color: vars.$bg-secondary-light;
+            border-color: vars.$intoxicate;
+            color: vars.$intoxicate;
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+
+    &__addressWrapper {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    &__addressInput {
+        flex: 1;
+        margin-bottom: 0 !important;
+
+        :global(.MuiTextField-root) {
+            width: 100% !important;
+            margin-bottom: 0 !important;
+        }
+
+        :global(.MuiFormControl-root) {
+            width: 100% !important;
+            margin-bottom: 0 !important;
+        }
+
+        :global(.MuiOutlinedInput-root) {
+            height: 32px !important;
+            min-height: 32px !important;
+        }
+
+        :global(.MuiOutlinedInput-input) {
+            padding: 6px 12px !important;
+            font-size: 0.875rem !important;
+        }
+
+        :global(.MuiFormHelperText-root) {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            min-height: 0 !important;
+            padding: 0 !important;
+        }
+    }
+
+    &__addressHex {
+        font-size: 0.75rem;
+        color: vars.$text-secondary-light;
+        font-family: 'Courier New', monospace;
+        white-space: nowrap;
+        user-select: none;
+        pointer-events: none;
+    }
 }
 
 :global(.dark) {
@@ -99,6 +191,20 @@
         &__empty {
             color: vars.$text-secondary-dark;
         }
+
+        &__byteOrderButton {
+            border-color: vars.$border-color-dark;
+            color: vars.$text-secondary-dark;
+
+            &:hover {
+                background-color: vars.$bg-secondary-dark;
+                border-color: vars.$intoxicate;
+                color: vars.$intoxicate;
+            }
+        }
+
+        &__addressHex {
+            color: vars.$text-secondary-dark;
+        }
     }
 }
-

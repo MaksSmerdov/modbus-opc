@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { TagsTableCell } from '../TagsTableCell';
 import { TagsTableActions } from '../TagsTableActions';
-import { shouldShowLength, shouldShowBitIndex, shouldShowByteOrder } from '../utils/tagsTableUtils';
+import { shouldShowLength, shouldShowBitIndex } from '../utils/tagsTableUtils';
 import type { Tag, CreateTagData } from '../../../types';
 import styles from './TagsTableRow.module.scss';
 
@@ -14,6 +14,7 @@ interface TagsTableRowProps {
     hasMultiByteTags: boolean;
     canEdit: boolean;
     onFieldChange: (field: keyof CreateTagData, value: unknown) => void;
+    onByteOrderClick?: () => void;
     onEdit: () => void;
     onDelete: () => void;
     onSave: () => void;
@@ -33,6 +34,7 @@ export const TagsTableRow = memo(({
     hasMultiByteTags,
     canEdit,
     onFieldChange,
+    onByteOrderClick,
     onEdit,
     onDelete,
     onSave,
@@ -49,7 +51,6 @@ export const TagsTableRow = memo(({
 
     const showLength = useMemo(() => shouldShowLength(currentDataType), [currentDataType]);
     const showBitIndex = useMemo(() => shouldShowBitIndex(currentDataType), [currentDataType]);
-    const showByteOrder = useMemo(() => shouldShowByteOrder(currentDataType), [currentDataType]);
 
     return (
         <tr className={isEditing ? styles['tagsTableRow_editing'] : ''}>
@@ -130,17 +131,14 @@ export const TagsTableRow = memo(({
             )}
             {hasMultiByteTags && (
                 <td>
-                    {showByteOrder ? (
-                        <TagsTableCell
-                            tag={tag}
-                            field="byteOrder"
-                            editingData={editingData}
-                            isEditing={isEditing}
-                            onFieldChange={onFieldChange}
-                        />
-                    ) : (
-                        <span className={styles['tagsTableRow__empty']}>—</span>
-                    )}
+                    <TagsTableCell
+                        tag={tag}
+                        field="byteOrder"
+                        editingData={editingData}
+                        isEditing={isEditing}
+                        onFieldChange={onFieldChange}
+                        onByteOrderClick={onByteOrderClick}
+                    />
                 </td>
             )}
             <td>

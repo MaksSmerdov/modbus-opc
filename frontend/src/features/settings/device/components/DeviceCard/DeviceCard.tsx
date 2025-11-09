@@ -4,6 +4,7 @@ import { Delete, Edit, PowerSettingsNew, Description } from '@mui/icons-material
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 import { transliterate } from '@/shared/utils/transliterate';
+import { useGetTagsQuery } from '@/features/settings/tag/api/tagsApi';
 import type { Device } from '../../types';
 import styles from './DeviceCard.module.scss';
 
@@ -28,6 +29,39 @@ export const DeviceCard = memo(({
 }: DeviceCardProps) => {
     const navigate = useNavigate();
     const isEditDeleteDisabled = useMemo(() => isPollingActive && device.isActive, [isPollingActive, device.isActive]);
+
+    // Получаем теги устройства
+    const { data: tags = [], isLoading: isLoadingTags } = useGetTagsQuery(device._id, {
+        skip: !device._id, // Пропускаем запрос, если нет deviceId
+    });
+
+    const tagsCount = useMemo(() => tags.length, [tags.length]);
+
+    // Функция для правильного склонения слова "тэг"
+    const getTagsLabel = useCallback((count: number): string => {
+        const lastDigit = count % 10;
+        const lastTwoDigits = count % 100;
+
+        // Исключения для 11-14
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
+            return 'тэгов';
+        }
+
+        // 1, 21, 31, 41... - "тэг"
+        if (lastDigit === 1) {
+            return 'тэг';
+        }
+
+        // 2-4, 22-24, 32-34... - "тэга"
+        if (lastDigit >= 2 && lastDigit <= 4) {
+            return 'тэга';
+        }
+
+        // 5-20, 25-30, 35-40... - "тэгов"
+        return 'тэгов';
+    }, []);
+
+    const tagsLabel = useMemo(() => getTagsLabel(tagsCount), [tagsCount, getTagsLabel]);
 
     const handleCardClick = useCallback((e: React.MouseEvent) => {
         // Не переходим, если клик был по кнопке
@@ -84,9 +118,16 @@ export const DeviceCard = memo(({
         <div className={styles['deviceCard']} onClick={handleCardClick}>
             <div className={styles['deviceCard__header']}>
                 <div className={styles['deviceCard__title']}>
-                    <h4 className={styles['deviceCard__name']} title={device.name}>
-                        {device.name}
-                    </h4>
+                    <div className={styles['deviceCard__nameWrapper']}>
+                        <h4 className={styles['deviceCard__name']} title={device.name}>
+                            {device.name}
+                        </h4>
+                        {!isLoadingTags && (
+                            <span className={styles['deviceCard__tagsCount']}>
+                                [{tagsCount} {tagsLabel}]
+                            </span>
+                        )}
+                    </div>
                     <div className={styles['deviceCard__actions']} onClick={(e) => e.stopPropagation()}>
                         {onToggleActive && (
                             <Tooltip title={device.isActive ? 'Выключить устройство' : 'Включить устройство'} arrow>
@@ -140,6 +181,12 @@ export const DeviceCard = memo(({
             <div className={styles['deviceCard__info']}>
                 <span className={styles['deviceCard__infoText']}>
                     Slave ID: {device.slaveId}
+                </span>
+                <span className={styles['deviceCard__infoText']}>
+                    Интервал сохранения: {`${device.saveInterval / 1000}`} сек.
+                </span>
+                <span className={styles['deviceCard__infoText']}>
+                    Таймаут: {device.timeout} мс
                 </span>
             </div>
         </div>

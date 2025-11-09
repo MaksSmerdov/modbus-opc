@@ -2,11 +2,12 @@ import { useState, useMemo, useCallback } from 'react';
 import { useCreateTagMutation, useUpdateTagMutation, useDeleteTagMutation } from '../../api/tagsApi';
 import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import { TagDetailsModal } from '../TagDetailsModal/TagDetailsModal';
+import { ByteOrderModal } from '../ByteOrderModal/ByteOrderModal';
 import { TagsTableToolbar } from './TagsTableToolbar';
 import { TagsTableNewRow } from './TagsTableNewRow';
 import { TagsTableRow } from './TagsTableRow';
 import { shouldShowByteOrder, getDefaultLength } from './utils/tagsTableUtils';
-import type { Tag, CreateTagData, UpdateTagData } from '../../types';
+import type { Tag, CreateTagData, UpdateTagData, ByteOrder } from '../../types';
 import styles from './TagsTable.module.scss';
 
 interface TagsTableProps {
@@ -28,6 +29,7 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
     const [editingRow, setEditingRow] = useState<EditingRow | null>(null);
     const [detailsModalOpen, setDetailsModalOpen] = useState(false);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+    const [byteOrderModalOpen, setByteOrderModalOpen] = useState(false);
 
     const handleAddRow = useCallback(() => {
         setEditingRow({
@@ -37,7 +39,7 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                 name: '',
                 dataType: 'int16',
                 functionCode: 'holding',
-                byteOrder: 'ABCD', // По умолчанию на бэке 'ABCD'
+                byteOrder: 'ABCD', // По умолчанию ABCD
                 scale: 1,
                 offset: 0,
                 decimals: 0, // По умолчанию на бэке 0
@@ -91,6 +93,26 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
         setSelectedTag(null);
     }, []);
 
+    const handleOpenByteOrderModal = useCallback(() => {
+        setByteOrderModalOpen(true);
+    }, []);
+
+    const handleCloseByteOrderModal = useCallback(() => {
+        setByteOrderModalOpen(false);
+    }, []);
+
+    const handleSaveByteOrder = useCallback((byteOrder: ByteOrder) => {
+        if (!editingRow) return;
+        setEditingRow({
+            ...editingRow,
+            data: {
+                ...editingRow.data,
+                byteOrder,
+            },
+        });
+        setByteOrderModalOpen(false);
+    }, [editingRow]);
+
     const handleSaveRow = useCallback(async () => {
         if (!editingRow) return;
 
@@ -129,7 +151,7 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                     // bitIndex обязателен для bits, для остальных должен быть null
                     ...(dataType === 'bits' && editingRow.data.bitIndex !== null && editingRow.data.bitIndex !== undefined && { bitIndex: editingRow.data.bitIndex }),
                     ...(dataType !== 'bits' && { bitIndex: null }),
-                    // byteOrder только для многобайтовых типов (на бэке default: 'ABCD')
+                    // byteOrder только для многобайтовых типов
                     ...(shouldShowByteOrder(dataType) && editingRow.data.byteOrder && { byteOrder: editingRow.data.byteOrder }),
                     // scale и offset всегда передаем (на бэке default: scale = 1, offset = 0)
                     scale: editingRow.data.scale ?? 1,
@@ -209,9 +231,9 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                 updatedData.bitIndex = null;
             }
 
-            // Сбрасываем byteOrder если тип не многобайтовый
-            if (!shouldShowByteOrder(newDataType)) {
-                updatedData.byteOrder = undefined;
+            // byteOrder по умолчанию ABCD для многобайтовых типов
+            if (shouldShowByteOrder(newDataType) && !updatedData.byteOrder) {
+                updatedData.byteOrder = 'ABCD';
             }
 
             // Вычисляем length для типов с фиксированной длиной
@@ -248,14 +270,15 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
             return dataType === 'bits';
         }) || (editingRow?.id === 'new' && editingRow.data.dataType === 'bits');
 
-        const hasMultiByte = tags.some(t => {
+        // Колонка Byte Order всегда показывается в режиме редактирования
+        const hasMultiByte = canEdit || tags.some(t => {
             const isEditing = editingRow && editingRow.id === t._id;
             const dataType = isEditing && editingRow.data.dataType ? editingRow.data.dataType : t.dataType;
             return shouldShowByteOrder(dataType);
         }) || (editingRow?.id === 'new' && editingRow.data.dataType ? shouldShowByteOrder(editingRow.data.dataType) : false);
 
         return { hasStringTags: hasString, hasBitsTags: hasBits, hasMultiByteTags: hasMultiByte };
-    }, [tags, editingRow]);
+    }, [tags, editingRow, canEdit]);
 
     return (
         <>
@@ -276,8 +299,8 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                                 <th>Function Code</th>
                                 <th>Тип данных</th>
                                 {hasStringTags && <th>Длина</th>}
-                                {hasBitsTags && <th>Bit Index</th>}
-                                {hasMultiByteTags && <th>Byte Order</th>}
+                                {hasBitsTags && <th>Индекс битов</th>}
+                                {hasMultiByteTags && <th>Порядок байтов</th>}
                                 <th>Ед. изм.</th>
                                 {canEdit && <th>Действия</th>}
                             </tr>
@@ -292,6 +315,7 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                                     onFieldChange={updateEditingField}
                                     onSave={handleSaveRow}
                                     onCancel={handleCancelEdit}
+                                    onByteOrderClick={handleOpenByteOrderModal}
                                     isLoading={isCreating}
                                 />
                             )}
@@ -311,6 +335,7 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                                         hasMultiByteTags={hasMultiByteTags}
                                         canEdit={canEdit}
                                         onFieldChange={updateEditingField}
+                                        onByteOrderClick={editingRow?.id === tag._id ? handleOpenByteOrderModal : undefined}
                                         onEdit={handleEdit}
                                         onDelete={handleDelete}
                                         onSave={handleSaveRow}
@@ -333,6 +358,14 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                 onSave={handleSaveDetails}
                 isLoading={isUpdating}
             />
+            {editingRow && (
+                <ByteOrderModal
+                    open={byteOrderModalOpen}
+                    onClose={handleCloseByteOrderModal}
+                    currentValue={editingRow.data.byteOrder ?? 'ABCD'}
+                    onSave={handleSaveByteOrder}
+                />
+            )}
         </>
     );
 };

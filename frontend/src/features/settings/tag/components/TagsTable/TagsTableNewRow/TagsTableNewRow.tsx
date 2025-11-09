@@ -1,8 +1,9 @@
 import { MenuItem } from '@mui/material';
+import { Edit } from '@mui/icons-material';
 import { Input } from '@/shared/ui/Input/Input';
 import { Select } from '@/shared/ui/Select/Select';
 import { TagsTableActions } from '../TagsTableActions';
-import { shouldShowLength, shouldShowBitIndex, shouldShowByteOrder } from '../utils/tagsTableUtils';
+import { shouldShowLength, shouldShowBitIndex } from '../utils/tagsTableUtils';
 import type { CreateTagData } from '../../../types';
 import styles from './TagsTableNewRow.module.scss';
 
@@ -14,6 +15,7 @@ interface TagsTableNewRowProps {
     onFieldChange: (field: keyof CreateTagData, value: unknown) => void;
     onSave: () => void;
     onCancel: () => void;
+    onByteOrderClick?: () => void;
     isLoading?: boolean;
 }
 
@@ -25,6 +27,7 @@ export const TagsTableNewRow = ({
     onFieldChange,
     onSave,
     onCancel,
+    onByteOrderClick,
     isLoading = false,
 }: TagsTableNewRowProps) => {
     const dataType = editingData.dataType ?? 'int16';
@@ -45,15 +48,29 @@ export const TagsTableNewRow = ({
                 </div>
             </td>
             <td>
-                <div className={styles['tagsTableNewRow__inputWrapper']}>
+                <div className={styles['tagsTableNewRow__addressWrapper']}>
                     <Input
                         type="number"
                         value={editingData.address ?? 0}
-                        onChange={(e) => onFieldChange('address', Number(e.target.value))}
+                        onChange={(e) => {
+                            const inputValue = e.target.value;
+                            if (inputValue === '') {
+                                onFieldChange('address', 0);
+                            } else {
+                                const parsedValue = parseInt(inputValue, 10);
+                                if (!isNaN(parsedValue) && parsedValue >= 0) {
+                                    onFieldChange('address', parsedValue);
+                                }
+                            }
+                        }}
                         fullWidth={true}
                         helperText=""
-                        className={styles['tagsTableNewRow__input']}
+                        className={styles['tagsTableNewRow__addressInput']}
+                        placeholder="0"
                     />
+                    <span className={styles['tagsTableNewRow__addressHex']}>
+                        (0x{((editingData.address ?? 0).toString(16).toUpperCase().padStart(4, '0'))})
+                    </span>
                 </div>
             </td>
             <td>
@@ -144,26 +161,21 @@ export const TagsTableNewRow = ({
             )}
             {hasMultiByteTags && (
                 <td>
-                    {shouldShowByteOrder(dataType) ? (
-                        <div className={styles['tagsTableNewRow__selectWrapper']}>
-                            <Select
-                                value={editingData.byteOrder ?? 'BE'}
-                                onChange={(e) => onFieldChange('byteOrder', e.target.value)}
-                                fullWidth={true}
-                                helperText=""
-                                className={styles['tagsTableNewRow__select']}
+                    <div className={styles['tagsTableNewRow__byteOrderWrapper']}>
+                        <span className={styles['tagsTableNewRow__byteOrderValue']}>
+                            {editingData.byteOrder ?? 'ABCD'}
+                        </span>
+                        {onByteOrderClick && (
+                            <button
+                                type="button"
+                                className={styles['tagsTableNewRow__byteOrderButton']}
+                                onClick={onByteOrderClick}
+                                title="Изменить порядок байтов"
                             >
-                                <MenuItem value="BE">BE</MenuItem>
-                                <MenuItem value="LE">LE</MenuItem>
-                                <MenuItem value="ABCD">ABCD</MenuItem>
-                                <MenuItem value="CDAB">CDAB</MenuItem>
-                                <MenuItem value="BADC">BADC</MenuItem>
-                                <MenuItem value="DCBA">DCBA</MenuItem>
-                            </Select>
-                        </div>
-                    ) : (
-                        <span className={styles['tagsTableNewRow__empty']}>—</span>
-                    )}
+                                <Edit fontSize="small" />
+                            </button>
+                        )}
+                    </div>
                 </td>
             )}
             <td>

@@ -40,9 +40,25 @@
         flex: 1;
     }
 
+    &__nameWrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    &__tagsCount {
+        font-size: 0.8125rem;
+        color: vars.$text-secondary-light;
+        font-weight: 400;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
     &__info {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
+        gap: 8px;
         align-items: center;
         margin-top: 8px;
     }
@@ -164,6 +180,10 @@
                     }
                 }
             }
+        }
+
+        &__tagsCount {
+            color: vars.$text-secondary-dark;
         }
     }
 }

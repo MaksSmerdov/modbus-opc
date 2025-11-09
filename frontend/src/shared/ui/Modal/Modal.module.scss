@@ -56,6 +56,11 @@
         flex: 1;
         min-height: 0;
 
+        // Добавляем отступ сверху для первого элемента контента
+        >*:first-child {
+            margin-top: 24px;
+        }
+
         :global(.MuiDialogContent-root) {
             padding: 0;
             overflow-y: auto;
