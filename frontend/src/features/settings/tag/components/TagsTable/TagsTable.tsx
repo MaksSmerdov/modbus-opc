@@ -278,9 +278,6 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                                 {hasStringTags && <th>Длина</th>}
                                 {hasBitsTags && <th>Bit Index</th>}
                                 {hasMultiByteTags && <th>Byte Order</th>}
-                                <th>Scale</th>
-                                <th>Offset</th>
-                                <th>Decimals</th>
                                 <th>Ед. изм.</th>
                                 {canEdit && <th>Действия</th>}
                             </tr>

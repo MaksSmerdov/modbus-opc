@@ -1,3 +1,6 @@
+import { MenuItem } from '@mui/material';
+import { Input } from '@/shared/ui/Input/Input';
+import { Select } from '@/shared/ui/Select/Select';
 import { TagsTableActions } from '../TagsTableActions';
 import { shouldShowLength, shouldShowBitIndex, shouldShowByteOrder } from '../utils/tagsTableUtils';
 import type { CreateTagData } from '../../../types';
@@ -29,67 +32,91 @@ export const TagsTableNewRow = ({
     return (
         <tr className={styles['tagsTableNewRow']}>
             <td>
-                <input
-                    type="text"
-                    value={editingData.name ?? ''}
-                    onChange={(e) => onFieldChange('name', e.target.value)}
-                    className={styles['tagsTableNewRow__input']}
-                    placeholder="Название"
-                />
+                <div className={styles['tagsTableNewRow__inputWrapper']}>
+                    <Input
+                        type="text"
+                        value={editingData.name ?? ''}
+                        onChange={(e) => onFieldChange('name', e.target.value)}
+                        placeholder="Название"
+                        fullWidth={true}
+                        helperText=""
+                        className={styles['tagsTableNewRow__input']}
+                    />
+                </div>
             </td>
             <td>
-                <input
-                    type="number"
-                    value={editingData.address ?? 0}
-                    onChange={(e) => onFieldChange('address', Number(e.target.value))}
-                    className={styles['tagsTableNewRow__input']}
-                />
+                <div className={styles['tagsTableNewRow__inputWrapper']}>
+                    <Input
+                        type="number"
+                        value={editingData.address ?? 0}
+                        onChange={(e) => onFieldChange('address', Number(e.target.value))}
+                        fullWidth={true}
+                        helperText=""
+                        className={styles['tagsTableNewRow__input']}
+                    />
+                </div>
             </td>
             <td>
-                <input
-                    type="text"
-                    value={editingData.category ?? ''}
-                    onChange={(e) => onFieldChange('category', e.target.value)}
-                    className={styles['tagsTableNewRow__input']}
-                />
+                <div className={styles['tagsTableNewRow__inputWrapper']}>
+                    <Input
+                        type="text"
+                        value={editingData.category ?? ''}
+                        onChange={(e) => onFieldChange('category', e.target.value)}
+                        fullWidth={true}
+                        helperText=""
+                        className={styles['tagsTableNewRow__input']}
+                    />
+                </div>
             </td>
             <td>
-                <select
-                    value={editingData.functionCode ?? 'holding'}
-                    onChange={(e) => onFieldChange('functionCode', e.target.value)}
-                    className={styles['tagsTableNewRow__select']}
-                >
-                    <option value="holding">holding</option>
-                    <option value="input">input</option>
-                    <option value="coil">coil</option>
-                    <option value="discrete">discrete</option>
-                </select>
+                <div className={styles['tagsTableNewRow__selectWrapper']}>
+                    <Select
+                        value={editingData.functionCode ?? 'holding'}
+                        onChange={(e) => onFieldChange('functionCode', e.target.value)}
+                        fullWidth={true}
+                        helperText=""
+                        className={styles['tagsTableNewRow__select']}
+                    >
+                        <MenuItem value="holding">holding</MenuItem>
+                        <MenuItem value="input">input</MenuItem>
+                        <MenuItem value="coil">coil</MenuItem>
+                        <MenuItem value="discrete">discrete</MenuItem>
+                    </Select>
+                </div>
             </td>
             <td>
-                <select
-                    value={dataType}
-                    onChange={(e) => onFieldChange('dataType', e.target.value)}
-                    className={styles['tagsTableNewRow__select']}
-                >
-                    <option value="int16">int16</option>
-                    <option value="uint16">uint16</option>
-                    <option value="int32">int32</option>
-                    <option value="uint32">uint32</option>
-                    <option value="float32">float32</option>
-                    <option value="string">string</option>
-                    <option value="bits">bits</option>
-                </select>
+                <div className={styles['tagsTableNewRow__selectWrapper']}>
+                    <Select
+                        value={dataType}
+                        onChange={(e) => onFieldChange('dataType', e.target.value)}
+                        fullWidth={true}
+                        helperText=""
+                        className={styles['tagsTableNewRow__select']}
+                    >
+                        <MenuItem value="int16">int16</MenuItem>
+                        <MenuItem value="uint16">uint16</MenuItem>
+                        <MenuItem value="int32">int32</MenuItem>
+                        <MenuItem value="uint32">uint32</MenuItem>
+                        <MenuItem value="float32">float32</MenuItem>
+                        <MenuItem value="string">string</MenuItem>
+                        <MenuItem value="bits">bits</MenuItem>
+                    </Select>
+                </div>
             </td>
             {hasStringTags && (
                 <td>
                     {shouldShowLength(dataType) ? (
-                        <input
-                            type="number"
-                            value={editingData.length ?? ''}
-                            onChange={(e) => onFieldChange('length', e.target.value === '' ? undefined : Number(e.target.value))}
-                            className={styles['tagsTableNewRow__input']}
-                            placeholder="Обязательно"
-                        />
+                        <div className={styles['tagsTableNewRow__inputWrapper']}>
+                            <Input
+                                type="number"
+                                value={editingData.length ?? ''}
+                                onChange={(e) => onFieldChange('length', e.target.value === '' ? undefined : Number(e.target.value))}
+                                placeholder="Обязательно"
+                                fullWidth={true}
+                                helperText=""
+                                className={styles['tagsTableNewRow__input']}
+                            />
+                        </div>
                     ) : (
                         <span className={styles['tagsTableNewRow__empty']}>—</span>
                     )}
@@ -98,15 +125,18 @@ export const TagsTableNewRow = ({
             {hasBitsTags && (
                 <td>
                     {shouldShowBitIndex(dataType) ? (
-                        <input
-                            type="number"
-                            min="0"
-                            max="15"
-                            value={editingData.bitIndex ?? ''}
-                            onChange={(e) => onFieldChange('bitIndex', e.target.value === '' ? null : Number(e.target.value))}
-                            className={styles['tagsTableNewRow__input']}
-                            placeholder="0-15"
-                        />
+                        <div className={styles['tagsTableNewRow__inputWrapper']}>
+                            <Input
+                                type="number"
+                                inputProps={{ min: 0, max: 15 }}
+                                value={editingData.bitIndex ?? ''}
+                                onChange={(e) => onFieldChange('bitIndex', e.target.value === '' ? null : Number(e.target.value))}
+                                placeholder="0-15"
+                                fullWidth={true}
+                                helperText=""
+                                className={styles['tagsTableNewRow__input']}
+                            />
+                        </div>
                     ) : (
                         <span className={styles['tagsTableNewRow__empty']}>—</span>
                     )}
@@ -115,56 +145,38 @@ export const TagsTableNewRow = ({
             {hasMultiByteTags && (
                 <td>
                     {shouldShowByteOrder(dataType) ? (
-                        <select
-                            value={editingData.byteOrder ?? 'BE'}
-                            onChange={(e) => onFieldChange('byteOrder', e.target.value)}
-                            className={styles['tagsTableNewRow__select']}
-                        >
-                            <option value="BE">BE</option>
-                            <option value="LE">LE</option>
-                            <option value="ABCD">ABCD</option>
-                            <option value="CDAB">CDAB</option>
-                            <option value="BADC">BADC</option>
-                            <option value="DCBA">DCBA</option>
-                        </select>
+                        <div className={styles['tagsTableNewRow__selectWrapper']}>
+                            <Select
+                                value={editingData.byteOrder ?? 'BE'}
+                                onChange={(e) => onFieldChange('byteOrder', e.target.value)}
+                                fullWidth={true}
+                                helperText=""
+                                className={styles['tagsTableNewRow__select']}
+                            >
+                                <MenuItem value="BE">BE</MenuItem>
+                                <MenuItem value="LE">LE</MenuItem>
+                                <MenuItem value="ABCD">ABCD</MenuItem>
+                                <MenuItem value="CDAB">CDAB</MenuItem>
+                                <MenuItem value="BADC">BADC</MenuItem>
+                                <MenuItem value="DCBA">DCBA</MenuItem>
+                            </Select>
+                        </div>
                     ) : (
                         <span className={styles['tagsTableNewRow__empty']}>—</span>
                     )}
                 </td>
             )}
             <td>
-                <input
-                    type="number"
-                    step="0.01"
-                    value={editingData.scale ?? 1}
-                    onChange={(e) => onFieldChange('scale', Number(e.target.value))}
-                    className={styles['tagsTableNewRow__input']}
-                />
-            </td>
-            <td>
-                <input
-                    type="number"
-                    step="0.01"
-                    value={editingData.offset ?? 0}
-                    onChange={(e) => onFieldChange('offset', Number(e.target.value))}
-                    className={styles['tagsTableNewRow__input']}
-                />
-            </td>
-            <td>
-                <input
-                    type="number"
-                    value={editingData.decimals ?? 2}
-                    onChange={(e) => onFieldChange('decimals', Number(e.target.value))}
-                    className={styles['tagsTableNewRow__input']}
-                />
-            </td>
-            <td>
-                <input
-                    type="text"
-                    value={editingData.unit ?? ''}
-                    onChange={(e) => onFieldChange('unit', e.target.value)}
-                    className={styles['tagsTableNewRow__input']}
-                />
+                <div className={styles['tagsTableNewRow__inputWrapper']}>
+                    <Input
+                        type="text"
+                        value={editingData.unit ?? ''}
+                        onChange={(e) => onFieldChange('unit', e.target.value)}
+                        fullWidth={true}
+                        helperText=""
+                        className={styles['tagsTableNewRow__input']}
+                    />
+                </div>
             </td>
             <td>
                 <TagsTableActions

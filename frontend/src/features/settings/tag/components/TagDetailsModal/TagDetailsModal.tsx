@@ -17,12 +17,18 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
     const [minValue, setMinValue] = useState<string>('');
     const [maxValue, setMaxValue] = useState<string>('');
     const [description, setDescription] = useState<string>('');
+    const [scale, setScale] = useState<string>('');
+    const [offset, setOffset] = useState<string>('');
+    const [decimals, setDecimals] = useState<string>('');
 
     useEffect(() => {
         if (tag) {
             setMinValue(tag.minValue !== null && tag.minValue !== undefined ? String(tag.minValue) : '');
             setMaxValue(tag.maxValue !== null && tag.maxValue !== undefined ? String(tag.maxValue) : '');
             setDescription(tag.description || '');
+            setScale(tag.scale !== null && tag.scale !== undefined ? String(tag.scale) : '1');
+            setOffset(tag.offset !== null && tag.offset !== undefined ? String(tag.offset) : '0');
+            setDecimals(tag.decimals !== null && tag.decimals !== undefined ? String(tag.decimals) : '0');
         }
     }, [tag]);
 
@@ -33,6 +39,9 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             minValue: minValue === '' ? null : Number(minValue),
             maxValue: maxValue === '' ? null : Number(maxValue),
             description: description || undefined,
+            scale: scale === '' ? undefined : Number(scale),
+            offset: offset === '' ? undefined : Number(offset),
+            decimals: decimals === '' ? undefined : Number(decimals),
         };
 
         await onSave(updateData);
@@ -44,6 +53,9 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             setMinValue(tag.minValue !== null && tag.minValue !== undefined ? String(tag.minValue) : '');
             setMaxValue(tag.maxValue !== null && tag.maxValue !== undefined ? String(tag.maxValue) : '');
             setDescription(tag.description || '');
+            setScale(tag.scale !== null && tag.scale !== undefined ? String(tag.scale) : '1');
+            setOffset(tag.offset !== null && tag.offset !== undefined ? String(tag.offset) : '0');
+            setDecimals(tag.decimals !== null && tag.decimals !== undefined ? String(tag.decimals) : '0');
         }
         onClose();
     };
@@ -59,21 +71,54 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             fullWidth
         >
             <div className={styles['tagDetailsModal']}>
-                <Input
-                    label="Минимальное значение"
-                    type="number"
-                    value={minValue}
-                    onChange={(e) => setMinValue(e.target.value)}
-                    helperText="Оставьте пустым, чтобы убрать ограничение"
-                    disabled={isLoading}
-                />
+                <div className={styles['tagDetailsModal__row']}>
+                    <Input
+                        label="Минимальное значение"
+                        type="number"
+                        value={minValue}
+                        onChange={(e) => setMinValue(e.target.value)}
+                        helperText="Оставьте пустым, чтобы убрать ограничение"
+                        disabled={isLoading}
+                    />
+
+                    <Input
+                        label="Максимальное значение"
+                        type="number"
+                        value={maxValue}
+                        onChange={(e) => setMaxValue(e.target.value)}
+                        helperText="Оставьте пустым, чтобы убрать ограничение"
+                        disabled={isLoading}
+                    />
+                </div>
+
+                <div className={styles['tagDetailsModal__row']}>
+                    <Input
+                        label="Scale"
+                        type="number"
+                        inputProps={{ step: 0.01 }}
+                        value={scale}
+                        onChange={(e) => setScale(e.target.value)}
+                        helperText="Коэффициент масштабирования"
+                        disabled={isLoading}
+                    />
+
+                    <Input
+                        label="Offset"
+                        type="number"
+                        inputProps={{ step: 0.01 }}
+                        value={offset}
+                        onChange={(e) => setOffset(e.target.value)}
+                        helperText="Смещение значения"
+                        disabled={isLoading}
+                    />
+                </div>
 
                 <Input
-                    label="Максимальное значение"
+                    label="Decimals"
                     type="number"
-                    value={maxValue}
-                    onChange={(e) => setMaxValue(e.target.value)}
-                    helperText="Оставьте пустым, чтобы убрать ограничение"
+                    value={decimals}
+                    onChange={(e) => setDecimals(e.target.value)}
+                    helperText="Количество знаков после запятой"
                     disabled={isLoading}
                 />
 

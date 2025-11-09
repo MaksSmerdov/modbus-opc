@@ -146,33 +146,6 @@ export const TagsTableRow = memo(({
             <td>
                 <TagsTableCell
                     tag={tag}
-                    field="scale"
-                    editingData={editingData}
-                    isEditing={isEditing}
-                    onFieldChange={onFieldChange}
-                />
-            </td>
-            <td>
-                <TagsTableCell
-                    tag={tag}
-                    field="offset"
-                    editingData={editingData}
-                    isEditing={isEditing}
-                    onFieldChange={onFieldChange}
-                />
-            </td>
-            <td>
-                <TagsTableCell
-                    tag={tag}
-                    field="decimals"
-                    editingData={editingData}
-                    isEditing={isEditing}
-                    onFieldChange={onFieldChange}
-                />
-            </td>
-            <td>
-                <TagsTableCell
-                    tag={tag}
                     field="unit"
                     editingData={editingData}
                     isEditing={isEditing}

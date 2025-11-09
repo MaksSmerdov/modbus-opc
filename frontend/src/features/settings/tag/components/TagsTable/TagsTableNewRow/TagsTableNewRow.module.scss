@@ -3,36 +3,90 @@
 .tagsTableNewRow {
     background-color: rgba(vars.$intoxicate, 0.1);
 
-    &__input {
+    &__inputWrapper {
+        display: block;
         width: 100%;
-        padding: 4px 8px;
-        border: 1px solid vars.$border-color-light;
-        border-radius: 4px;
-        background-color: vars.$bg-primary-light;
-        color: vars.$text-primary-light;
-        font-size: 0.875rem;
-        transition: border-color 0.2s ease;
+        max-width: 100%;
+        text-align: left;
+        box-sizing: border-box;
+        overflow: hidden;
+        min-width: 0;
+    }
 
-        &:focus {
-            outline: none;
-            border-color: vars.$intoxicate;
+    &__input {
+        margin-bottom: 0 !important;
+
+        // Переопределяем стили для TextField
+        :global(.MuiTextField-root) {
+            width: 100% !important;
+            margin-bottom: 0 !important;
+        }
+
+        // Переопределяем стили для FormControl внутри TextField
+        :global(.MuiFormControl-root) {
+            width: 100% !important;
+            margin-bottom: 0 !important;
+        }
+
+        // Уменьшаем высоту input
+        :global(.MuiOutlinedInput-root) {
+            height: 32px !important;
+            min-height: 32px !important;
+        }
+
+        :global(.MuiOutlinedInput-input) {
+            padding: 6px 12px !important;
+            font-size: 0.875rem !important;
+        }
+
+        // Скрываем helperText
+        :global(.MuiFormHelperText-root) {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            min-height: 0 !important;
+            padding: 0 !important;
         }
     }
 
-    &__select {
+    &__selectWrapper {
+        display: block;
         width: 100%;
-        padding: 4px 8px;
-        border: 1px solid vars.$border-color-light;
-        border-radius: 4px;
-        background-color: vars.$bg-primary-light;
-        color: vars.$text-primary-light;
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: border-color 0.2s ease;
+        max-width: 100%;
+        text-align: left;
+        box-sizing: border-box;
+        overflow: hidden;
+        min-width: 0;
+    }
 
-        &:focus {
-            outline: none;
-            border-color: vars.$intoxicate;
+    &__select {
+        margin-bottom: 0 !important;
+
+        // Переопределяем стили для FormControl
+        :global(.MuiFormControl-root) {
+            width: 100% !important;
+            margin-bottom: 0 !important;
+        }
+
+        // Уменьшаем высоту select
+        :global(.MuiOutlinedInput-root) {
+            height: 32px !important;
+            min-height: 32px !important;
+        }
+
+        :global(.MuiSelect-select) {
+            padding: 6px 12px !important;
+            font-size: 0.875rem !important;
+            line-height: 1.5 !important;
+        }
+
+        // Скрываем helperText
+        :global(.MuiFormHelperText-root) {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            min-height: 0 !important;
+            padding: 0 !important;
         }
     }
 
@@ -45,26 +99,6 @@
 :global(.dark) {
     .tagsTableNewRow {
         background-color: rgba(vars.$intoxicate, 0.2);
-
-        &__input {
-            border-color: vars.$border-color-dark;
-            background-color: vars.$bg-secondary-dark;
-            color: vars.$text-primary-dark;
-
-            &:focus {
-                border-color: vars.$intoxicate;
-            }
-        }
-
-        &__select {
-            border-color: vars.$border-color-dark;
-            background-color: vars.$bg-secondary-dark;
-            color: vars.$text-primary-dark;
-
-            &:focus {
-                border-color: vars.$intoxicate;
-            }
-        }
 
         &__empty {
             color: vars.$text-secondary-dark;

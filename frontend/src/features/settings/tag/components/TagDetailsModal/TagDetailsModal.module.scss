@@ -6,6 +6,11 @@
     gap: 16px;
     padding: 8px 0;
 
+    &__row {
+        display: flex;
+        gap: 16px;
+    }
+
     &__actions {
         display: flex;
         gap: 12px;
