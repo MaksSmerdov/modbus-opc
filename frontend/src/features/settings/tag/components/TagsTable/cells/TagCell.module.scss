@@ -1,6 +1,6 @@
 @use "@/shared/styles/variables" as vars;
 
-.tagsTableCell {
+.tagCell {
     &__inputWrapper {
         display: block;
         width: 100%;
@@ -14,19 +14,16 @@
     &__input {
         margin-bottom: 0 !important;
 
-        // Переопределяем стили для TextField
         :global(.MuiTextField-root) {
             width: 100% !important;
             margin-bottom: 0 !important;
         }
 
-        // Переопределяем стили для FormControl внутри TextField
         :global(.MuiFormControl-root) {
             width: 100% !important;
             margin-bottom: 0 !important;
         }
 
-        // Уменьшаем высоту input
         :global(.MuiOutlinedInput-root) {
             height: 32px !important;
             min-height: 32px !important;
@@ -37,7 +34,6 @@
             font-size: 0.875rem !important;
         }
 
-        // Скрываем helperText
         :global(.MuiFormHelperText-root) {
             display: none !important;
             height: 0 !important;
@@ -60,13 +56,11 @@
     &__select {
         margin-bottom: 0 !important;
 
-        // Переопределяем стили для FormControl
         :global(.MuiFormControl-root) {
             width: 100% !important;
             margin-bottom: 0 !important;
         }
 
-        // Уменьшаем высоту select
         :global(.MuiOutlinedInput-root) {
             height: 32px !important;
             min-height: 32px !important;
@@ -78,7 +72,6 @@
             line-height: 1.5 !important;
         }
 
-        // Скрываем helperText
         :global(.MuiFormHelperText-root) {
             display: none !important;
             height: 0 !important;
@@ -187,7 +180,7 @@
 }
 
 :global(.dark) {
-    .tagsTableCell {
+    .tagCell {
         &__empty {
             color: vars.$text-secondary-dark;
         }
@@ -208,3 +201,4 @@
         }
     }
 }
+

@@ -1,2 +1,0 @@
-export { TagsTableNewRow } from './TagsTableNewRow';
-

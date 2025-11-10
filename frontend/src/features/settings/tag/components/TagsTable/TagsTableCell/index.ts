@@ -1,2 +1,0 @@
-export { TagsTableCell } from './TagsTableCell';
-

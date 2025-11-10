@@ -5,5 +5,7 @@ import './shared/styles/_fonts.scss'
 import App from './app/App.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <App />
+  <StrictMode>
+    <App />
+  </StrictMode>
 )

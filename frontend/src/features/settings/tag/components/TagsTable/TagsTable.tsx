@@ -1,13 +1,15 @@
-import { useState, useMemo, useCallback } from 'react';
-import { useCreateTagMutation, useUpdateTagMutation, useDeleteTagMutation } from '../../api/tagsApi';
+import { useState, useCallback } from 'react';
+import { useUpdateTagMutation } from '../../api/tagsApi';
 import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
 import { TagDetailsModal } from '../TagDetailsModal/TagDetailsModal';
 import { ByteOrderModal } from '../ByteOrderModal/ByteOrderModal';
 import { TagsTableToolbar } from './TagsTableToolbar';
-import { TagsTableNewRow } from './TagsTableNewRow';
 import { TagsTableRow } from './TagsTableRow';
+import { useTagEditing } from './hooks/useTagEditing';
+import { useColumnVisibility } from './hooks/useColumnVisibility';
 import { shouldShowByteOrder, getDefaultLength } from './utils/tagsTableUtils';
-import type { Tag, CreateTagData, UpdateTagData, ByteOrder } from '../../types';
+import type { Tag, UpdateTagData, ByteOrder, CreateTagData } from '../../types';
 import styles from './TagsTable.module.scss';
 
 interface TagsTableProps {
@@ -16,56 +18,30 @@ interface TagsTableProps {
     canEdit?: boolean;
 }
 
-interface EditingRow {
-    id: string | 'new';
-    data: Partial<CreateTagData>;
-}
-
 export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) => {
     const { showSuccess, showError } = useSnackbar();
-    const [createTag, { isLoading: isCreating }] = useCreateTagMutation();
     const [updateTag, { isLoading: isUpdating }] = useUpdateTagMutation();
-    const [deleteTag, { isLoading: isDeleting }] = useDeleteTagMutation();
-    const [editingRow, setEditingRow] = useState<EditingRow | null>(null);
+
+    const {
+        editingRow,
+        setEditingRow,
+        handleSave,
+        handleDelete,
+        startEditing,
+        startCreating,
+        cancelEditing,
+        isCreating,
+        isUpdating: isUpdatingTag,
+        isDeleting,
+    } = useTagEditing(deviceId);
+
     const [detailsModalOpen, setDetailsModalOpen] = useState(false);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
     const [byteOrderModalOpen, setByteOrderModalOpen] = useState(false);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [tagToDelete, setTagToDelete] = useState<string | null>(null);
 
-    const handleAddRow = useCallback(() => {
-        setEditingRow({
-            id: 'new',
-            data: {
-                address: 0,
-                name: '',
-                dataType: 'int16',
-                functionCode: 'holding',
-                byteOrder: 'ABCD', // По умолчанию ABCD
-                scale: 1,
-                offset: 0,
-                decimals: 0, // По умолчанию на бэке 0
-            },
-        });
-    }, []);
-
-    const handleEditRow = useCallback((tag: Tag) => {
-        setEditingRow({
-            id: tag._id,
-            data: {
-                address: tag.address,
-                name: tag.name,
-                category: tag.category ?? '',
-                functionCode: tag.functionCode ?? 'holding',
-                dataType: tag.dataType,
-                length: tag.length,
-                bitIndex: tag.bitIndex ?? null,
-                byteOrder: tag.byteOrder ?? 'ABCD',
-                scale: tag.scale ?? 1,
-                offset: tag.offset ?? 0,
-                decimals: tag.decimals ?? 0,
-                unit: tag.unit ?? '',
-            },
-        });
-    }, []);
+    const columnVisibility = useColumnVisibility(tags, editingRow, canEdit);
 
     const handleOpenDetails = useCallback((tag: Tag) => {
         setSelectedTag(tag);
@@ -84,10 +60,6 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
         }
     }, [selectedTag, deviceId, updateTag, showSuccess, showError]);
 
-    const handleCancelEdit = useCallback(() => {
-        setEditingRow(null);
-    }, []);
-
     const handleCloseDetailsModal = useCallback(() => {
         setDetailsModalOpen(false);
         setSelectedTag(null);
@@ -101,119 +73,22 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
         setByteOrderModalOpen(false);
     }, []);
 
-    const handleSaveByteOrder = useCallback((byteOrder: ByteOrder) => {
-        if (!editingRow) return;
-        setEditingRow({
-            ...editingRow,
-            data: {
-                ...editingRow.data,
-                byteOrder,
-            },
-        });
-        setByteOrderModalOpen(false);
-    }, [editingRow]);
+    const handleDeleteClick = useCallback((tagId: string) => {
+        setTagToDelete(tagId);
+        setDeleteConfirmOpen(true);
+    }, []);
 
-    const handleSaveRow = useCallback(async () => {
-        if (!editingRow) return;
+    const handleConfirmDelete = useCallback(async () => {
+        if (!tagToDelete) return;
+        await handleDelete(tagToDelete);
+        setDeleteConfirmOpen(false);
+        setTagToDelete(null);
+    }, [tagToDelete, handleDelete]);
 
-        try {
-            if (editingRow.id === 'new') {
-                // Создание нового тэга
-                const dataType = editingRow.data.dataType ?? 'int16';
-
-                // Валидация обязательных полей
-                if (!editingRow.data.name) {
-                    showError('Название тэга обязательно');
-                    return;
-                }
-                if (dataType === 'string' && !editingRow.data.length) {
-                    showError('Длина обязательна для типа string');
-                    return;
-                }
-                if (dataType === 'bits' && (editingRow.data.bitIndex === null || editingRow.data.bitIndex === undefined)) {
-                    showError('Bit Index обязателен для типа bits');
-                    return;
-                }
-
-                // Формируем данные для создания тэга (без deviceId - он передается в URL)
-                const tagData: Omit<CreateTagData, 'deviceId'> = {
-                    address: editingRow.data.address ?? 0,
-                    name: editingRow.data.name ?? '',
-                    dataType,
-                    // length обязателен всегда, для string берем из формы, для остальных вычисляем
-                    length: dataType === 'string'
-                        ? (editingRow.data.length ?? 1)
-                        : (editingRow.data.length ?? getDefaultLength(dataType)),
-                    // functionCode обязателен, передаем явно (на бэке default: 'holding')
-                    functionCode: editingRow.data.functionCode ?? 'holding',
-                    // category необязателен, но передаем если есть (на бэке default: 'general')
-                    ...(editingRow.data.category && { category: editingRow.data.category }),
-                    // bitIndex обязателен для bits, для остальных должен быть null
-                    ...(dataType === 'bits' && editingRow.data.bitIndex !== null && editingRow.data.bitIndex !== undefined && { bitIndex: editingRow.data.bitIndex }),
-                    ...(dataType !== 'bits' && { bitIndex: null }),
-                    // byteOrder только для многобайтовых типов
-                    ...(shouldShowByteOrder(dataType) && editingRow.data.byteOrder && { byteOrder: editingRow.data.byteOrder }),
-                    // scale и offset всегда передаем (на бэке default: scale = 1, offset = 0)
-                    scale: editingRow.data.scale ?? 1,
-                    offset: editingRow.data.offset ?? 0,
-                    // decimals необязателен (на бэке default: 0)
-                    decimals: editingRow.data.decimals ?? 0,
-                    // unit необязателен (на бэке default: '')
-                    ...(editingRow.data.unit && { unit: editingRow.data.unit }),
-                };
-                await createTag({ deviceId, data: tagData }).unwrap();
-                showSuccess('Тэг успешно создан');
-            } else {
-                // Обновление существующего тэга
-                const dataType = editingRow.data.dataType;
-
-                // Формируем данные для обновления тэга (без deviceId - он передается в URL)
-                const updateData: Omit<UpdateTagData, 'deviceId'> = {
-                    ...(editingRow.data.address !== undefined && { address: editingRow.data.address }),
-                    ...(editingRow.data.name !== undefined && { name: editingRow.data.name }),
-                    ...(editingRow.data.category !== undefined && { category: editingRow.data.category }),
-                    ...(editingRow.data.functionCode !== undefined && { functionCode: editingRow.data.functionCode }),
-                    ...(dataType !== undefined && { dataType }),
-                    // length обязателен всегда, для string берем из формы, для остальных вычисляем если не указан
-                    ...(dataType && {
-                        length: dataType === 'string'
-                            ? (editingRow.data.length ?? 1)
-                            : (editingRow.data.length ?? getDefaultLength(dataType))
-                    }),
-                    // bitIndex обязателен для bits, для остальных должен быть null
-                    ...(dataType && dataType === 'bits' && editingRow.data.bitIndex !== null && editingRow.data.bitIndex !== undefined && { bitIndex: editingRow.data.bitIndex }),
-                    ...(dataType && dataType !== 'bits' && { bitIndex: null }),
-                    // byteOrder только для многобайтовых типов
-                    ...(dataType && shouldShowByteOrder(dataType) && editingRow.data.byteOrder !== undefined && { byteOrder: editingRow.data.byteOrder }),
-                    // scale и offset всегда передаем при обновлении (если указаны)
-                    ...(editingRow.data.scale !== undefined && { scale: editingRow.data.scale }),
-                    ...(editingRow.data.offset !== undefined && { offset: editingRow.data.offset }),
-                    // decimals передаем если указан
-                    ...(editingRow.data.decimals !== undefined && { decimals: editingRow.data.decimals }),
-                    // unit передаем если указан
-                    ...(editingRow.data.unit !== undefined && { unit: editingRow.data.unit }),
-                };
-                await updateTag({ deviceId, tagId: editingRow.id, data: updateData }).unwrap();
-                showSuccess('Тэг успешно обновлен');
-            }
-            setEditingRow(null);
-        } catch (error) {
-            console.error('Ошибка сохранения тэга:', error);
-            showError(editingRow.id === 'new' ? 'Не удалось создать тэг' : 'Не удалось обновить тэг');
-        }
-    }, [editingRow, createTag, updateTag, showSuccess, showError, deviceId]);
-
-    const handleDeleteRow = useCallback(async (tagId: string) => {
-        if (!confirm('Вы уверены, что хотите удалить этот тэг?')) return;
-
-        try {
-            await deleteTag({ deviceId, tagId }).unwrap();
-            showSuccess('Тэг успешно удален');
-        } catch (error) {
-            console.error('Ошибка удаления тэга:', error);
-            showError('Не удалось удалить тэг');
-        }
-    }, [deviceId, deleteTag, showSuccess, showError]);
+    const handleCancelDelete = useCallback(() => {
+        setDeleteConfirmOpen(false);
+        setTagToDelete(null);
+    }, []);
 
     const updateEditingField = useCallback((field: keyof CreateTagData, value: unknown) => {
         if (!editingRow) return;
@@ -254,38 +129,20 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                 },
             });
         }
-    }, [editingRow]);
+    }, [editingRow, setEditingRow]);
 
-    // Определяем видимость колонок
-    const { hasStringTags, hasBitsTags, hasMultiByteTags } = useMemo(() => {
-        const hasString = tags.some(t => {
-            const isEditing = editingRow && editingRow.id === t._id;
-            const dataType = isEditing && editingRow.data.dataType ? editingRow.data.dataType : t.dataType;
-            return dataType === 'string';
-        }) || (editingRow?.id === 'new' && editingRow.data.dataType === 'string');
-
-        const hasBits = tags.some(t => {
-            const isEditing = editingRow && editingRow.id === t._id;
-            const dataType = isEditing && editingRow.data.dataType ? editingRow.data.dataType : t.dataType;
-            return dataType === 'bits';
-        }) || (editingRow?.id === 'new' && editingRow.data.dataType === 'bits');
-
-        // Колонка Byte Order всегда показывается в режиме редактирования
-        const hasMultiByte = canEdit || tags.some(t => {
-            const isEditing = editingRow && editingRow.id === t._id;
-            const dataType = isEditing && editingRow.data.dataType ? editingRow.data.dataType : t.dataType;
-            return shouldShowByteOrder(dataType);
-        }) || (editingRow?.id === 'new' && editingRow.data.dataType ? shouldShowByteOrder(editingRow.data.dataType) : false);
-
-        return { hasStringTags: hasString, hasBitsTags: hasBits, hasMultiByteTags: hasMultiByte };
-    }, [tags, editingRow, canEdit]);
+    const handleSaveByteOrder = useCallback((byteOrder: ByteOrder) => {
+        if (!editingRow) return;
+        updateEditingField('byteOrder', byteOrder);
+        setByteOrderModalOpen(false);
+    }, [editingRow, updateEditingField]);
 
     return (
         <>
             <div className={styles['tagsTable']}>
                 {canEdit && (
                     <TagsTableToolbar
-                        onAdd={handleAddRow}
+                        onAdd={startCreating}
                         disabled={editingRow !== null || isCreating}
                     />
                 )}
@@ -298,52 +155,53 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                                 <th>Категория</th>
                                 <th>Function Code</th>
                                 <th>Тип данных</th>
-                                {hasStringTags && <th>Длина</th>}
-                                {hasBitsTags && <th>Индекс битов</th>}
-                                {hasMultiByteTags && <th>Порядок байтов</th>}
+                                {columnVisibility.hasStringTags && <th>Длина</th>}
+                                {columnVisibility.hasBitsTags && <th>Индекс битов</th>}
+                                {columnVisibility.hasMultiByteTags && <th>Порядок байтов</th>}
                                 <th>Ед. изм.</th>
                                 {canEdit && <th>Действия</th>}
                             </tr>
                         </thead>
                         <tbody>
                             {editingRow?.id === 'new' && (
-                                <TagsTableNewRow
+                                <TagsTableRow
+                                    isNew={true}
+                                    isEditing={true}
                                     editingData={editingRow.data}
-                                    hasStringTags={hasStringTags}
-                                    hasBitsTags={hasBitsTags}
-                                    hasMultiByteTags={hasMultiByteTags}
+                                    hasStringTags={columnVisibility.hasStringTags}
+                                    hasBitsTags={columnVisibility.hasBitsTags}
+                                    hasMultiByteTags={columnVisibility.hasMultiByteTags}
+                                    canEdit={canEdit}
                                     onFieldChange={updateEditingField}
-                                    onSave={handleSaveRow}
-                                    onCancel={handleCancelEdit}
+                                    onSave={handleSave}
+                                    onCancel={cancelEditing}
                                     onByteOrderClick={handleOpenByteOrderModal}
-                                    isLoading={isCreating}
+                                    isSaving={isCreating}
                                 />
                             )}
                             {tags.map((tag) => {
-                                const handleEdit = () => handleEditRow(tag);
-                                const handleDelete = () => handleDeleteRow(tag._id);
-                                const handleDetails = () => handleOpenDetails(tag);
+                                const isEditing = editingRow?.id === tag._id;
 
                                 return (
                                     <TagsTableRow
                                         key={tag._id}
                                         tag={tag}
-                                        isEditing={editingRow?.id === tag._id}
-                                        editingData={editingRow?.id === tag._id ? editingRow.data : undefined}
-                                        hasStringTags={hasStringTags}
-                                        hasBitsTags={hasBitsTags}
-                                        hasMultiByteTags={hasMultiByteTags}
+                                        isEditing={isEditing}
+                                        editingData={isEditing ? editingRow.data : undefined}
+                                        hasStringTags={columnVisibility.hasStringTags}
+                                        hasBitsTags={columnVisibility.hasBitsTags}
+                                        hasMultiByteTags={columnVisibility.hasMultiByteTags}
                                         canEdit={canEdit}
                                         onFieldChange={updateEditingField}
-                                        onByteOrderClick={editingRow?.id === tag._id ? handleOpenByteOrderModal : undefined}
-                                        onEdit={handleEdit}
-                                        onDelete={handleDelete}
-                                        onSave={handleSaveRow}
-                                        onCancel={handleCancelEdit}
-                                        onDetails={handleDetails}
-                                        isSaving={isUpdating}
+                                        onByteOrderClick={isEditing ? handleOpenByteOrderModal : undefined}
+                                        onEdit={() => startEditing(tag)}
+                                        onDelete={() => handleDeleteClick(tag._id)}
+                                        onSave={handleSave}
+                                        onCancel={cancelEditing}
+                                        onDetails={() => handleOpenDetails(tag)}
+                                        isSaving={isUpdatingTag}
                                         isDeleting={isDeleting}
-                                        disabled={editingRow !== null}
+                                        disabled={editingRow !== null && editingRow.id !== tag._id}
                                     />
                                 );
                             })}
@@ -366,6 +224,17 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                     onSave={handleSaveByteOrder}
                 />
             )}
+            <ConfirmModal
+                open={deleteConfirmOpen}
+                onClose={handleCancelDelete}
+                onConfirm={handleConfirmDelete}
+                title="Удаление тэга"
+                message="Вы уверены, что хотите удалить этот тэг?"
+                confirmText="Удалить"
+                cancelText="Отмена"
+                confirmVariant="contained"
+                isLoading={isDeleting}
+            />
         </>
     );
 };

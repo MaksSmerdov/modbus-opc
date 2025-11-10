@@ -1,12 +1,22 @@
 import { memo, useMemo } from 'react';
-import { TagsTableCell } from '../TagsTableCell';
 import { TagsTableActions } from '../TagsTableActions';
+import {
+    TagNameCell,
+    TagAddressCell,
+    TagTextCell,
+    TagFunctionCodeCell,
+    TagDataTypeCell,
+    TagLengthCell,
+    TagBitIndexCell,
+    TagByteOrderCell,
+} from '../cells';
 import { shouldShowLength, shouldShowBitIndex } from '../utils/tagsTableUtils';
 import type { Tag, CreateTagData } from '../../../types';
 import styles from './TagsTableRow.module.scss';
 
 interface TagsTableRowProps {
-    tag: Tag;
+    tag?: Tag; // опционально для новой строки
+    isNew?: boolean;
     isEditing: boolean;
     editingData?: Partial<CreateTagData>;
     hasStringTags: boolean;
@@ -15,11 +25,11 @@ interface TagsTableRowProps {
     canEdit: boolean;
     onFieldChange: (field: keyof CreateTagData, value: unknown) => void;
     onByteOrderClick?: () => void;
-    onEdit: () => void;
-    onDelete: () => void;
+    onEdit?: () => void;
+    onDelete?: () => void;
     onSave: () => void;
     onCancel: () => void;
-    onDetails: () => void;
+    onDetails?: () => void;
     isSaving?: boolean;
     isDeleting?: boolean;
     disabled?: boolean;
@@ -27,6 +37,7 @@ interface TagsTableRowProps {
 
 export const TagsTableRow = memo(({
     tag,
+    isNew = false,
     isEditing,
     editingData,
     hasStringTags,
@@ -44,70 +55,79 @@ export const TagsTableRow = memo(({
     isDeleting = false,
     disabled = false,
 }: TagsTableRowProps) => {
-    const currentDataType = useMemo(() =>
-        isEditing && editingData?.dataType ? editingData.dataType : tag.dataType,
-        [isEditing, editingData?.dataType, tag.dataType]
-    );
+    const currentDataType = useMemo(() => {
+        if (isEditing && editingData?.dataType) {
+            return editingData.dataType;
+        }
+        return tag?.dataType ?? 'int16';
+    }, [isEditing, editingData?.dataType, tag?.dataType]);
 
     const showLength = useMemo(() => shouldShowLength(currentDataType), [currentDataType]);
     const showBitIndex = useMemo(() => shouldShowBitIndex(currentDataType), [currentDataType]);
 
+    // Определяем значения для отображения
+    const displayData = isEditing && editingData 
+        ? editingData 
+        : (tag ? {
+            name: tag.name,
+            address: tag.address,
+            category: tag.category,
+            functionCode: tag.functionCode,
+            dataType: tag.dataType,
+            length: tag.length,
+            bitIndex: tag.bitIndex,
+            byteOrder: tag.byteOrder,
+            scale: tag.scale,
+            offset: tag.offset,
+            decimals: tag.decimals,
+            unit: tag.unit,
+        } : {});
+
     return (
         <tr className={isEditing ? styles['tagsTableRow_editing'] : ''}>
             <td>
-                <TagsTableCell
-                    tag={tag}
-                    field="name"
-                    editingData={editingData}
+                <TagNameCell
+                    value={displayData.name ?? ''}
                     isEditing={isEditing}
-                    onFieldChange={onFieldChange}
+                    onChange={(value) => onFieldChange('name', value)}
                 />
             </td>
             <td>
-                <TagsTableCell
-                    tag={tag}
-                    field="address"
-                    editingData={editingData}
+                <TagAddressCell
+                    value={displayData.address ?? 0}
                     isEditing={isEditing}
-                    onFieldChange={onFieldChange}
+                    onChange={(value) => onFieldChange('address', value)}
                 />
             </td>
             <td>
-                <TagsTableCell
-                    tag={tag}
-                    field="category"
-                    editingData={editingData}
+                <TagTextCell
+                    value={displayData.category ?? ''}
                     isEditing={isEditing}
-                    onFieldChange={onFieldChange}
+                    onChange={(value) => onFieldChange('category', value)}
                 />
             </td>
             <td>
-                <TagsTableCell
-                    tag={tag}
-                    field="functionCode"
-                    editingData={editingData}
+                <TagFunctionCodeCell
+                    value={displayData.functionCode}
                     isEditing={isEditing}
-                    onFieldChange={onFieldChange}
+                    onChange={(value) => onFieldChange('functionCode', value)}
                 />
             </td>
             <td>
-                <TagsTableCell
-                    tag={tag}
-                    field="dataType"
-                    editingData={editingData}
+                <TagDataTypeCell
+                    value={displayData.dataType}
                     isEditing={isEditing}
-                    onFieldChange={onFieldChange}
+                    onChange={(value) => onFieldChange('dataType', value)}
                 />
             </td>
             {hasStringTags && (
                 <td>
                     {showLength ? (
-                        <TagsTableCell
-                            tag={tag}
-                            field="length"
-                            editingData={editingData}
+                        <TagLengthCell
+                            value={displayData.length}
+                            dataType={currentDataType}
                             isEditing={isEditing}
-                            onFieldChange={onFieldChange}
+                            onChange={(value) => onFieldChange('length', value)}
                         />
                     ) : (
                         <span className={styles['tagsTableRow__empty']}>—</span>
@@ -117,12 +137,11 @@ export const TagsTableRow = memo(({
             {hasBitsTags && (
                 <td>
                     {showBitIndex ? (
-                        <TagsTableCell
-                            tag={tag}
-                            field="bitIndex"
-                            editingData={editingData}
+                        <TagBitIndexCell
+                            value={displayData.bitIndex ?? null}
+                            dataType={currentDataType}
                             isEditing={isEditing}
-                            onFieldChange={onFieldChange}
+                            onChange={(value) => onFieldChange('bitIndex', value)}
                         />
                     ) : (
                         <span className={styles['tagsTableRow__empty']}>—</span>
@@ -131,23 +150,21 @@ export const TagsTableRow = memo(({
             )}
             {hasMultiByteTags && (
                 <td>
-                    <TagsTableCell
-                        tag={tag}
-                        field="byteOrder"
-                        editingData={editingData}
+                    <TagByteOrderCell
+                        value={isEditing && editingData 
+                            ? (editingData.byteOrder ?? 'ABCD')
+                            : displayData.byteOrder}
                         isEditing={isEditing}
-                        onFieldChange={onFieldChange}
+                        onChange={(value) => onFieldChange('byteOrder', value)}
                         onByteOrderClick={onByteOrderClick}
                     />
                 </td>
             )}
             <td>
-                <TagsTableCell
-                    tag={tag}
-                    field="unit"
-                    editingData={editingData}
+                <TagTextCell
+                    value={displayData.unit ?? ''}
                     isEditing={isEditing}
-                    onFieldChange={onFieldChange}
+                    onChange={(value) => onFieldChange('unit', value)}
                 />
             </td>
             {canEdit && (
@@ -168,4 +185,3 @@ export const TagsTableRow = memo(({
         </tr>
     );
 });
-
