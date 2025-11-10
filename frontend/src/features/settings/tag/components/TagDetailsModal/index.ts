@@ -1,2 +1,0 @@
-export { TagDetailsModal } from './TagDetailsModal';
-

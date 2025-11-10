@@ -1,24 +1,24 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .devicesList {
     &__error {
         padding: 16px;
         text-align: center;
-        color: vars.$error-color-light;
+        color: vars.$red;
     }
 
     &__empty {
         padding: 24px;
         text-align: center;
-        color: vars.$text-secondary-light;
-        font-size: 0.9375rem;
+        @include mixins.text-style(15px, null, null, vars.$text-secondary-light);
     }
 }
 
 :global(.dark) {
     .devicesList {
         &__error {
-            color: vars.$error-color-dark;
+            color: vars.$red;
         }
 
         &__empty {

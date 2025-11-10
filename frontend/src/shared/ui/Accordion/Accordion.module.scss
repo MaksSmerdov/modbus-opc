@@ -1,0 +1,97 @@
+@use '@/shared/styles/variables' as vars;
+
+.accordion {
+    &__root {
+        background: vars.$bg-secondary-light !important;
+        border: 1px solid vars.$border-color-light !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+        margin-bottom: 12px !important;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+
+        &:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        &::before {
+            display: none !important;
+        }
+    }
+
+    &_expanded {
+        margin-bottom: 12px !important;
+    }
+
+    &__summary {
+        padding: 16px 20px !important;
+        min-height: auto !important;
+
+        &Root {
+            min-height: auto !important;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: vars.$table-row-hover-light !important;
+            }
+        }
+
+        &Expanded {
+            min-height: auto !important;
+        }
+
+        &Content {
+            margin: 0 !important;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: vars.$text-primary-light !important;
+        }
+    }
+
+    &__details {
+        padding: 0 20px 16px !important;
+        border-top: 1px solid vars.$border-color-light;
+        color: vars.$text-primary-light !important;
+    }
+
+    &__detailsRoot {
+        padding: 0 !important;
+    }
+}
+
+// Стили для темной темы
+:global(.dark) {
+    .accordion {
+        &__root {
+            background: vars.$bg-secondary-dark !important;
+            border-color: vars.$border-color-dark !important;
+
+            &:hover {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+            }
+        }
+
+        &__summary {
+            &Root {
+                &:hover {
+                    background-color: vars.$table-row-hover-dark !important;
+                }
+            }
+
+            &Content {
+                color: vars.$text-primary-dark !important;
+            }
+        }
+
+        &__details {
+            border-top-color: vars.$border-color-dark;
+            color: vars.$text-primary-dark !important;
+        }
+    }
+
+    // Стили для иконки расширения в темной теме
+    :global(.MuiAccordionSummary-expandIconWrapper) {
+        color: vars.$text-secondary-dark !important;
+    }
+}
+

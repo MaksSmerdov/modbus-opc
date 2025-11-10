@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .portCard {
     margin-top: 12px;
@@ -38,14 +39,17 @@
 
     &__name {
         margin: 0;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: vars.$text-primary-light;
+        @include mixins.text-style(13px, null, 600, vars.$text-primary-light);
+        min-width: 0;
+        flex: 1;
+        display: flex;
+    }
+
+    &__nameText {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         min-width: 0;
-        flex: 1;
     }
 
     &__status {
@@ -53,7 +57,7 @@
     }
 
     &__statusChip {
-        font-size: 0.6875rem;
+        @include mixins.text-style(11px, null, null, null);
         height: 20px;
     }
 
@@ -64,13 +68,11 @@
     }
 
     &__infoText {
-        font-size: 0.8125rem;
-        color: vars.$text-secondary-light;
+        @include mixins.text-style(13px, null, null, vars.$text-secondary-light);
     }
 
     &__devicesCount {
-        font-size: 0.75rem;
-        color: vars.$text-secondary-light;
+        @include mixins.text-style(12px, null, null, vars.$text-secondary-light);
         margin-right: 8px;
     }
 

@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .devicePage {
     padding: 24px;
@@ -29,9 +30,7 @@
 
     &__title {
         margin: 0;
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: vars.$text-primary-light;
+        @include mixins.text-style(24px, null, 600, vars.$text-primary-light);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -57,9 +56,7 @@
 
     &__sectionTitle {
         margin: 0;
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: vars.$text-primary-light;
+        @include mixins.text-style(18px, null, 600, vars.$text-primary-light);
     }
 
     &__loading {
@@ -105,9 +102,7 @@
 
     &__tagName {
         margin: 0;
-        font-size: 1rem;
-        font-weight: 600;
-        color: vars.$text-primary-light;
+        @include mixins.text-style(16px, null, 600, vars.$text-primary-light);
     }
 
     &__tagInfo {
@@ -118,13 +113,11 @@
     }
 
     &__tagInfoItem {
-        font-size: 0.875rem;
-        color: vars.$text-secondary-light;
+        @include mixins.text-style(14px, null, null, vars.$text-secondary-light);
     }
 
     &__tagDescription {
-        font-size: 0.875rem;
-        color: vars.$text-secondary-light;
+        @include mixins.text-style(14px, null, null, vars.$text-secondary-light);
         margin-top: 8px;
     }
 }

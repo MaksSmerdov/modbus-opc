@@ -42,7 +42,9 @@ export const UsersList = () => {
       if (response.success) {
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
-            user.id === userId ? response.data : user
+            user.id === userId
+              ? { ...user, ...response.data } // Мержим существующие данные с новыми
+              : user
           )
         );
         showSuccess('Роль пользователя успешно обновлена');

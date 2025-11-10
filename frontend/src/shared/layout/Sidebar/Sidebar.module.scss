@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .sidebar {
     position: fixed;
@@ -29,9 +30,7 @@
     }
 
     &__title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: vars.$text-primary-light;
+        @include mixins.text-style(16px, null, 600, vars.$text-primary-light);
         padding: 0 8px;
     }
 
@@ -62,9 +61,7 @@
     }
 
     &__toggle-icon {
-        font-size: 24px;
-        font-weight: bold;
-        line-height: 1;
+        @include mixins.text-style(24px, 1, bold, null);
         display: block;
     }
 

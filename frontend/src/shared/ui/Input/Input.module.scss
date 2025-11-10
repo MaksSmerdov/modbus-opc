@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .input {
   &__root {
@@ -8,7 +9,7 @@
   &_error {
     :global(.MuiOutlinedInput-root) {
       &:hover :global(.MuiOutlinedInput-notchedOutline) {
-        border-color: vars.$error-color-light;
+        border-color: vars.$red;
       }
     }
   }
@@ -68,8 +69,7 @@
 
   // Стилизация label
   :global(.MuiInputLabel-root) {
-    font-weight: 500;
-    color: vars.$text-secondary-light;
+    @include mixins.text-style(null, null, 500, vars.$text-secondary-light);
 
     &:global(.Mui-focused) {
       color: vars.$intoxicate;
@@ -80,15 +80,13 @@
   :global(.MuiFormHelperText-root) {
     margin-top: 4px;
     margin-bottom: 0;
-    font-size: 0.75rem;
+    @include mixins.text-style(12px, 1.43, null, vars.$text-secondary-light);
     min-height: 20px;
     display: block;
-    line-height: 1.43;
     box-sizing: border-box;
-    color: vars.$text-secondary-light;
 
     &:global(.Mui-error) {
-      color: vars.$error-color-light;
+      color: vars.$red;
     }
   }
 
@@ -115,7 +113,7 @@
     &_error {
       :global(.MuiOutlinedInput-root) {
         &:hover :global(.MuiOutlinedInput-notchedOutline) {
-          border-color: vars.$error-color-dark;
+          border-color: vars.$red;
         }
       }
     }
@@ -177,7 +175,7 @@
       color: vars.$text-secondary-dark;
 
       &:global(.Mui-error) {
-        color: vars.$error-color-dark;
+        color: vars.$red;
       }
     }
   }

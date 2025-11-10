@@ -34,14 +34,8 @@
     }
 
     .SnackbarContent-root[class*="variant-error"] {
-        background-color: vars.$error-color-light !important;
+        background-color: vars.$red !important;
         color: #fff !important;
-    }
-
-    :global(.dark) {
-        .SnackbarContent-root[class*="variant-error"] {
-            background-color: vars.$error-color-dark !important;
-        }
     }
 
     .SnackbarContent-root[class*="variant-warning"] {

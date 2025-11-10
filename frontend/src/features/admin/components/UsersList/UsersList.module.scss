@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .usersList {
   &__header {
@@ -10,9 +11,7 @@
 
   &__title {
     margin: 0;
-    font-size: 24px;
-    font-weight: 600;
-    color: vars.$text-primary-light;
+    @include mixins.text-style(24px, null, 600, vars.$text-primary-light);
   }
 
   &__loading,
@@ -23,7 +22,7 @@
   }
 
   &__error {
-    color: vars.$error-color-light;
+    color: vars.$red;
   }
 
   &__table {
@@ -40,9 +39,7 @@
       th {
         padding: 8px 12px;
         text-align: center;
-        font-weight: 600;
-        font-size: 14px;
-        color: vars.$text-primary-light;
+        @include mixins.text-style(14px, null, 600, vars.$text-primary-light);
         border-bottom: 2px solid vars.$table-border-light;
       }
     }
@@ -71,7 +68,7 @@
     }
 
     &__error {
-      color: vars.$error-color-dark;
+      color: vars.$red;
     }
 
     &__table-content {

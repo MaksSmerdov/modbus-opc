@@ -1,3 +1,3 @@
-export { TagsTable } from './components/TagsTable';
-export { TagDetailsModal } from './components/TagDetailsModal';
-export { TagsValuesView } from './components/TagsValuesView';
+export { TagsTable } from './components/TagsTable/TagsTable';
+export { TagDetailsModal } from './components/TagDetailsModal/TagDetailsModal';
+export { TagsValuesView } from './components/TagsValuesView/TagsValuesView';

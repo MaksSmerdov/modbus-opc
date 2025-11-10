@@ -39,7 +39,7 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
     const isAdmin = useMemo(() => user?.role === 'admin', [user?.role]);
 
     // Фильтруем устройства по порту
-    const portDevices = useMemo(() => 
+    const portDevices = useMemo(() =>
         devices?.filter((device) => device.portId === portId) || [],
         [devices, portId]
     );
@@ -156,13 +156,13 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
 
     return (
         <>
-            <div className={styles['devicesList']}>
+            <ul className={`${styles['devicesList']} list-reset`}>
                 {portDevices.map((device) => {
                     const handleEdit = canManageDevices && onEdit ? () => handleEditDevice(device) : undefined;
                     const handleDelete = canManageDevices ? () => handleDeleteDevice(device._id) : undefined;
                     const handleToggle = canManageDevices ? () => handleToggleActive(device) : undefined;
                     const handleLog = isAdmin ? () => handleToggleLog(device) : undefined;
-                    
+
                     return (
                         <DeviceCard
                             key={device._id}
@@ -176,7 +176,7 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
                         />
                     );
                 })}
-            </div>
+            </ul>
             <ConfirmModal
                 open={deleteConfirmOpen}
                 onClose={handleDeleteCancel}

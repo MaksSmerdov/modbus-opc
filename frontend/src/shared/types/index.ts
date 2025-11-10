@@ -1,6 +1,5 @@
 export type Theme = 'light' | 'dark' | 'auto';
 
-// Общие типы пользователя (используются в нескольких модулях)
 export type UserRole = 'admin' | 'operator' | 'viewer';
 
 export interface User {

@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { TagsTableActions } from '../TagsTableActions';
+import { TagsTableActions } from '../TagsTableActions/TagsTableActions';
 import {
     TagNameCell,
     TagAddressCell,
@@ -15,7 +15,7 @@ import type { Tag, CreateTagData } from '../../../types';
 import styles from './TagsTableRow.module.scss';
 
 interface TagsTableRowProps {
-    tag?: Tag; // опционально для новой строки
+    tag?: Tag;
     isNew?: boolean;
     isEditing: boolean;
     editingData?: Partial<CreateTagData>;
@@ -37,7 +37,6 @@ interface TagsTableRowProps {
 
 export const TagsTableRow = memo(({
     tag,
-    isNew = false,
     isEditing,
     editingData,
     hasStringTags,

@@ -1,2 +1,0 @@
-export { TagsValuesView } from './TagsValuesView';
-

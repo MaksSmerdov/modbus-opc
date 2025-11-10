@@ -87,7 +87,7 @@ export const PortCard = memo(({
 
     if (isCollapsed) {
         return (
-            <div
+            <li
                 className={styles['portCard']}
                 title={port.name}
                 onClick={handleCardClick}
@@ -95,22 +95,24 @@ export const PortCard = memo(({
                 <div className={styles['portCard__icon']}>
                     <Settings />
                 </div>
-            </div>
+            </li>
         );
     }
 
     return (
-        <div
+        <li
             className={styles['portCard']}
             onClick={handleCardClick}
         >
             <div className={styles['portCard__header']}>
                 <div className={styles['portCard__title']}>
-                    <Tooltip title={port.name} arrow>
-                        <h4 className={styles['portCard__name']}>
-                            {port.name}
-                        </h4>
-                    </Tooltip>
+                    <h4 className={styles['portCard__name']}>
+                        <Tooltip title={port.name} arrow>
+                            <span className={styles['portCard__nameText']}>
+                                {port.name}
+                            </span>
+                        </Tooltip>
+                    </h4>
                     <div className={styles['portCard__actions']} onClick={(e) => e.stopPropagation()}>
                         {onToggleActive && (
                             <IconButton
@@ -153,7 +155,7 @@ export const PortCard = memo(({
                     )}
                 </div>
             </div>
-        </div>
+        </li>
     );
 });
 

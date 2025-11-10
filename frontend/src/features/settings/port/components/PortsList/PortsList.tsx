@@ -153,7 +153,7 @@ export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) 
 
     return (
         <>
-            <div className={styles['portsList']}>
+            <ul className={`${styles['portsList']} list-reset`}>
                 {ports.map((port) => (
                     <PortCard
                         key={port._id}
@@ -166,7 +166,7 @@ export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) 
                         isCollapsed={isCollapsed}
                     />
                 ))}
-            </div>
+            </ul>
             <ConfirmModal
                 open={deleteConfirmOpen}
                 onClose={handleDeleteCancel}

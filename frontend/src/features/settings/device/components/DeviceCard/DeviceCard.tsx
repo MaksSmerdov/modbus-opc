@@ -118,7 +118,7 @@ export const DeviceCard = memo(({
     }, [onToggleLogData, device]);
 
     return (
-        <div className={styles['deviceCard']} onClick={handleCardClick}>
+        <li className={styles['deviceCard']} onClick={handleCardClick}>
             <div className={styles['deviceCard__header']}>
                 <div className={styles['deviceCard__title']}>
                     <div className={styles['deviceCard__nameWrapper']}>
@@ -184,6 +184,6 @@ export const DeviceCard = memo(({
                     Таймаут: {device.timeout} мс
                 </span>
             </div>
-        </div>
+        </li>
     );
 });

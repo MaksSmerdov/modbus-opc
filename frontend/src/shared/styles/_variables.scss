@@ -39,29 +39,6 @@ $text-secondary-dark: #b0b0b0;
 $text-muted-dark: #808080;
 $border-color-dark: rgba($white, 0.12);
 
-// Переменные для ThemeToggle
-$theme-toggle-bg-light: rgba($black, 0.05);
-$theme-toggle-border-light: rgba($black, 0.1);
-$theme-toggle-icon-light: $grey;
-$theme-toggle-icon-hover-light: $carbon;
-$theme-toggle-hover-light: rgba($black, 0.08);
-$theme-toggle-active-bg-light: rgba($black, 0.1);
-$theme-toggle-active-icon-light: $black;
-
-$theme-toggle-bg-dark: rgba($white, 0.1);
-$theme-toggle-border-dark: rgba($white, 0.2);
-$theme-toggle-icon-dark: $cerebral-grey;
-$theme-toggle-icon-hover-dark: $white;
-$theme-toggle-hover-dark: rgba($white, 0.15);
-$theme-toggle-active-bg-dark: rgba($white, 0.2);
-$theme-toggle-active-icon-dark: $white;
-
-// Дополнительные переменные для админ-компонентов
-$select-border-hover: #667eea;
-$select-focus-shadow: rgba(102, 126, 234, 0.1);
-$current-user-color: #667eea;
-$error-color-light: #d32f2f;
-$error-color-dark: #ef5350;
 
 // Переменные для таблицы
 $table-header-bg-light: $white-smoke;
