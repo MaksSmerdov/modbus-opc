@@ -1,0 +1,29 @@
+@use "@/shared/styles/variables" as vars;
+
+.searchInput {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    &__icon {
+        position: absolute;
+        left: 12px;
+        color: vars.$text-secondary-light;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    &__input {
+        padding-left: 40px !important;
+    }
+}
+
+:global(.dark) {
+    .searchInput {
+        &__icon {
+            color: vars.$text-secondary-dark;
+        }
+    }
+}
+

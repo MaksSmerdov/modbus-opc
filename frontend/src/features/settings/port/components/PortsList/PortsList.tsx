@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, memo } from 'react';
+import { useState, useMemo, useCallback, memo, useRef, useEffect } from 'react';
 import { useGetPortsQuery, useDeletePortMutation, useUpdatePortMutation } from '../../api/portsApi';
 import { useGetDevicesQuery } from '@/features/settings/device/api/devicesApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
@@ -19,6 +19,8 @@ interface PortsListProps {
 export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) => {
     const { data: ports, isLoading, error } = useGetPortsQuery();
     const { data: devices } = useGetDevicesQuery();
+    // Сохраняем предыдущее количество портов для отображения скелетонов
+    const previousPortsCountRef = useRef<number>(3);
     const { isPolling } = useGetPollingStatusQuery(undefined, {
         selectFromResult: ({ data }) => ({
             isPolling: data?.isPolling ?? false,
@@ -99,18 +101,32 @@ export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) 
         }
     }, [canManagePorts, handleTogglePortActive]);
 
+    // Обновляем количество портов при изменении данных
+    useEffect(() => {
+        if (ports && ports.length > 0) {
+            previousPortsCountRef.current = ports.length;
+        }
+    }, [ports]);
+
+    // Определяем количество скелетонов для отображения
+    const skeletonsCount = previousPortsCountRef.current;
+
     if (isLoading) {
         return (
-            <div className={portCardStyles['portCard']}>
-                <div className={portCardStyles['portCard__header']}>
-                    <div className={portCardStyles['portCard__title']}>
-                        <Skeleton variant="text" width="60%" height={24} className={portCardStyles['portCard__name']} />
-                        <div className={portCardStyles['portCard__actions']}>
-                            <Skeleton variant="circular" width={24} height={24} />
+            <div className={styles['portsList']}>
+                {Array.from({ length: skeletonsCount }).map((_, index) => (
+                    <div key={index} className={portCardStyles['portCard']}>
+                        <div className={portCardStyles['portCard__header']}>
+                            <div className={portCardStyles['portCard__title']}>
+                                <Skeleton variant="text" width="60%" height={24} className={portCardStyles['portCard__name']} />
+                                <div className={portCardStyles['portCard__actions']}>
+                                    <Skeleton variant="circular" width={24} height={24} />
+                                </div>
+                            </div>
                         </div>
+                        <Skeleton variant="text" width="20%" height={24} className={portCardStyles['portCard__name']} />
                     </div>
-                </div>
-                <Skeleton variant="text" width="20%" height={24} className={portCardStyles['portCard__name']} />
+                ))}
             </div>
         );
     }

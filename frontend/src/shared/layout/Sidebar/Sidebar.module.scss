@@ -71,6 +71,7 @@
     &__content {
         flex: 1;
         padding: 16px;
+        padding-right: 8px;
         overflow-y: auto;
         overflow-x: hidden;
         display: flex;
@@ -84,7 +85,6 @@
 
     &__ports {
         flex: 1;
-        overflow-y: auto;
     }
 }
 

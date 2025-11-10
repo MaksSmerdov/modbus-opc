@@ -2,9 +2,10 @@
 import { memo, useMemo, useCallback } from 'react';
 import { Delete, Edit, PowerSettingsNew, Description } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { Tooltip } from '@mui/material';
 import { transliterate } from '@/shared/utils/transliterate';
 import { useGetTagsQuery } from '@/features/settings/tag/api/tagsApi';
+import { IconButton } from '@/shared/ui/IconButton';
+import { useThrottle } from '@/shared/hooks/useThrottle';
 import type { Device } from '../../types';
 import styles from './DeviceCard.module.scss';
 
@@ -102,11 +103,13 @@ export const DeviceCard = memo(({
         }
     }, [onDelete, device._id]);
 
-    const handleToggle = useCallback(() => {
+    const handleToggleInternal = useCallback(() => {
         if (onToggleActive) {
             onToggleActive(device);
         }
     }, [onToggleActive, device]);
+
+    const { throttledFn: handleToggle, isLoading: isToggling } = useThrottle(handleToggleInternal, 1000);
 
     const handleToggleLog = useCallback(() => {
         if (onToggleLogData) {
@@ -130,50 +133,42 @@ export const DeviceCard = memo(({
                     </div>
                     <div className={styles['deviceCard__actions']} onClick={(e) => e.stopPropagation()}>
                         {onToggleActive && (
-                            <Tooltip title={device.isActive ? 'Выключить устройство' : 'Включить устройство'} arrow>
-                                <button
-                                    className={`${styles['deviceCard__actionButton']} ${styles['deviceCard__actionButton_power']} ${device.isActive ? styles['deviceCard__actionButton_power_active'] : ''}`}
-                                    onClick={handleToggle}
-                                >
-                                    <PowerSettingsNew fontSize="small" />
-                                </button>
-                            </Tooltip>
+                            <IconButton
+                                icon={<PowerSettingsNew fontSize="small" />}
+                                tooltip={device.isActive ? 'Выключить устройство' : 'Включить устройство'}
+                                variant="power"
+                                active={device.isActive}
+                                onClick={handleToggle}
+                                isLoading={isToggling}
+                            />
                         )}
                         {onToggleLogData && (
-                            <Tooltip title={device.logData ? 'Выключить логирование данных' : 'Включить логирование данных'} arrow>
-                                <button
-                                    className={`${styles['deviceCard__actionButton']} ${styles['deviceCard__actionButton_log']} ${device.logData ? styles['deviceCard__actionButton_log_active'] : ''}`}
-                                    onClick={handleToggleLog}
-                                >
-                                    <Description fontSize="small" />
-                                </button>
-                            </Tooltip>
+                            <IconButton
+                                icon={<Description fontSize="small" />}
+                                tooltip={device.logData ? 'Выключить логирование данных' : 'Включить логирование данных'}
+                                variant="log"
+                                active={device.logData}
+                                disabled={isToggling}
+                                onClick={handleToggleLog}
+                            />
                         )}
                         {onEdit && (
-                            <Tooltip title={getEditTooltip} arrow>
-                                <span>
-                                    <button
-                                        className={styles['deviceCard__actionButton']}
-                                        onClick={handleEdit}
-                                        disabled={isEditDeleteDisabled}
-                                    >
-                                        <Edit fontSize="small" />
-                                    </button>
-                                </span>
-                            </Tooltip>
+                            <IconButton
+                                icon={<Edit fontSize="small" />}
+                                tooltip={getEditTooltip}
+                                variant="edit"
+                                disabled={isEditDeleteDisabled || isToggling}
+                                onClick={handleEdit}
+                            />
                         )}
                         {onDelete && (
-                            <Tooltip title={getDeleteTooltip} arrow>
-                                <span>
-                                    <button
-                                        className={styles['deviceCard__actionButton']}
-                                        onClick={handleDelete}
-                                        disabled={isEditDeleteDisabled}
-                                    >
-                                        <Delete fontSize="small" />
-                                    </button>
-                                </span>
-                            </Tooltip>
+                            <IconButton
+                                icon={<Delete fontSize="small" />}
+                                tooltip={getDeleteTooltip}
+                                variant="delete"
+                                disabled={isEditDeleteDisabled || isToggling}
+                                onClick={handleDelete}
+                            />
                         )}
                     </div>
                 </div>

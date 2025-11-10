@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 import type { Port } from '../../types';
 import { transliterate } from '@/shared/utils/transliterate';
+import { IconButton } from '@/shared/ui/IconButton';
+import { useThrottle } from '@/shared/hooks/useThrottle';
 import styles from './PortCard.module.scss';
 import { memo, useMemo, useCallback } from 'react';
 
@@ -75,11 +77,13 @@ export const PortCard = memo(({
         }
     }, [onDelete, port._id]);
 
-    const handleToggle = useCallback(() => {
+    const handleToggleInternal = useCallback(() => {
         if (onToggleActive) {
             onToggleActive(port);
         }
     }, [onToggleActive, port]);
+
+    const { throttledFn: handleToggle, isLoading: isToggling } = useThrottle(handleToggleInternal, 1000);
 
     if (isCollapsed) {
         return (
@@ -109,14 +113,14 @@ export const PortCard = memo(({
                     </Tooltip>
                     <div className={styles['portCard__actions']} onClick={(e) => e.stopPropagation()}>
                         {onToggleActive && (
-                            <Tooltip title={port.isActive ? 'Выключить порт' : 'Включить порт'} arrow>
-                                <button
-                                    className={`${styles['portCard__actionButton']} ${styles['portCard__actionButton_power']} ${port.isActive ? styles['portCard__actionButton_power_active'] : ''}`}
-                                    onClick={handleToggle}
-                                >
-                                    <PowerSettingsNew fontSize="small" />
-                                </button>
-                            </Tooltip>
+                            <IconButton
+                                icon={<PowerSettingsNew fontSize="small" />}
+                                tooltip={port.isActive ? 'Выключить порт' : 'Включить порт'}
+                                variant="power"
+                                active={port.isActive}
+                                onClick={handleToggle}
+                                isLoading={isToggling}
+                            />
                         )}
                     </div>
                 </div>
@@ -129,32 +133,23 @@ export const PortCard = memo(({
                     </span>
                 )}
                 <div className={styles['portCard__actions']}>
-
                     {onEdit && (
-                        <Tooltip title={getEditTooltip} arrow>
-                            <span>
-                                <button
-                                    className={styles['portCard__actionButton']}
-                                    onClick={handleEdit}
-                                    disabled={isEditDeleteDisabled}
-                                >
-                                    <Edit fontSize="small" />
-                                </button>
-                            </span>
-                        </Tooltip>
+                        <IconButton
+                            icon={<Edit fontSize="small" />}
+                            tooltip={getEditTooltip}
+                            variant="edit"
+                            disabled={isEditDeleteDisabled || isToggling}
+                            onClick={handleEdit}
+                        />
                     )}
                     {onDelete && (
-                        <Tooltip title={getDeleteTooltip} arrow>
-                            <span>
-                                <button
-                                    className={styles['portCard__actionButton']}
-                                    onClick={handleDelete}
-                                    disabled={isEditDeleteDisabled}
-                                >
-                                    <Delete fontSize="small" />
-                                </button>
-                            </span>
-                        </Tooltip>
+                        <IconButton
+                            icon={<Delete fontSize="small" />}
+                            tooltip={getDeleteTooltip}
+                            variant="delete"
+                            disabled={isEditDeleteDisabled || isToggling}
+                            onClick={handleDelete}
+                        />
                     )}
                 </div>
             </div>
