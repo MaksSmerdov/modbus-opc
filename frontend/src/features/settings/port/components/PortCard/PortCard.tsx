@@ -5,6 +5,7 @@ import type { Port } from '../../types';
 import { transliterate } from '@/shared/utils/transliterate';
 import { IconButton } from '@/shared/ui/IconButton';
 import { useThrottle } from '@/shared/hooks/useThrottle';
+import { formatPortInfo, formatDevicesCount, getEditTooltip, getDeleteTooltip } from '../../utils/portUtils';
 import styles from './PortCard.module.scss';
 import { memo, useMemo, useCallback } from 'react';
 
@@ -29,13 +30,7 @@ export const PortCard = memo(({
 }: PortCardProps) => {
     const navigate = useNavigate();
 
-    const portInfo = useMemo(() => {
-        if (port.connectionType === 'RTU') {
-            return `${port.port}`;
-        } else {
-            return `${port.host}:${port.tcpPort}`;
-        }
-    }, [port]);
+    const portInfo = useMemo(() => formatPortInfo(port), [port]);
 
     const handleCardClick = useCallback((e: React.MouseEvent) => {
         // Не переходим, если клик был по кнопке редактирования/удаления
@@ -49,20 +44,14 @@ export const PortCard = memo(({
     // Блокируем редактирование/удаление если опрос включен И порт активен
     const isEditDeleteDisabled = useMemo(() => isPollingActive && port.isActive, [isPollingActive, port.isActive]);
 
-    const getEditTooltip = useMemo((): string => {
+    const editTooltip = useMemo(() => {
         if (!onEdit) return '';
-        if (isEditDeleteDisabled) {
-            return 'Сначала выключите порт, чтобы редактировать его';
-        }
-        return 'Редактировать';
+        return getEditTooltip(isEditDeleteDisabled);
     }, [onEdit, isEditDeleteDisabled]);
 
-    const getDeleteTooltip = useMemo((): string => {
+    const deleteTooltip = useMemo(() => {
         if (!onDelete) return '';
-        if (isEditDeleteDisabled) {
-            return 'Сначала выключите порт, чтобы удалить его';
-        }
-        return 'Удалить';
+        return getDeleteTooltip(isEditDeleteDisabled);
     }, [onDelete, isEditDeleteDisabled]);
 
     const handleEdit = useCallback(() => {
@@ -131,14 +120,14 @@ export const PortCard = memo(({
                 <span className={styles['portCard__infoText']}>{portInfo}</span>
                 {devicesCount > 0 && (
                     <span className={styles['portCard__devicesCount']}>
-                        [{devicesCount} {devicesCount === 1 ? 'уст-во' : devicesCount < 5 ? 'уст-ва' : 'уст-в'}]
+                        {formatDevicesCount(devicesCount)}
                     </span>
                 )}
                 <div className={styles['portCard__actions']}>
                     {onEdit && (
                         <IconButton
                             icon={<Edit fontSize="small" />}
-                            tooltip={getEditTooltip}
+                            tooltip={editTooltip}
                             variant="edit"
                             disabled={isEditDeleteDisabled || isToggling}
                             onClick={handleEdit}
@@ -147,7 +136,7 @@ export const PortCard = memo(({
                     {onDelete && (
                         <IconButton
                             icon={<Delete fontSize="small" />}
-                            tooltip={getDeleteTooltip}
+                            tooltip={deleteTooltip}
                             variant="delete"
                             disabled={isEditDeleteDisabled || isToggling}
                             onClick={handleDelete}

@@ -4,10 +4,12 @@ import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import styles from './MonitorPage.module.scss';
 
 export const MonitorPage = () => {
-    const { data: tags, isLoading, error } = useGetMonitorQuery(undefined, {
-        pollingInterval: 2000, // Обновляем каждые 2 секунды
-    });
     const { data: pollingStatus } = useGetPollingStatusQuery();
+    const pollInterval = pollingStatus?.pollInterval ?? 5000;
+
+    const { data: tags, isLoading, error } = useGetMonitorQuery(undefined, {
+        pollingInterval: pollInterval,
+    });
 
     if (isLoading) {
         return (

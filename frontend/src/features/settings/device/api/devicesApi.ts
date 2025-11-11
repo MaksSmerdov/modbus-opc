@@ -6,6 +6,7 @@ import type {
     CreateDeviceData,
     UpdateDeviceData,
 } from '../types';
+import { normalizeDevicePortId, normalizeDevicesPortId } from '../utils/normalizeDevice';
 
 export const devicesApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -14,13 +15,7 @@ export const devicesApi = baseApi.injectEndpoints({
             query: () => '/config/devices',
             providesTags: ['Devices'],
             transformResponse: (response: DevicesListResponse) => {
-                // Нормализуем portId: если это объект, берем _id, иначе оставляем как есть
-                return response.data.map((device) => ({
-                    ...device,
-                    portId: typeof device.portId === 'object' && device.portId !== null
-                        ? (device.portId as { _id: string })._id
-                        : device.portId,
-                }));
+                return normalizeDevicesPortId(response.data);
             },
         }),
 
@@ -29,14 +24,7 @@ export const devicesApi = baseApi.injectEndpoints({
             query: (id) => `/config/devices/${id}`,
             providesTags: (_result, _error, id) => [{ type: 'Devices', id }],
             transformResponse: (response: DeviceResponse) => {
-                // Нормализуем portId: если это объект, берем _id, иначе оставляем как есть
-                const device = response.data;
-                return {
-                    ...device,
-                    portId: typeof device.portId === 'object' && device.portId !== null
-                        ? (device.portId as { _id: string })._id
-                        : device.portId,
-                };
+                return normalizeDevicePortId(response.data);
             },
         }),
 
@@ -48,14 +36,7 @@ export const devicesApi = baseApi.injectEndpoints({
                 body: deviceData,
             }),
             transformResponse: (response: DeviceResponse) => {
-                // Нормализуем portId: если это объект, берем _id, иначе оставляем как есть
-                const device = response.data;
-                return {
-                    ...device,
-                    portId: typeof device.portId === 'object' && device.portId !== null
-                        ? (device.portId as { _id: string })._id
-                        : device.portId,
-                };
+                return normalizeDevicePortId(response.data);
             },
             invalidatesTags: ['Devices'],
         }),
@@ -68,14 +49,7 @@ export const devicesApi = baseApi.injectEndpoints({
                 body: data,
             }),
             transformResponse: (response: DeviceResponse) => {
-                // Нормализуем portId: если это объект, берем _id, иначе оставляем как есть
-                const device = response.data;
-                return {
-                    ...device,
-                    portId: typeof device.portId === 'object' && device.portId !== null
-                        ? (device.portId as { _id: string })._id
-                        : device.portId,
-                };
+                return normalizeDevicePortId(response.data);
             },
             invalidatesTags: (_result, _error, { id }) => [
                 { type: 'Devices', id },

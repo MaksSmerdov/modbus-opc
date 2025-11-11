@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 import { PlayArrow, Stop } from '@mui/icons-material';
 import { useGetPollingStatusQuery, useStartPollingMutation, useStopPollingMutation } from '../../api/pollingApi';
@@ -9,13 +9,21 @@ import styles from './PollingToggle.module.scss';
 export const PollingToggle = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const { data: status, isLoading: isLoadingStatus } = useGetPollingStatusQuery(undefined, {
-        pollingInterval: 2000, // Обновляем статус каждые 2 секунды
+        pollingInterval: 5000,
     });
+    const pollInterval = useMemo(() => status?.pollInterval ?? 5000, [status?.pollInterval]);
+    const { data: updatedStatus } = useGetPollingStatusQuery(undefined, {
+        pollingInterval: pollInterval,
+        skip: !status,
+    });
+
+    const currentStatus = updatedStatus ?? status;
+
     const [startPolling, { isLoading: isStarting }] = useStartPollingMutation();
     const [stopPolling, { isLoading: isStopping }] = useStopPollingMutation();
 
-    const isPolling = status?.isPolling ?? false;
-    const hasManager = status?.hasManager ?? false;
+    const isPolling = currentStatus?.isPolling ?? false;
+    const hasManager = currentStatus?.hasManager ?? false;
     const isLoading = isLoadingStatus || isStarting || isStopping;
 
     const handleToggleInternal = useCallback(async () => {

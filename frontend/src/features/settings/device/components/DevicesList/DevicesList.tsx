@@ -1,15 +1,16 @@
-
-import { useState, useMemo, useCallback, memo } from 'react';
-import { useGetDevicesQuery, useDeleteDeviceMutation, useUpdateDeviceMutation } from '../../api/devicesApi';
+import { useMemo, useCallback, memo } from 'react';
+import { useGetDevicesQuery } from '../../api/devicesApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import { DeviceCard } from '../DeviceCard/DeviceCard';
-import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
+import { DeviceCardSkeleton } from '../DeviceCard/DeviceCardSkeleton';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
+import { useDeviceDeletion } from '../../hooks/useDeviceDeletion';
+import { useDeviceToggle } from '../../hooks/useDeviceToggle';
+import { useDeviceLogToggle } from '../../hooks/useDeviceLogToggle';
+import { filterDevicesByPort } from '../../utils/deviceUtils';
 import type { Device } from '../../types';
 import styles from './DevicesList.module.scss';
-import deviceCardStyles from '../DeviceCard/DeviceCard.module.scss';
 import { useParams } from 'react-router-dom';
 
 interface DevicesListProps {
@@ -25,73 +26,30 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
         }),
     });
     const { user } = useAppSelector((state) => state.auth);
-    const { showSuccess, showError } = useSnackbar();
-    const [deleteDevice, { isLoading: isDeleting }] = useDeleteDeviceMutation();
-    const [updateDevice] = useUpdateDeviceMutation();
-    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-    const [deviceToDelete, setDeviceToDelete] = useState<string | null>(null);
 
     // Получаем portSlug из URL для навигации
     const { portSlug } = useParams<{ portSlug: string }>();
+
+    const {
+        deleteConfirmOpen,
+        isDeleting,
+        handleDeleteClick,
+        handleDeleteConfirm,
+        handleDeleteCancel,
+    } = useDeviceDeletion();
+
+    const { handleToggleDeviceActive } = useDeviceToggle();
+    const { handleToggleLogData } = useDeviceLogToggle();
 
     const isPollingActive = useMemo(() => isPolling, [isPolling]);
     const canManageDevices = useMemo(() => user?.role === 'admin' || user?.role === 'operator', [user?.role]);
     const isAdmin = useMemo(() => user?.role === 'admin', [user?.role]);
 
     // Фильтруем устройства по порту
-    const portDevices = useMemo(() =>
-        devices?.filter((device) => device.portId === portId) || [],
+    const portDevices = useMemo(
+        () => filterDevicesByPort(devices, portId),
         [devices, portId]
     );
-
-    const handleToggleDeviceActive = useCallback(async (device: Device) => {
-        try {
-            await updateDevice({
-                id: device._id,
-                data: { isActive: !device.isActive },
-            }).unwrap();
-            showSuccess(device.isActive ? 'Устройство выключено' : 'Устройство включено');
-        } catch (error) {
-            console.error('Ошибка переключения активности устройства:', error);
-            showError('Не удалось изменить статус устройства');
-        }
-    }, [updateDevice, showSuccess, showError]);
-
-    const handleToggleLogData = useCallback(async (device: Device) => {
-        try {
-            await updateDevice({
-                id: device._id,
-                data: { logData: !device.logData },
-            }).unwrap();
-            showSuccess(device.logData ? `Логи объекта '${device.name}' выключены` : `Логи объекта '${device.name}' включены`);
-        } catch (error) {
-            console.error('Ошибка переключения логирования данных:', error);
-            showError('Не удалось изменить настройку логирования');
-        }
-    }, [updateDevice, showSuccess, showError]);
-
-    const handleDeleteClick = useCallback((deviceId: string) => {
-        setDeviceToDelete(deviceId);
-        setDeleteConfirmOpen(true);
-    }, []);
-
-    const handleDeleteConfirm = useCallback(async () => {
-        if (!deviceToDelete) return;
-        try {
-            await deleteDevice(deviceToDelete).unwrap();
-            setDeleteConfirmOpen(false);
-            setDeviceToDelete(null);
-            showSuccess('Устройство успешно удалено');
-        } catch (error) {
-            console.error('Ошибка удаления устройства:', error);
-            showError('Не удалось удалить устройство');
-        }
-    }, [deviceToDelete, deleteDevice, showSuccess, showError]);
-
-    const handleDeleteCancel = useCallback(() => {
-        setDeleteConfirmOpen(false);
-        setDeviceToDelete(null);
-    }, []);
 
     // Мемоизировать обработчики для map
     const handleEditDevice = useCallback((device: Device) => {
@@ -120,16 +78,8 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
 
     if (isLoading) {
         return (
-            <div className={deviceCardStyles['deviceCard']}>
-                <div className={deviceCardStyles['deviceCard__header']}>
-                    <div className={deviceCardStyles['deviceCard__title']}>
-                        <Skeleton variant="text" width="60%" height={24} className={deviceCardStyles['deviceCard__name']} />
-                        <div className={deviceCardStyles['deviceCard__actions']}>
-                            <Skeleton variant="circular" width={24} height={24} />
-                        </div>
-                    </div>
-                </div>
-                <Skeleton variant="text" width="20%" height={24} className={deviceCardStyles['deviceCard__name']} />
+            <div className={styles['devicesList']}>
+                <DeviceCardSkeleton />
             </div>
         );
     }

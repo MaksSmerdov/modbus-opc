@@ -2,10 +2,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shared/ui/Input/Input';
 import { Button } from '@/shared/ui/Button/Button';
-import { transliterate } from '@/shared/utils/transliterate';
 import { useAppSelector } from '@/app/hooks/hooks';
 import type { CreateDeviceData } from '../../types';
 import { deviceSchema, type DeviceFormData } from './deviceSchemas';
+import {
+    getDefaultDeviceFormValues,
+    generateSlugFromName,
+    getSlugHelperText,
+} from './utils/formUtils';
 import styles from './AddDeviceForm.module.scss';
 
 interface AddDeviceFormProps {
@@ -36,17 +40,7 @@ export const AddDeviceForm = ({
         setValue,
     } = useForm<DeviceFormData>({
         resolver: zodResolver(deviceSchema),
-        defaultValues: {
-            name: initialData?.name || '',
-            slug: initialData?.slug || '',
-            slaveId: initialData?.slaveId || 1,
-            portId: portId,
-            timeout: initialData?.timeout || 500,
-            retries: initialData?.retries || 3,
-            saveInterval: initialData?.saveInterval || 30000,
-            logData: initialData?.logData || false,
-            isActive: initialData?.isActive !== undefined ? initialData.isActive : true,
-        },
+        defaultValues: getDefaultDeviceFormValues(portId, initialData),
     });
 
     const watchedSlug = watch('slug');
@@ -56,7 +50,7 @@ export const AddDeviceForm = ({
         const name = e.target.value;
         if (!initialData?.slug && mode === 'create' && !isAdmin) {
             // Автогенерация только для не-админов
-            const generatedSlug = transliterate(name).toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+            const generatedSlug = generateSlugFromName(name);
             setValue('slug', generatedSlug, { shouldValidate: false });
         }
     };
@@ -65,19 +59,12 @@ export const AddDeviceForm = ({
         onSubmit(data as CreateDeviceData);
     };
 
-    // Определяем helperText для slug
-    const getSlugHelperText = () => {
-        if (errors.slug?.message) {
-            return errors.slug.message;
-        }
-        if (watchedSlug) {
-            return undefined; // Скрываем helperText когда slug заполнен
-        }
-        if (isAdmin) {
-            return 'Опционально. Если не указан, будет сгенерирован автоматически';
-        }
-        return undefined; // Для не-админов поле скрыто, поэтому helperText не нужен
-    };
+    const slugHelperText = getSlugHelperText(
+        watchedSlug,
+        !!errors.slug,
+        errors.slug?.message,
+        isAdmin
+    );
 
     return (
         <form onSubmit={handleSubmit(onFormSubmit)} className={styles['form']}>
@@ -94,7 +81,7 @@ export const AddDeviceForm = ({
                     label="Slug (опционально)"
                     {...register('slug')}
                     error={!!errors.slug}
-                    helperText={getSlugHelperText()}
+                    helperText={slugHelperText}
                     disabled={isLoading}
                 />
             )}

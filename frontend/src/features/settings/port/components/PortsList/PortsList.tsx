@@ -1,15 +1,16 @@
-import { useState, useMemo, useCallback, memo, useRef, useEffect } from 'react';
-import { useGetPortsQuery, useDeletePortMutation, useUpdatePortMutation } from '../../api/portsApi';
+import { useMemo, useCallback, memo, useRef, useEffect } from 'react';
+import { useGetPortsQuery } from '../../api/portsApi';
 import { useGetDevicesQuery } from '@/features/settings/device/api/devicesApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import { PortCard } from '../PortCard/PortCard';
-import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
+import { PortCardSkeleton } from '../PortCard/PortCardSkeleton';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
+import { usePortDeletion } from '../../hooks/usePortDeletion';
+import { usePortToggle } from '../../hooks/usePortToggle';
+import { countDevicesByPort } from '../../utils/portUtils';
 import type { Port } from '../../types';
 import styles from './PortsList.module.scss';
-import portCardStyles from '../PortCard/PortCard.module.scss';
 
 interface PortsListProps {
     isCollapsed?: boolean;
@@ -27,60 +28,25 @@ export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) 
         }),
     });
     const { user } = useAppSelector((state) => state.auth);
-    const { showSuccess, showError } = useSnackbar();
-    const [deletePort, { isLoading: isDeleting }] = useDeletePortMutation();
-    const [updatePort] = useUpdatePortMutation();
-    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-    const [portToDelete, setPortToDelete] = useState<string | null>(null);
+    
+    const {
+        deleteConfirmOpen,
+        isDeleting,
+        handleDeleteClick,
+        handleDeleteConfirm,
+        handleDeleteCancel,
+    } = usePortDeletion();
+    
+    const { handleTogglePortActive } = usePortToggle();
 
     const isPollingActive = useMemo(() => isPolling, [isPolling]);
     const canManagePorts = useMemo(() => user?.role === 'admin' || user?.role === 'operator', [user?.role]);
 
     // Подсчитываем количество устройств для каждого порта
-    const devicesCountByPort = useMemo(() => {
-        if (!devices || !ports) return {};
-        const countMap: Record<string, number> = {};
-        ports.forEach((port) => {
-            countMap[port._id] = devices.filter((device) => device.portId === port._id).length;
-        });
-        return countMap;
-    }, [devices, ports]);
-
-    const handleTogglePortActive = useCallback(async (port: Port) => {
-        try {
-            await updatePort({
-                id: port._id,
-                data: { isActive: !port.isActive },
-            }).unwrap();
-            showSuccess(port.isActive ? 'Порт выключен' : 'Порт включен');
-        } catch (error) {
-            console.error('Ошибка переключения активности порта:', error);
-            showError('Не удалось изменить статус порта');
-        }
-    }, [updatePort, showSuccess, showError]);
-
-    const handleDeleteClick = useCallback((portId: string) => {
-        setPortToDelete(portId);
-        setDeleteConfirmOpen(true);
-    }, []);
-
-    const handleDeleteConfirm = useCallback(async () => {
-        if (!portToDelete) return;
-        try {
-            await deletePort(portToDelete).unwrap();
-            setDeleteConfirmOpen(false);
-            setPortToDelete(null);
-            showSuccess('Порт успешно удален');
-        } catch (error) {
-            console.error('Ошибка удаления порта:', error);
-            showError('Не удалось удалить порт');
-        }
-    }, [portToDelete, deletePort, showSuccess, showError]);
-
-    const handleDeleteCancel = useCallback(() => {
-        setDeleteConfirmOpen(false);
-        setPortToDelete(null);
-    }, []);
+    const devicesCountByPort = useMemo(
+        () => countDevicesByPort(ports, devices),
+        [devices, ports]
+    );
 
     // Мемоизировать обработчики для map
     const handleEditPort = useCallback((port: Port) => {
@@ -115,17 +81,7 @@ export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) 
         return (
             <div className={styles['portsList']}>
                 {Array.from({ length: skeletonsCount }).map((_, index) => (
-                    <div key={index} className={portCardStyles['portCard']}>
-                        <div className={portCardStyles['portCard__header']}>
-                            <div className={portCardStyles['portCard__title']}>
-                                <Skeleton variant="text" width="60%" height={24} className={portCardStyles['portCard__name']} />
-                                <div className={portCardStyles['portCard__actions']}>
-                                    <Skeleton variant="circular" width={24} height={24} />
-                                </div>
-                            </div>
-                        </div>
-                        <Skeleton variant="text" width="20%" height={24} className={portCardStyles['portCard__name']} />
-                    </div>
+                    <PortCardSkeleton key={index} />
                 ))}
             </div>
         );

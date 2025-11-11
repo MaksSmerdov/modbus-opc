@@ -23,7 +23,7 @@ export const DevicePage = () => {
     const { data: devices, isLoading: devicesLoading, error: devicesError } = useGetDevicesQuery();
     const { user } = useAppSelector((state) => state.auth);
     const { data: pollingStatus } = useGetPollingStatusQuery(undefined, {
-        pollingInterval: 2000,
+        pollingInterval: 5000, // Временный интервал для запроса статуса, потом заменится на реальный
     });
     const { showSuccess, showError } = useSnackbar();
     const [updateDevice] = useUpdateDeviceMutation();
@@ -42,11 +42,13 @@ export const DevicePage = () => {
     const isPollingActive = pollingStatus?.isPolling ?? false;
     const shouldShowValues = isDeviceActive && isPollingActive;
 
+    const pollInterval = pollingStatus?.pollInterval ?? 5000;
+
     const { data: deviceData, isLoading: deviceDataLoading } = useGetDeviceDataQuery(
         device?.slug ?? '',
         {
             skip: !shouldShowValues || !device?.slug,
-            pollingInterval: shouldShowValues ? 2000 : 0, // Обновляем каждые 2 секунды, если нужно показывать значения
+            pollingInterval: shouldShowValues ? pollInterval : 0,
         }
     );
 
