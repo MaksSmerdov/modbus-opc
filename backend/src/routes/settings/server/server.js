@@ -1,7 +1,7 @@
 import express from 'express';
-import { getServerSettings, updateServerSettings } from '../../models/settings/index.js';
-import { getModbusManager } from '../../server.js';
-import { reinitializeModbus } from '../../utils/modbusReloader.js';
+import { getServerSettings, updateServerSettings } from '../../../models/settings/index.js';
+import { getModbusManager } from '../../../server.js';
+import { reinitializeModbus } from '../../../utils/modbusReloader.js';
 
 const router = express.Router();
 

@@ -237,5 +237,92 @@ router.get('/:deviceName/history', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/data/tags/all:
+ *   get:
+ *     summary: Получить все теги всех устройств с данными
+ *     tags: [Data]
+ *     responses:
+ *       200:
+ *         description: Массив всех тегов с информацией о портах, устройствах и значениях
+ *       503:
+ *         description: Modbus не инициализирован
+ */
+router.get('/tags/all', async (req, res) => {
+  try {
+    if (!modbusManager) {
+      return res.status(503).json({ error: 'Modbus не инициализирован' });
+    }
+
+    const { Device, Port, Tag } = await import('../../models/settings/index.js');
+
+    // Получаем все устройства с портами
+    const devices = await Device.find()
+      .populate('portId', 'name')
+      .lean();
+
+    // Получаем все теги
+    const allTags = await Tag.find().lean();
+
+    // Получаем данные всех устройств из modbusManager
+    const devicesDataMap = new Map();
+    modbusManager.devices.forEach(device => {
+      if (isDataFresh(device)) {
+        devicesDataMap.set(device.slug, device.data);
+      }
+    });
+
+    // Формируем результат
+    const result = allTags.map(tag => {
+      const device = devices.find(d => d._id.toString() === tag.deviceId.toString());
+      if (!device) return null;
+
+      const port = device.portId;
+      const deviceData = devicesDataMap.get(device.slug);
+
+      // Находим значение тега в данных устройства
+      let value = null;
+      let unit = tag.unit || '';
+
+      if (deviceData && deviceData[tag.category] && deviceData[tag.category][tag.name]) {
+        const tagData = deviceData[tag.category][tag.name];
+        value = tagData.value;
+        if (tagData.unit) {
+          unit = tagData.unit;
+        }
+      }
+
+      return {
+        _id: tag._id,
+        portName: port?.name || 'Неизвестный порт',
+        portId: port?._id?.toString() || '',
+        deviceName: device.name,
+        deviceSlug: device.slug,
+        deviceId: device._id.toString(),
+        tagName: tag.name,
+        category: tag.category,
+        value: value,
+        unit: unit,
+        address: tag.address,
+        functionCode: tag.functionCode,
+        dataType: tag.dataType,
+      };
+    }).filter(item => item !== null);
+
+    res.json({
+      success: true,
+      count: result.length,
+      data: result
+    });
+  } catch (error) {
+    console.error('Ошибка получения всех тегов:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка получения тегов'
+    });
+  }
+});
+
 export default router;
 

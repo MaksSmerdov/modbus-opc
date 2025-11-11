@@ -1,8 +1,8 @@
 import express from 'express';
-import devicesRouter from './devices.js';
-import portsRouter from './ports.js';
-import tagsRouter from './tags.js';
-import serverRouter from './server.js';
+import devicesRouter from './devices/devices.js';
+import portsRouter from './ports/ports.js';
+import tagsRouter from './tags/tags.js';
+import serverRouter from './server/server.js';
 
 const router = express.Router();
 

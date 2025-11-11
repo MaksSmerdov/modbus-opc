@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { configDB } from '../../utils/database.js';
+import { configDB } from '../../../utils/database.js';
 
 /**
  * Схема настроек сервера

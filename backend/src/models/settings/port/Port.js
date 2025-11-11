@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { configDB } from '../../utils/database.js';
+import { configDB } from '../../../utils/database.js';
 
 /**
  * Схема порта
@@ -17,17 +17,17 @@ const portSchema = new mongoose.Schema({
     enum: ['RTU', 'TCP'],
     uppercase: true
   },
-  
+
   // === Параметры для RTU ===
   port: {
     type: String,
-    required: function() {
+    required: function () {
       return this.connectionType === 'RTU';
     }
   },
   baudRate: {
     type: Number,
-    required: function() {
+    required: function () {
       return this.connectionType === 'RTU';
     },
     default: 9600,
@@ -49,21 +49,21 @@ const portSchema = new mongoose.Schema({
     enum: ['none', 'even', 'odd'],
     lowercase: true
   },
-  
+
   // === Параметры для TCP ===
   host: {
     type: String,
-    required: function() {
+    required: function () {
       return this.connectionType === 'TCP';
     }
   },
   tcpPort: {
     type: Number,
-    required: function() {
+    required: function () {
       return this.connectionType === 'TCP';
     },
   },
-  
+
   // === Общие параметры ===
   isActive: {
     type: Boolean,

@@ -1,6 +1,6 @@
 import express from 'express';
-import { Port, Device } from '../../models/settings/index.js';
-import { reinitializeModbus } from '../../utils/modbusReloader.js';
+import { Port, Device } from '../../../models/settings/index.js';
+import { reinitializeModbus } from '../../../utils/modbusReloader.js';
 
 const router = express.Router();
 
