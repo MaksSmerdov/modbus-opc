@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .monitorPage {
     display: flex;
@@ -17,7 +18,7 @@
     &__title {
         font-size: 1.5rem;
         font-weight: 600;
-        color: vars.$text-primary-light;
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
         margin: 0;
     }
 
@@ -35,7 +36,8 @@
 
     &__tableWrapper {
         overflow-x: auto;
-        border: 1px solid vars.$border-color-light;
+        border: 1px solid;
+        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
         border-radius: 8px;
         max-height: calc(100vh - 200px);
     }
@@ -43,16 +45,17 @@
     &__table {
         width: 100%;
         border-collapse: collapse;
-        background-color: vars.$bg-primary-light;
+        @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
         font-size: 0.875rem;
 
         th {
-            background-color: vars.$bg-secondary-light;
+            @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
             padding: 12px 16px;
             text-align: left;
             font-weight: 600;
-            color: vars.$text-primary-light;
-            border-bottom: 2px solid vars.$border-color-light;
+            @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+            border-bottom: 2px solid;
+            @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
             position: sticky;
             top: 0;
             z-index: 1;
@@ -60,15 +63,16 @@
 
         td {
             padding: 12px 16px;
-            border-bottom: 1px solid vars.$border-color-light;
-            color: vars.$text-primary-light;
+            border-bottom: 1px solid;
+            @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
+            @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
         }
 
         tr {
-            transition: background-color 0.2s ease;
+            @include mixins.transition(background-color);
 
             &:hover {
-                background-color: vars.$bg-secondary-light;
+                @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
             }
 
             &:last-child td {
@@ -79,7 +83,7 @@
 
     &__empty {
         text-align: center;
-        color: vars.$text-secondary-light;
+        @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
         padding: 32px !important;
     }
 
@@ -89,40 +93,4 @@
     }
 }
 
-:global(.dark) {
-    .monitorPage {
-        &__title {
-            color: vars.$text-primary-dark;
-        }
-
-        &__tableWrapper {
-            border-color: vars.$border-color-dark;
-        }
-
-        &__table {
-            background-color: vars.$bg-primary-dark;
-
-            th {
-                background-color: vars.$bg-secondary-dark;
-                color: vars.$text-primary-dark;
-                border-bottom-color: vars.$border-color-dark;
-            }
-
-            td {
-                border-bottom-color: vars.$border-color-dark;
-                color: vars.$text-primary-dark;
-            }
-
-            tr {
-                &:hover {
-                    background-color: vars.$bg-secondary-dark;
-                }
-            }
-        }
-
-        &__empty {
-            color: vars.$text-secondary-dark;
-        }
-    }
-}
 

@@ -1,8 +1,10 @@
+@use "@/shared/styles/mixins" as mixins;
+
 .button {
     &__root {
       text-transform: none;
       font-weight: 500;
-      transition: all 0.3s ease;
+      @include mixins.transition(all, 0.3s);
   
       &:disabled {
         opacity: 0.6;
@@ -64,8 +66,9 @@
   
     // Анимация при клике
     :global(.MuiButton-root) {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-  
+      @include mixins.transition(transform, 0.2s);
+      @include mixins.transition(box-shadow, 0.2s);
+
       &:active {
         transform: scale(0.98);
       }

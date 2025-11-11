@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .header {
     position: fixed;
@@ -10,11 +11,16 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 24px;
-    background-color: vars.$bg-primary-light;
-    color: vars.$text-primary-light;
-    border-bottom: 1px solid vars.$border-color-light;
+    @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+    border-bottom: 1px solid;
+    @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
     height: 79px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    
+    @include mixins.dark-theme {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
 
     &__left {
         display: flex;
@@ -39,7 +45,8 @@
         align-items: center;
         gap: 8px;
         padding-right: 16px;
-        border-right: 1px solid vars.$border-color-light;
+        border-right: 1px solid;
+        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
         margin-right: 8px;
     }
 
@@ -59,7 +66,8 @@
         align-items: center;
         gap: 8px;
         padding-left: 16px;
-        border-left: 1px solid vars.$border-color-light;
+        border-left: 1px solid;
+        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
         margin-left: 8px;
     }
 
@@ -70,6 +78,10 @@
         padding: 4px 12px;
         border-radius: 20px;
         background-color: rgba(vars.$intoxicate, 0.1);
+        
+        @include mixins.dark-theme {
+            background-color: rgba(vars.$intoxicate, 0.15);
+        }
     }
 
     &__userIcon {
@@ -80,70 +92,31 @@
     &__userName {
         font-size: 0.875rem;
         font-weight: 500;
-        color: vars.$text-primary-light;
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
     }
 
     &__adminButton,
     &__logoutButton {
-        color: vars.$text-secondary-light !important;
-        transition: all 0.2s ease;
+        @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
+        @include mixins.transition();
 
         &:hover {
+            @include mixins.transition(background-color, color);
             background-color: rgba(vars.$intoxicate, 0.1) !important;
             color: vars.$intoxicate !important;
+            
+            @include mixins.dark-theme {
+                background-color: rgba(vars.$intoxicate, 0.2) !important;
+            }
         }
     }
 
     &__adminButton_active {
         background-color: rgba(vars.$intoxicate, 0.15) !important;
         color: vars.$intoxicate !important;
-    }
-}
-
-:global(.dark) {
-    .header {
-        background-color: vars.$bg-primary-dark;
-        color: vars.$text-primary-dark;
-        border-bottom: 1px solid vars.$border-color-dark;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-
-        &__title {
-            color: vars.$intoxicate;
-        }
-
-        &__viewMode {
-            border-right-color: vars.$border-color-dark;
-        }
-
-        &__polling {
-            border-right-color: vars.$border-color-dark;
-        }
-
-        &__user {
-            border-left-color: vars.$border-color-dark;
-        }
-
-        &__userInfo {
-            background-color: rgba(vars.$intoxicate, 0.15);
-        }
-
-        &__userName {
-            color: vars.$text-primary-dark;
-        }
-
-        &__adminButton,
-        &__logoutButton {
-            color: vars.$text-secondary-dark !important;
-
-            &:hover {
-                background-color: rgba(vars.$intoxicate, 0.2) !important;
-                color: vars.$intoxicate !important;
-            }
-        }
-
-        &__adminButton_active {
+        
+        @include mixins.dark-theme {
             background-color: rgba(vars.$intoxicate, 0.25) !important;
-            color: vars.$intoxicate !important;
         }
     }
 }

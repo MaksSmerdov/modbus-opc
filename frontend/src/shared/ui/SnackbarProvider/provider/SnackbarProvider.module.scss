@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 :global {
     .SnackbarContainer-root {
@@ -10,19 +11,10 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
         border-radius: 8px !important;
         font-family: inherit !important;
-    }
-
-    // Светлая тема
-    .SnackbarContent-root {
-        background-color: vars.$bg-secondary-light !important;
-        color: vars.$text-primary-light !important;
-    }
-
-    // Темная тема
-    :global(.dark) {
-        .SnackbarContent-root {
-            background-color: vars.$bg-secondary-dark !important;
-            color: vars.$text-primary-dark !important;
+        @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+        
+        @include mixins.dark-theme {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
         }
     }

@@ -1,13 +1,21 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .skeleton {
-    background-color: rgba(vars.$intoxicate, 0.1) !important;
+    @include mixins.theme-property(background-color, rgba(vars.$intoxicate, 0.1), rgba(vars.$intoxicate, 0.15));
 
     &::after {
         background: linear-gradient(90deg,
                 transparent,
                 rgba(vars.$intoxicate, 0.2),
                 transparent) !important;
+        
+        @include mixins.dark-theme {
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(vars.$intoxicate, 0.3),
+                    transparent) !important;
+        }
     }
 
     &_text {
@@ -24,18 +32,5 @@
 
     &_circular {
         // Стили для круглого варианта
-    }
-}
-
-:global(.dark) {
-    .skeleton {
-        background-color: rgba(vars.$intoxicate, 0.15) !important;
-
-        &::after {
-            background: linear-gradient(90deg,
-                    transparent,
-                    rgba(vars.$intoxicate, 0.3),
-                    transparent) !important;
-        }
     }
 }

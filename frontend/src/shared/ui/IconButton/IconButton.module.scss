@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .iconButton {
     background: transparent;
@@ -6,21 +7,31 @@
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
-    color: vars.$text-secondary-light;
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    @include mixins.transition();
     min-width: 28px;
     min-height: 28px;
 
     &:hover:not(:disabled) {
+        @include mixins.transition(background-color, color);
         background-color: rgba(0, 0, 0, 0.05);
         color: vars.$text-primary-light;
+        
+        @include mixins.dark-theme {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: vars.$text-primary-dark;
+        }
     }
 
     &:active:not(:disabled) {
         background-color: rgba(0, 0, 0, 0.08);
+        
+        @include mixins.dark-theme {
+            background-color: rgba(255, 255, 255, 0.12);
+        }
     }
 
     &:disabled {
@@ -37,6 +48,10 @@
             &.iconButton_active {
                 background-color: rgba(76, 175, 80, 0.1);
                 color: #4caf50;
+                
+                @include mixins.dark-theme {
+                    background-color: rgba(76, 175, 80, 0.15);
+                }
             }
         }
     }
@@ -50,6 +65,10 @@
             &.iconButton_active {
                 background-color: rgba(33, 150, 243, 0.1);
                 color: #2196f3;
+                
+                @include mixins.dark-theme {
+                    background-color: rgba(33, 150, 243, 0.15);
+                }
             }
         }
     }
@@ -64,65 +83,15 @@
         &:hover:not(:disabled) {
             color: #f44336;
             background-color: rgba(244, 67, 54, 0.1);
+            
+            @include mixins.dark-theme {
+                background-color: rgba(244, 67, 54, 0.15);
+            }
         }
     }
 
     &__loader {
         color: inherit;
-    }
-}
-
-:global(.dark) {
-    .iconButton {
-        color: vars.$text-secondary-dark;
-
-        &:hover:not(:disabled) {
-            background-color: rgba(255, 255, 255, 0.08);
-            color: vars.$text-primary-dark;
-        }
-
-        &:active:not(:disabled) {
-            background-color: rgba(255, 255, 255, 0.12);
-        }
-
-        &_power {
-            &.iconButton_active {
-                color: #4caf50;
-            }
-
-            &:hover:not(:disabled) {
-                &.iconButton_active {
-                    background-color: rgba(76, 175, 80, 0.15);
-                    color: #4caf50;
-                }
-            }
-        }
-
-        &_log {
-            &.iconButton_active {
-                color: #2196f3;
-            }
-
-            &:hover:not(:disabled) {
-                &.iconButton_active {
-                    background-color: rgba(33, 150, 243, 0.15);
-                    color: #2196f3;
-                }
-            }
-        }
-
-        &_edit {
-            &:hover:not(:disabled) {
-                color: vars.$intoxicate;
-            }
-        }
-
-        &_delete {
-            &:hover:not(:disabled) {
-                color: #f44336;
-                background-color: rgba(244, 67, 54, 0.15);
-            }
-        }
     }
 }
 

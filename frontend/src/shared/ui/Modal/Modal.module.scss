@@ -1,15 +1,20 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .modal {
     &__paper {
         border-radius: 12px;
+        @include mixins.transition(all, 0.3s);
+        @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-        transition: all 0.3s ease;
-        background-color: vars.$bg-secondary-light;
         max-height: calc(100vh - 64px);
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        
+        @include mixins.dark-theme {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
     }
 
     &__title {
@@ -19,9 +24,10 @@
         padding: 20px 24px;
         font-weight: 600;
         font-size: 1.25rem;
-        border-bottom: 1px solid vars.$border-color-light;
+        border-bottom: 1px solid;
+        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
         position: relative;
-        color: vars.$text-primary-light;
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
         flex-shrink: 0;
 
         :global(.MuiDialogTitle-root) {
@@ -39,12 +45,18 @@
     }
 
     &__closeButton {
-        color: vars.$text-muted-light;
-        transition: all 0.2s ease;
+        @include mixins.theme-color(vars.$text-muted-light, vars.$text-muted-dark);
+        @include mixins.transition();
 
         &:hover {
+            @include mixins.transition(background-color, color);
             background-color: rgba(0, 0, 0, 0.04);
             color: vars.$text-primary-light;
+            
+            @include mixins.dark-theme {
+                background-color: rgba(255, 255, 255, 0.08);
+                color: vars.$text-primary-dark;
+            }
         }
     }
 
@@ -52,7 +64,7 @@
         padding: 24px;
         overflow-y: auto;
         overflow-x: hidden;
-        color: vars.$text-primary-light;
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
         flex: 1;
         min-height: 0;
 
@@ -70,43 +82,13 @@
 
     &__actions {
         padding: 16px 24px;
-        border-top: 1px solid vars.$border-color-light;
+        border-top: 1px solid;
+        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
         gap: 8px;
         flex-shrink: 0;
 
         :global(.MuiDialogActions-root) {
             padding: 0;
-        }
-    }
-}
-
-:global(.dark) {
-    .modal {
-        &__paper {
-            background-color: vars.$bg-secondary-dark;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        &__title {
-            border-bottom: 1px solid vars.$border-color-dark;
-            color: vars.$text-primary-dark;
-        }
-
-        &__closeButton {
-            color: vars.$text-muted-dark;
-
-            &:hover {
-                background-color: rgba(255, 255, 255, 0.08);
-                color: vars.$text-primary-dark;
-            }
-        }
-
-        &__content {
-            color: vars.$text-primary-dark;
-        }
-
-        &__actions {
-            border-top: 1px solid vars.$border-color-dark;
         }
     }
 }

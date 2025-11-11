@@ -5,3 +5,45 @@
   font-weight: $font-weight;
   color: $color;
 }
+
+// Миксин для transition (стандартный)
+@mixin transition($property: all, $duration: 0.3s, $timing: ease-in-out) {
+  transition: $property $duration $timing;
+}
+
+// Миксин для темной темы (для сложных случаев)
+@mixin dark-theme {
+  :global(.dark) & {
+    @content;
+  }
+}
+
+// Специализированные миксины для частых случаев (удобство и читаемость)
+@mixin theme-color($light-color, $dark-color) {
+  color: $light-color;
+  @include dark-theme {
+    color: $dark-color;
+  }
+}
+
+@mixin theme-bg($light-bg, $dark-bg) {
+  background-color: $light-bg;
+  @include dark-theme {
+    background-color: $dark-bg;
+  }
+}
+
+@mixin theme-border($light-border, $dark-border) {
+  border-color: $light-border;
+  @include dark-theme {
+    border-color: $dark-border;
+  }
+}
+
+// Универсальный миксин для редких случаев (box-shadow, opacity и т.д.)
+@mixin theme-property($property, $light-value, $dark-value) {
+  #{$property}: $light-value;
+  @include dark-theme {
+    #{$property}: $dark-value;
+  }
+}

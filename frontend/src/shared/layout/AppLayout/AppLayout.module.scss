@@ -1,3 +1,6 @@
+@use "@/shared/styles/mixins" as mixins;
+@use "@/shared/styles/variables" as vars;
+
 .appLayout {
     display: flex;
     flex-direction: column;

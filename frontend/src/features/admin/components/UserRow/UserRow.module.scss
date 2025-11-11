@@ -8,22 +8,25 @@
   &__date,
   &__actions {
     padding: 14px;
-    @include mixins.text-style(14px, null, null, vars.$text-primary-light);
+    @include mixins.text-style(14px, null, null, null);
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
     text-align: center;
   }
 
   &__email {
-    color: vars.$text-secondary-light;
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
   }
 
   &__select {
     padding: 4px 6px;
-    border: 1px solid vars.$steam;
+    border: 1px solid;
+    @include mixins.theme-border(vars.$steam, vars.$border-color-dark);
     border-radius: 4px;
     @include mixins.text-style(14px, null, null, null);
-    background-color: vars.$bg-secondary-light;
+    @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
     cursor: pointer;
-    transition: border-color 0.2s ease;
+    @include mixins.transition(border-color);
 
     &:hover:not(:disabled) {
       border-color: vars.$intoxicate;
@@ -49,38 +52,5 @@
     display: block;
     margin-top: 4px;
     @include mixins.text-style(12px, null, null, vars.$red);
-  }
-}
-
-:global(.dark) {
-  .userRow {
-    &__name,
-    &__email,
-    &__role,
-    &__date {
-      color: vars.$text-primary-dark;
-    }
-
-    &__email {
-      color: vars.$text-secondary-dark;
-    }
-
-    &__select {
-      background-color: vars.$bg-secondary-dark;
-      border-color: vars.$border-color-dark;
-      color: vars.$text-primary-dark;
-
-      &:hover:not(:disabled) {
-        border-color: vars.$intoxicate;
-      }
-    }
-
-    &__current-user {
-      color: vars.$intoxicate;
-    }
-
-    &__error {
-      color: vars.$red;
-    }
   }
 }

@@ -1,4 +1,5 @@
 @use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
 
 .searchInput {
     position: relative;
@@ -9,21 +10,13 @@
     &__icon {
         position: absolute;
         left: 12px;
-        color: vars.$text-secondary-light;
+        @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
         z-index: 1;
         pointer-events: none;
     }
 
     &__input {
         padding-left: 40px !important;
-    }
-}
-
-:global(.dark) {
-    .searchInput {
-        &__icon {
-            color: vars.$text-secondary-dark;
-        }
     }
 }
 

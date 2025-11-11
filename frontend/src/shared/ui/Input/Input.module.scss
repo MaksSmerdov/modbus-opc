@@ -20,17 +20,16 @@
 
   // Стилизация для состояния фокуса
   :global(.MuiOutlinedInput-root) {
-    transition: border-color 0.3s ease;
-    background-color: vars.$bg-secondary-light;
+    @include mixins.transition(border-color, 0.3s);
+    @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
 
     :global(.MuiOutlinedInput-notchedOutline) {
       border-color: rgba(vars.$intoxicate, 0.5);
-      transition: border-color 0.3s ease;
+      @include mixins.transition(border-color, 0.3s);
     }
 
     &:hover :global(.MuiOutlinedInput-notchedOutline) {
       border-color: vars.$intoxicate;
-      transition: border-color 0.3s ease;
     }
 
     &:global(.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
@@ -41,7 +40,7 @@
 
   // Стилизация input текста
   :global(.MuiOutlinedInput-input) {
-    color: vars.$text-primary-light;
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
 
     // Скрытие стрелок для input[type="number"]
     &[type="number"] {
@@ -64,12 +63,20 @@
       -webkit-text-fill-color: vars.$text-primary-light !important;
       box-shadow: 0 0 0 30px vars.$bg-secondary-light inset !important;
       caret-color: vars.$text-primary-light;
+      
+      @include mixins.dark-theme {
+        -webkit-box-shadow: 0 0 0 30px vars.$bg-secondary-dark inset !important;
+        -webkit-text-fill-color: vars.$text-primary-dark !important;
+        box-shadow: 0 0 0 30px vars.$bg-secondary-dark inset !important;
+        caret-color: vars.$text-primary-dark;
+      }
     }
   }
 
   // Стилизация label
   :global(.MuiInputLabel-root) {
-    @include mixins.text-style(null, null, 500, vars.$text-secondary-light);
+    @include mixins.text-style(null, null, 500, null);
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
 
     &:global(.Mui-focused) {
       color: vars.$intoxicate;
@@ -80,7 +87,8 @@
   :global(.MuiFormHelperText-root) {
     margin-top: 4px;
     margin-bottom: 0;
-    @include mixins.text-style(12px, 1.43, null, vars.$text-secondary-light);
+    @include mixins.text-style(12px, 1.43, null, null);
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
     min-height: 20px;
     display: block;
     box-sizing: border-box;
@@ -104,79 +112,6 @@
     :global(.MuiFormHelperText-root) {
       min-height: 20px;
       display: block;
-    }
-  }
-}
-
-:global(.dark) {
-  .input {
-    &_error {
-      :global(.MuiOutlinedInput-root) {
-        &:hover :global(.MuiOutlinedInput-notchedOutline) {
-          border-color: vars.$red;
-        }
-      }
-    }
-
-    :global(.MuiOutlinedInput-root) {
-      background-color: vars.$bg-secondary-dark;
-
-      :global(.MuiOutlinedInput-notchedOutline) {
-        border-color: rgba(vars.$intoxicate, 0.5);
-        transition: border-color 0.3s ease;
-      }
-
-      &:hover :global(.MuiOutlinedInput-notchedOutline) {
-        border-color: vars.$intoxicate;
-        transition: border-color 0.3s ease;
-      }
-
-      &:global(.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
-        border-color: vars.$intoxicate;
-      }
-    }
-
-    :global(.MuiOutlinedInput-input) {
-      color: vars.$text-primary-dark;
-
-      // Скрытие стрелок для input[type="number"] в темной теме
-      &[type="number"] {
-        -moz-appearance: textfield; // Firefox
-        appearance: textfield; // Стандартное свойство
-
-        &::-webkit-outer-spin-button,
-        &::-webkit-inner-spin-button {
-          -webkit-appearance: none; // Chrome, Safari, Edge
-          margin: 0;
-        }
-      }
-
-      // Переопределение стилей автозаполнения для темной темы
-      &:-webkit-autofill,
-      &:-webkit-autofill:hover,
-      &:-webkit-autofill:focus,
-      &:-webkit-autofill:active {
-        -webkit-box-shadow: 0 0 0 30px vars.$bg-secondary-dark inset !important;
-        -webkit-text-fill-color: vars.$text-primary-dark !important;
-        box-shadow: 0 0 0 30px vars.$bg-secondary-dark inset !important;
-        caret-color: vars.$text-primary-dark;
-      }
-    }
-
-    :global(.MuiInputLabel-root) {
-      color: vars.$text-secondary-dark;
-
-      &:global(.Mui-focused) {
-        color: vars.$intoxicate;
-      }
-    }
-
-    :global(.MuiFormHelperText-root) {
-      color: vars.$text-secondary-dark;
-
-      &:global(.Mui-error) {
-        color: vars.$red;
-      }
     }
   }
 }

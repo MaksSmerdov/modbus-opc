@@ -1,4 +1,5 @@
 @use "variables" as vars;
+@use "mixins" as mixins;
 
 *,
 *::before,
@@ -18,6 +19,7 @@ body {
   font-size: 16px;
   color: vars.$text-primary-light;
   background-color: vars.$bg-primary-light;
+  @include mixins.transition(background-color, color);
 }
 
 html.dark body {
@@ -37,18 +39,18 @@ html.dark body {
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(vars.$intoxicate, 0.3);
+    @include mixins.theme-property(background-color, rgba(vars.$intoxicate, 0.3), rgba(vars.$intoxicate, 0.4));
     border-radius: 5px;
     border: 2px solid transparent;
     background-clip: padding-box;
-    transition: background-color 0.2s ease;
+    @include mixins.transition(background-color);
 
     &:hover {
-      background-color: rgba(vars.$intoxicate, 0.5);
+      @include mixins.theme-property(background-color, rgba(vars.$intoxicate, 0.5), rgba(vars.$intoxicate, 0.6));
     }
 
     &:active {
-      background-color: rgba(vars.$intoxicate, 0.7);
+      @include mixins.theme-property(background-color, rgba(vars.$intoxicate, 0.7), rgba(vars.$intoxicate, 0.8));
     }
   }
 }
@@ -57,55 +59,35 @@ html.dark body {
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(vars.$intoxicate, 0.3) transparent;
-}
 
-// Стили для темной темы
-html.dark {
-  * {
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba(vars.$intoxicate, 0.4);
-
-      &:hover {
-        background-color: rgba(vars.$intoxicate, 0.6);
-      }
-
-      &:active {
-        background-color: rgba(vars.$intoxicate, 0.8);
-      }
-    }
-
+  @include mixins.dark-theme {
     scrollbar-color: rgba(vars.$intoxicate, 0.4) transparent;
   }
+}
 
-  body {
-    color: vars.$text-primary-dark;
-    background-color: vars.$bg-primary-dark;
+// Стили для выпадающего меню Select
+.MuiMenu-paper {
+  @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+  @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+}
+
+.MuiMenuItem-root {
+  @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+
+  &:hover {
+    @include mixins.theme-property(background-color, rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.08));
   }
 
-  // Стили для выпадающего меню Select в темной теме
-  .MuiMenu-paper {
-    background-color: vars.$bg-secondary-dark !important;
-    color: vars.$text-primary-dark !important;
-  }
-
-  .MuiMenuItem-root {
-    color: vars.$text-primary-dark !important;
+  &.Mui-selected {
+    @include mixins.theme-property(background-color, rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.12));
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.08) !important;
+      @include mixins.theme-property(background-color, rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.16));
     }
+  }
 
-    &.Mui-selected {
-      background-color: rgba(255, 255, 255, 0.12) !important;
-
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.16) !important;
-      }
-    }
-
-    &.Mui-focusVisible {
-      background-color: rgba(255, 255, 255, 0.08) !important;
-    }
+  &.Mui-focusVisible {
+    @include mixins.theme-property(background-color, rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.08));
   }
 }
 

@@ -7,9 +7,10 @@
     top: 79px;
     width: 240px;
     height: calc(100vh - 79px);
-    background-color: vars.$bg-primary-light;
-    border-right: 1px solid vars.$border-color-light;
-    transition: width 0.3s ease;
+    @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
+    border-right: 1px solid;
+    @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
+    @include mixins.transition(width, 0.3s);
     display: flex;
     flex-direction: column;
     z-index: 100;
@@ -24,13 +25,15 @@
         justify-content: space-between;
         align-items: center;
         padding: 8px;
-        border-bottom: 1px solid vars.$border-color-light;
-        transition: border-bottom-color 0.3s ease;
+        border-bottom: 1px solid;
+        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
+        @include mixins.transition(border-bottom-color, 0.3s);
         flex-shrink: 0;
     }
 
     &__title {
-        @include mixins.text-style(16px, null, 600, vars.$text-primary-light);
+        @include mixins.text-style(16px, null, 600, null);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
         padding: 0 8px;
     }
 
@@ -43,15 +46,23 @@
         align-items: center;
         justify-content: center;
         border-radius: 4px;
-        color: vars.$text-primary-light;
-        transition: background-color 0.2s ease, color 0.2s ease;
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+        @include mixins.transition(background-color, color);
 
         &:hover {
             background-color: rgba(0, 0, 0, 0.05);
+            
+            @include mixins.dark-theme {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
         }
 
         &:active {
             background-color: rgba(0, 0, 0, 0.08);
+            
+            @include mixins.dark-theme {
+                background-color: rgba(255, 255, 255, 0.08);
+            }
         }
 
         &:focus {
@@ -82,32 +93,5 @@
 
     &__ports {
         flex: 1;
-    }
-}
-
-:global(.dark) {
-    .sidebar {
-        background-color: vars.$bg-primary-dark;
-        border-right: 1px solid vars.$border-color-dark;
-
-        &__header {
-            border-bottom: 1px solid vars.$border-color-dark;
-        }
-
-        &__title {
-            color: vars.$text-primary-dark;
-        }
-
-        &__toggle {
-            color: vars.$text-primary-dark;
-
-            &:hover {
-                background-color: rgba(255, 255, 255, 0.05);
-            }
-
-            &:active {
-                background-color: rgba(255, 255, 255, 0.08);
-            }
-        }
     }
 }

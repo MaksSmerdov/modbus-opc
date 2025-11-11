@@ -3,15 +3,14 @@
 
 .portCard {
     margin-top: 12px;
-    background-color: vars.$bg-secondary-light;
-    border: 1px solid vars.$border-color-light;
+    @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+    border: 1px solid;
+    @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
     border-radius: 8px;
     padding: 8px;
-    transition: all 0.2s ease;
-    cursor: pointer; // Добавляем курсор
+    cursor: pointer; 
 
     &:hover {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         border-color: vars.$intoxicate;
     }
 
@@ -19,7 +18,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: vars.$text-primary-light;
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
     }
 
     &__header {
@@ -39,7 +38,8 @@
 
     &__name {
         margin: 0;
-        @include mixins.text-style(13px, null, 600, vars.$text-primary-light);
+        @include mixins.text-style(13px, null, 600, null);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
         min-width: 0;
         flex: 1;
         display: flex;
@@ -68,11 +68,13 @@
     }
 
     &__infoText {
-        @include mixins.text-style(13px, null, null, vars.$text-secondary-light);
+        @include mixins.text-style(13px, null, null, null);
+        @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
     }
 
     &__devicesCount {
-        @include mixins.text-style(12px, null, null, vars.$text-secondary-light);
+        @include mixins.text-style(12px, null, null, null);
+        @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
         margin-right: 8px;
     }
 
@@ -91,18 +93,28 @@
         cursor: pointer;
         padding: 4px;
         border-radius: 4px;
-        color: vars.$text-secondary-light;
+        @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
         display: flex;
         align-items: center;
-        transition: all 0.2s ease;
+        @include mixins.transition();
 
         &:hover:not(:disabled) {
+            @include mixins.transition(background-color, color);
             background-color: rgba(0, 0, 0, 0.05);
             color: vars.$text-primary-light;
+            
+            @include mixins.dark-theme {
+                background-color: rgba(255, 255, 255, 0.08);
+                color: vars.$text-primary-dark;
+            }
         }
 
         &:active:not(:disabled) {
             background-color: rgba(0, 0, 0, 0.08);
+            
+            @include mixins.dark-theme {
+                background-color: rgba(255, 255, 255, 0.12);
+            }
         }
 
         &:disabled {
@@ -119,63 +131,9 @@
                 &.portCard__actionButton_power_active {
                     background-color: rgba(76, 175, 80, 0.1);
                     color: #4caf50;
-                }
-            }
-        }
-    }
-}
-
-:global(.dark) {
-    .portCard {
-        background-color: vars.$bg-secondary-dark;
-        border-color: vars.$border-color-dark;
-
-        &:hover {
-            border-color: vars.$intoxicate;
-        }
-
-        &__name {
-            color: vars.$text-primary-dark;
-        }
-
-        &__infoText {
-            color: vars.$text-secondary-dark;
-        }
-
-        &__devicesCount {
-            color: vars.$text-secondary-dark;
-        }
-
-        &__actions {
-            border-top-color: vars.$border-color-dark;
-        }
-
-        &__actionButton {
-            color: vars.$text-secondary-dark;
-
-            &:hover:not(:disabled) {
-                background-color: rgba(255, 255, 255, 0.08);
-                color: vars.$text-primary-dark;
-            }
-
-            &:active:not(:disabled) {
-                background-color: rgba(255, 255, 255, 0.12);
-            }
-
-            &:disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
-            }
-
-            &_power {
-                &.portCard__actionButton_power_active {
-                    color: #4caf50;
-                }
-
-                &:hover:not(:disabled) {
-                    &.portCard__actionButton_power_active {
+                    
+                    @include mixins.dark-theme {
                         background-color: rgba(76, 175, 80, 0.15);
-                        color: #4caf50;
                     }
                 }
             }
