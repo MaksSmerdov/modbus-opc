@@ -101,7 +101,7 @@ export const PortPage = () => {
     };
 
     return (
-        <div className={styles['portPage']}>
+        <div className={`${styles['portPage']} page`}>
             <div className={styles['portPage__header']}>
                 <h1 className={styles['portPage__title']}>{port.name}</h1>
                 <div className={styles['portPage__status']}>

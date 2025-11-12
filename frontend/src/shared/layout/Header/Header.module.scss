@@ -10,7 +10,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 24px;
+    padding: 16px;
     @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
     @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
     border-bottom: 1px solid;
@@ -38,22 +38,6 @@
         display: flex;
         align-items: center;
         gap: 12px;
-    }
-
-    &__viewMode {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding-right: 16px;
-        border-right: 1px solid;
-        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
-        margin-right: 8px;
-    }
-
-    &__viewModeButton {
-        min-width: auto;
-        padding: 6px 12px;
-        font-size: 0.8125rem;
     }
 
     &__polling {

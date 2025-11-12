@@ -45,7 +45,7 @@ export const MonitorPage = () => {
     };
 
     return (
-        <div className={styles['monitorPage']}>
+        <div className={`${styles['monitorPage']} page`}>
             <div className={styles['monitorPage__header']}>
                 <h1 className={styles['monitorPage__title']}>
                     Мониторинг тегов

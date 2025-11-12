@@ -2,9 +2,6 @@
 @use "@/shared/styles/mixins" as mixins;
 
 .devicePage {
-    padding: 24px;
-    max-width: 1500px;
-    margin: 0 auto;
 
     &__header {
         display: flex;

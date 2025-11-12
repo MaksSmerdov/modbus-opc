@@ -1,11 +1,18 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAppSelector } from '../hooks/hooks';
 import { AdminPage } from '@/features/admin';
-import { AppLayout } from '@/shared/layout';
+import { AppLayout, ProtectedRoute } from '@/shared/layout';
 import { AuthPage } from '@/pages/auth/AuthPage';
 import { PortPage } from '@/pages/port/PortPage';
 import { DevicePage } from '@/pages/device/DevicePage';
 import { MonitorPage } from '@/pages/monitor/MonitorPage';
+
+const IndexRedirect = () => {
+    const { user } = useAppSelector((state) => state.auth);
+    if (user?.role === 'viewer') {
+        return <Navigate to="/monitor" replace />;
+    } 
+};
 
 export const AppRoutes = () => {
     const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -30,13 +37,34 @@ export const AppRoutes = () => {
                     )
                 }
             >
-                <Route index element={<div style={{ padding: '16px' }}>Главная страница</div>} />
-                <Route path="admin" element={<AdminPage />} />
+                <Route index element={<IndexRedirect />} />
+                <Route
+                    path="admin"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <AdminPage />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path="monitor" element={<MonitorPage />} />
-                {/* Роут для страницы устройства с тэгами */}
-                <Route path=":portSlug/:deviceSlug" element={<DevicePage />} />
-                {/* Динамический роут для портов - должен быть последним, чтобы не перехватывать зарезервированные пути */}
-                <Route path=":portSlug" element={<PortPage />} />
+                {/* Роут для страницы устройства с тэгами - только для admin и operator */}
+                <Route
+                    path=":portSlug/:deviceSlug"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin', 'operator']}>
+                            <DevicePage />
+                        </ProtectedRoute>
+                    }
+                />
+                {/* Динамический роут для портов - только для admin и operator */}
+                <Route
+                    path=":portSlug"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin', 'operator']}>
+                            <PortPage />
+                        </ProtectedRoute>
+                    }
+                />
             </Route>
         </Routes>
     );

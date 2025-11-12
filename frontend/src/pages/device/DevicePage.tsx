@@ -141,7 +141,7 @@ export const DevicePage = () => {
     };
 
     return (
-        <div className={styles['devicePage']}>
+        <div className={`${styles['monitorPage']} page`}>
             <div className={styles['devicePage__header']}>
                 <div className={styles['devicePage__headerLeft']}>
                     <Button

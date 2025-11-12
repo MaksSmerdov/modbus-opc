@@ -1,4 +1,4 @@
-import { Settings, Delete, Edit, PowerSettingsNew } from '@mui/icons-material';
+import { Delete, Edit, PowerSettingsNew } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 import type { Port } from '../../types';
@@ -16,7 +16,6 @@ interface PortCardProps {
     onDelete?: (portId: string) => void;
     onToggleActive?: (port: Port) => void;
     isPollingActive?: boolean;
-    isCollapsed?: boolean;
 }
 
 export const PortCard = memo(({
@@ -26,7 +25,6 @@ export const PortCard = memo(({
     onDelete,
     onToggleActive,
     isPollingActive = false,
-    isCollapsed = false
 }: PortCardProps) => {
     const navigate = useNavigate();
 
@@ -73,20 +71,6 @@ export const PortCard = memo(({
     }, [onToggleActive, port]);
 
     const { throttledFn: handleToggle, isLoading: isToggling } = useThrottle(handleToggleInternal, 1000);
-
-    if (isCollapsed) {
-        return (
-            <li
-                className={styles['portCard']}
-                title={port.name}
-                onClick={handleCardClick}
-            >
-                <div className={styles['portCard__icon']}>
-                    <Settings />
-                </div>
-            </li>
-        );
-    }
 
     return (
         <li

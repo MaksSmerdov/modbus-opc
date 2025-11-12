@@ -2,13 +2,9 @@
 @use "@/shared/styles/mixins" as mixins;
 
 .monitorPage {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    padding: 24px;
-    height: 100%;
 
     &__header {
+        margin-bottom: 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;

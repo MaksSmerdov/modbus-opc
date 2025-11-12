@@ -66,7 +66,6 @@ export const PollingToggle = () => {
                 icon={isPolling ? <Stop /> : <PlayArrow />}
                 onClick={handleToggle}
                 disabled={isButtonDisabled}
-                variant="default"
                 active={isPolling}
                 isLoading={isButtonLoading}
                 className={`${styles['pollingToggle']} ${isPolling ? styles['pollingToggle_active'] : ''}`}

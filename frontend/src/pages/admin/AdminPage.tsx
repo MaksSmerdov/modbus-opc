@@ -12,10 +12,10 @@ export const AdminPage = () => {
   }
 
   return (
-    <div className={styles['admin']}>
-      <div className={styles['admin__container']}>
-        <h1 className={styles['admin__title']}>Панель администратора</h1>
-        <p className={styles['admin__subtitle']}>
+    <div className={`${styles['adminPage']} page`}>
+      <div className={styles['adminPage__container']}>
+        <h1 className={styles['adminPage__title']}>Панель администратора</h1>
+        <p className={styles['adminPage__subtitle']}>
           Управление пользователями системы
         </p>
         <UsersList />

@@ -13,11 +13,10 @@ import type { Port } from '../../types';
 import styles from './PortsList.module.scss';
 
 interface PortsListProps {
-    isCollapsed?: boolean;
     onEdit?: (port: Port) => void;
 }
 
-export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) => {
+export const PortsList = memo(({ onEdit }: PortsListProps) => {
     const { data: ports, isLoading, error } = useGetPortsQuery();
     const { data: devices } = useGetDevicesQuery();
     // Сохраняем предыдущее количество портов для отображения скелетонов
@@ -28,7 +27,7 @@ export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) 
         }),
     });
     const { user } = useAppSelector((state) => state.auth);
-    
+
     const {
         deleteConfirmOpen,
         isDeleting,
@@ -36,7 +35,7 @@ export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) 
         handleDeleteConfirm,
         handleDeleteCancel,
     } = usePortDeletion();
-    
+
     const { handleTogglePortActive } = usePortToggle();
 
     const isPollingActive = useMemo(() => isPolling, [isPolling]);
@@ -101,7 +100,7 @@ export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) 
         return (
             <div className={styles['portsList']}>
                 <div className={styles['portsList__empty']}>
-                    {isCollapsed ? '' : 'Нет портов'}
+                    Нет портов
                 </div>
             </div>
         );
@@ -119,7 +118,6 @@ export const PortsList = memo(({ isCollapsed = false, onEdit }: PortsListProps) 
                         onDelete={canManagePorts ? handleDeletePort : undefined}
                         onToggleActive={canManagePorts ? handleToggleActive : undefined}
                         isPollingActive={isPollingActive}
-                        isCollapsed={isCollapsed}
                     />
                 ))}
             </ul>

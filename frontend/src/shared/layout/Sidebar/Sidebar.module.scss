@@ -17,57 +17,50 @@
     overflow: hidden;
 
     &_collapsed {
-        width: 64px;
+        width: 0;
+        overflow: hidden;
+
+        .sidebar__header {
+            transform: translateX(-100%);
+        }
+
+        .sidebar__content {
+            transform: translateX(-100%);
+        }
     }
 
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px;
+        padding: 8px 16px;
         border-bottom: 1px solid;
         @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
-        @include mixins.transition(border-bottom-color, 0.3s);
         flex-shrink: 0;
+        @include mixins.transition(transform, 0.3s);
+        min-width: 240px;
     }
 
     &__title {
         @include mixins.text-style(16px, null, 600, null);
         @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
-        padding: 0 8px;
     }
 
     &__toggle {
         background: transparent;
         border: none;
         cursor: pointer;
-        padding: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 4px;
         @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
-        @include mixins.transition(background-color, color);
 
         &:hover {
             background-color: rgba(0, 0, 0, 0.05);
-            
+
             @include mixins.dark-theme {
                 background-color: rgba(255, 255, 255, 0.05);
             }
-        }
-
-        &:active {
-            background-color: rgba(0, 0, 0, 0.08);
-            
-            @include mixins.dark-theme {
-                background-color: rgba(255, 255, 255, 0.08);
-            }
-        }
-
-        &:focus {
-            outline: 2px solid vars.$intoxicate;
-            outline-offset: 2px;
         }
     }
 
@@ -79,11 +72,12 @@
     &__content {
         flex: 1;
         padding: 16px;
-        padding-right: 8px;
         overflow-y: auto;
         overflow-x: hidden;
         display: flex;
         flex-direction: column;
+        @include mixins.transition(transform, 0.3s);
+        min-width: 240px;
     }
 
     &__addButton {
@@ -93,5 +87,21 @@
 
     &__ports {
         flex: 1;
+        min-width: 0;
+    }
+
+    &__floatingToggle {
+        position: fixed;
+        left: 8px;
+        top: 87px;
+        z-index: 101;
+        @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
+        border: 1px solid;
+        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+        @include mixins.dark-theme {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
     }
 }
