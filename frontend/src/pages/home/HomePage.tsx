@@ -2,16 +2,22 @@ import { useMemo } from 'react';
 import { useAppSelector } from '@/app/hooks/hooks';
 import { Button } from '@/shared/ui/Button/Button';
 import styles from './HomePage.module.scss';
+import { useNavigate } from 'react-router-dom';
 
 export const HomePage = () => {
     const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+    const navigate = useNavigate();
 
     const userName = useMemo(() => {
         if (isAuthenticated && user?.name) {
             return user.name;
         }
-        return 'пользователь';
+        return 'Пользователь';
     }, [isAuthenticated, user?.name]);
+
+    const handleNavigate = () => {
+        navigate('/monitor')
+    }
 
     const content = useMemo(() => {
         const baseText = `${userName}, добро пожаловать в систему мониторинга и управления Modbus устройствами.`;
@@ -79,7 +85,7 @@ export const HomePage = () => {
     return (
         <div className={`${styles['homePage']} page`}>
             <div className={styles['homePage__content']}>
-                <h1 className={`${styles['homePage__title']} title-reset`}>Добро пожаловать в Modbus OPC</h1>
+                <h1 className={`${styles['homePage__title']} title-reset`}>Modbus OPC</h1>
                 <p className={styles['homePage__greeting']}>
                     {content.greeting}
                 </p>
@@ -98,7 +104,12 @@ export const HomePage = () => {
                         </ul>
                     </div>
                 )}
-                <Button className={styles['homePage__monitorButton']}>Перейти к панели мониторинга</Button>
+                <Button
+                    onClick={handleNavigate}
+                    className={styles['homePage__monitorButton']}
+                >
+                    Перейти к панели мониторинга
+                </Button>
             </div>
         </div>
     );

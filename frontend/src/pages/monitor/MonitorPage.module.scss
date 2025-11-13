@@ -80,11 +80,11 @@
     &__empty {
         text-align: center;
         @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
-        padding: 32px !important;
+        padding: 8x !important;
     }
 
     &__error {
-        padding: 24px;
+        padding: 8px;
         text-align: center;
     }
 }

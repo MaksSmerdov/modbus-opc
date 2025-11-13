@@ -82,7 +82,7 @@ export const MonitorPage = () => {
                             ) : (
                                 <tr>
                                     <td colSpan={6} className={styles['monitorPage__empty']}>
-                                        {tags === undefined ? 'Загрузка...' : 'Нет тегов'}
+                                        {tags === undefined ? 'Загрузка...' : 'В системе нет тегов для отображения'}
                                     </td>
                                 </tr>
                             )}
