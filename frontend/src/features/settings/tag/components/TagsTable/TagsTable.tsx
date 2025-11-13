@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useUpdateTagMutation } from '../../api/tagsApi';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
 import { TagDetailsModal } from '../TagDetailsModal/TagDetailsModal';
 import { ByteOrderModal } from '../ByteOrderModal/ByteOrderModal';

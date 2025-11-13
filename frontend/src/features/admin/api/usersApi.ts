@@ -1,5 +1,5 @@
-import { api } from '../../../shared/api/api';
-import type { User, UserRole } from '../../../shared/types';
+import { api } from '@/shared/api/api';
+import type { User, UserRole } from '@/shared/types';
 
 export interface UpdateUserRoleData {
   role: UserRole;

@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { useGetMeQuery } from '../features/auth/api/authApi';
 import { Loader } from '@/shared/ui/Loader/Loader';
-import { SnackbarProvider } from '@/shared/ui/SnackbarProvider/provider/SnackbarProvider';
+import { SnackbarProvider } from '@/shared/providers/SnackbarProvider';
 import { AppRoutes } from './routes/AppRoutes';
 import { useMemo } from 'react';
 

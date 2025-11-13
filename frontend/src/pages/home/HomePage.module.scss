@@ -5,21 +5,61 @@
     &__content {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 400px;
-        text-align: center;
     }
 
     &__title {
         @include mixins.text-style(48px, 1.2, 700, null);
         @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+        margin: 0 0 24px 0;
+        text-align: center;
+    }
+
+    &__greeting {
+        @include mixins.text-style(20px, 1.6, 500, null);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
         margin: 0 0 16px 0;
     }
 
     &__description {
-        @include mixins.text-style(18px, 1.5, null, null);
-        @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
-        margin: 0;
+        @include mixins.text-style(16px, 1.6, null, null);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+        margin: 0 0 16px 0;
+    }
+
+    &__capabilitiesTitle {
+        @include mixins.text-style(20px, 1.4, 600, null);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+        margin: 0 0 16px 0;
+    }
+
+    &__capabilitiesList {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 24px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__capabilityItem {
+        @include mixins.text-style(16px, 1.5, null, null);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+        padding-left: 24px;
+        position: relative;
+
+        &::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: vars.$intoxicate;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    }
+
+    &__monitorButton {
+        align-self: center;
+        width: auto;
+        min-width: 250px;
     }
 }

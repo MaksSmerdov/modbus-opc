@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLoginMutation } from '../api/authApi';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { Input } from '../../../shared/ui/Input/Input';
 import { Button } from '../../../shared/ui/Button/Button';
 import { loginSchema, type LoginFormData } from '../schemas/authSchemas';

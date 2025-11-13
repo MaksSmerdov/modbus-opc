@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useDeletePortMutation } from '../api/portsApi';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 
 export function usePortDeletion() {
     const [deletePort, { isLoading: isDeleting }] = useDeletePortMutation();

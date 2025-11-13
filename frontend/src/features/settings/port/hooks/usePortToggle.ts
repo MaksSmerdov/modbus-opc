@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useUpdatePortMutation } from '../api/portsApi';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import type { Port } from '../types';
 
 export function usePortToggle() {

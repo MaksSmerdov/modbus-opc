@@ -5,7 +5,7 @@ import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { Modal } from '@/shared/ui/Modal/Modal';
 import { PortsList, AddPortForm } from '@/features/settings/port';
 import { useCreatePortMutation, useUpdatePortMutation } from '@/features/settings/port/api/portsApi';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { getErrorMessage } from '@/shared/utils/errorUtils';
 import type { Port, CreatePortData } from '@/features/settings/port/types';
 import styles from './Sidebar.module.scss';

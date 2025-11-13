@@ -4,7 +4,7 @@ import { PlayArrow, Stop } from '@mui/icons-material';
 import { useGetPollingStatusQuery, useStartPollingMutation, useStopPollingMutation } from '../../api/pollingApi';
 import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useThrottle } from '@/shared/hooks/useThrottle';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import styles from './PollingToggle.module.scss';
 
 export const PollingToggle = () => {

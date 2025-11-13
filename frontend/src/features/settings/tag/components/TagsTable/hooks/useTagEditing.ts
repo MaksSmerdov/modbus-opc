@@ -1,8 +1,8 @@
 import { useState, useCallback, useRef } from 'react';
 import { useCreateTagMutation, useUpdateTagMutation, useDeleteTagMutation } from '../../../api/tagsApi';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { validateTagData, normalizeCreateTagData, normalizeUpdateTagData } from '../utils/tagFormUtils';
-import type { Tag, CreateTagData, UpdateTagData } from '../../../types';
+import type { Tag, CreateTagData } from '../../../types';
 
 interface EditingRow {
     id: string | 'new';

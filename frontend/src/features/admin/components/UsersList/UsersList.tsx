@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { usersApi } from '../../api/usersApi';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { UserRow } from '../UserRow/UserRow';
 import { Button } from '../../../../shared/ui/Button/Button';
 import type { User } from '../../../../shared/types';

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useDeleteDeviceMutation } from '../api/devicesApi';
-import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 
 export function useDeviceDeletion() {
     const [deleteDevice, { isLoading: isDeleting }] = useDeleteDeviceMutation();

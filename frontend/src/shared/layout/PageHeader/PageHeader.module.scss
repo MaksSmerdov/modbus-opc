@@ -6,7 +6,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 32px;
-    padding-bottom: 16px;
+    padding-bottom: 6px;
     border-bottom: 1px solid;
     @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
     gap: 16px;
@@ -28,7 +28,7 @@
 
     &__title {
         margin: 0;
-        @include mixins.text-style(32px, null, 700, null);
+        @include mixins.text-style(26px, null, 700, null);
         @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
         overflow: hidden;
         text-overflow: ellipsis;
