@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '@/app/hooks/hooks.ts';
 import { UsersList } from '../../features/admin/components/UsersList/UsersList';
+import { AuditLogs } from '../../features/admin/components/AuditLogs/AuditLogs';
 import styles from './AdminPage.module.scss';
 
 export const AdminPage = () => {
@@ -19,6 +20,7 @@ export const AdminPage = () => {
           Управление пользователями системы
         </p>
         <UsersList />
+        <AuditLogs />
       </div>
     </div>
   );

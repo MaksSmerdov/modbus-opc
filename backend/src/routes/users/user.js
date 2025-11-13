@@ -1,6 +1,7 @@
 import express from 'express';
 import { User } from '../../models/user/User.js';
 import { adminOnlyMiddleware } from '../../middleware/auth.js';
+import { logAudit } from '../../utils/auditLogger.js';
 import meRouter from './me.js';
 
 const router = express.Router();
@@ -127,6 +128,9 @@ router.put('/:userId/role', adminOnlyMiddleware, async (req, res) => {
       });
     }
 
+    // Получаем старые данные перед обновлением
+    const oldUser = await User.findById(userId).select('name email role').lean();
+
     const user = await User.findByIdAndUpdate(
       userId,
       { role },
@@ -137,6 +141,20 @@ router.put('/:userId/role', adminOnlyMiddleware, async (req, res) => {
       return res.status(404).json({
         success: false,
         error: 'Пользователь не найден'
+      });
+    }
+
+    // Логируем изменение роли
+    if (oldUser && oldUser.role !== user.role) {
+      await logAudit({
+        user: req.user,
+        action: 'update',
+        entityType: 'user',
+        entityName: user.name || user.email,
+        fieldName: 'role',
+        oldValue: oldUser.role,
+        newValue: user.role,
+        req
       });
     }
 
@@ -193,7 +211,8 @@ router.delete('/:userId', adminOnlyMiddleware, async (req, res) => {
       });
     }
 
-    const user = await User.findByIdAndDelete(userId);
+    // Получаем данные пользователя перед удалением
+    const user = await User.findById(userId).select('name email').lean();
 
     if (!user) {
       return res.status(404).json({
@@ -201,6 +220,18 @@ router.delete('/:userId', adminOnlyMiddleware, async (req, res) => {
         error: 'Пользователь не найден'
       });
     }
+
+    await User.findByIdAndDelete(userId);
+
+    // Логируем удаление пользователя
+    await logAudit({
+      user: req.user,
+      action: 'delete',
+      entityType: 'user',
+      entityName: user.name || user.email,
+      oldValue: user.name || user.email,
+      req
+    });
 
     res.json({
       success: true,

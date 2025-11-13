@@ -1,0 +1,88 @@
+@use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
+
+.auditLogsTable {
+    overflow-x: auto;
+
+    &__content {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead {
+            background-color: vars.$table-header-bg-light;
+
+            th {
+                padding: 12px 16px;
+                text-align: left;
+                @include mixins.text-style(14px, null, 600, vars.$text-primary-light);
+                border-bottom: 2px solid vars.$table-border-light;
+                white-space: nowrap;
+
+                &:last-child {
+                    text-align: center;
+                    width: 80px;
+                }
+            }
+        }
+
+        tbody {
+            tr {
+                border-bottom: 1px solid vars.$table-border-light;
+
+                &:hover {
+                    background-color: vars.$table-row-hover-light;
+                }
+            }
+
+            td {
+                padding: 12px 16px;
+                @include mixins.text-style(14px, null, 400, vars.$text-primary-light);
+                word-break: break-word;
+
+                &:last-child {
+                    text-align: center;
+                }
+            }
+        }
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 40px;
+        color: vars.$text-secondary-light;
+    }
+}
+
+:global(.dark) {
+    .auditLogsTable {
+        &__content {
+            thead {
+                background-color: vars.$table-header-bg-dark;
+
+                th {
+                    color: vars.$text-primary-dark;
+                    border-bottom: 2px solid vars.$table-border-dark;
+                }
+            }
+
+            tbody {
+                tr {
+                    border-bottom: 1px solid vars.$border-color-dark;
+
+                    &:hover {
+                        background-color: vars.$table-row-hover-dark;
+                    }
+                }
+
+                td {
+                    color: vars.$text-primary-dark;
+                }
+            }
+        }
+
+        &__empty {
+            color: vars.$text-secondary-dark;
+        }
+    }
+}
+

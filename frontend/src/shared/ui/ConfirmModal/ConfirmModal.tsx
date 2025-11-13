@@ -7,7 +7,7 @@ interface ConfirmModalProps {
     onClose: () => void;
     onConfirm: () => void;
     title?: string;
-    message: string;
+    message: string | React.ReactNode;
     confirmText?: string;
     cancelText?: string;
     confirmVariant?: 'contained' | 'outlined' | 'text';
@@ -40,7 +40,11 @@ export const ConfirmModal = ({
             disableBackdropClick={isLoading}
         >
             <div className={styles['confirmModal']}>
-                <p className={styles['confirmModal__message']}>{message}</p>
+                {typeof message === 'string' ? (
+                    <p className={styles['confirmModal__message']}>{message}</p>
+                ) : (
+                    <div className={styles['confirmModal__message']}>{message}</div>
+                )}
                 <div className={styles['confirmModal__actions']}>
                     <Button
                         variant="outlined"

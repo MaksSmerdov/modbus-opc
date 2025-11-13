@@ -1,6 +1,7 @@
 import express from 'express';
 import { Port, Device } from '../../../models/settings/index.js';
 import { reinitializeModbus } from '../../../utils/modbusReloader.js';
+import { logAudit } from '../../../utils/auditLogger.js';
 
 const router = express.Router();
 
@@ -224,6 +225,19 @@ router.post('/', async (req, res) => {
 
     const port = await Port.create(portData);
 
+    // Логируем создание порта
+    if (req.user) {
+      await logAudit({
+        user: req.user,
+        action: 'create',
+        entityType: 'port',
+        entityName: port.name,
+        fieldName: 'name',
+        newValue: port.name,
+        req
+      });
+    }
+
     res.status(201).json({
       success: true,
       data: formatPort(port.toObject())
@@ -329,6 +343,33 @@ router.put('/:id', async (req, res) => {
       await reinitializeModbus();
     }
 
+    // Логируем изменения
+    if (req.user && oldPort) {
+      if (oldPort.name !== port.name) {
+        await logAudit({
+          user: req.user,
+          action: 'update',
+          entityType: 'port',
+          entityName: port.name,
+          fieldName: 'name',
+          oldValue: oldPort.name,
+          newValue: port.name,
+          req
+        });
+      }
+      if (isActiveChanged) {
+        await logAudit({
+          user: req.user,
+          action: 'toggle',
+          entityType: 'port',
+          entityName: port.name,
+          oldValue: port.name,
+          newValue: port.isActive,
+          req
+        });
+      }
+    }
+
     res.json({
       success: true,
       data: formatPort(port)
@@ -410,12 +451,27 @@ router.delete('/:id', async (req, res) => {
       });
     }
 
-    const port = await Port.findByIdAndDelete(req.params.id).lean();
+    // Получаем данные порта перед удалением
+    const port = await Port.findById(req.params.id).lean();
 
     if (!port) {
       return res.status(404).json({
         success: false,
         error: 'Порт не найден'
+      });
+    }
+
+    await Port.findByIdAndDelete(req.params.id);
+
+    // Логируем удаление порта
+    if (req.user) {
+      await logAudit({
+        user: req.user,
+        action: 'delete',
+        entityType: 'port',
+        entityName: port.name,
+        oldValue: port.name,
+        req
       });
     }
 

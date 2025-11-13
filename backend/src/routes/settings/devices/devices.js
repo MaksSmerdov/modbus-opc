@@ -1,6 +1,7 @@
 import express from 'express';
 import { Device, Port, Tag } from '../../../models/settings/index.js';
 import { reinitializeModbus } from '../../../utils/modbusReloader.js';
+import { logAudit } from '../../../utils/auditLogger.js';
 
 const router = express.Router();
 
@@ -236,6 +237,19 @@ router.post('/', async (req, res) => {
     // Реинициализируем Modbus для подключения нового устройства
     await reinitializeModbus();
 
+    // Логируем создание устройства
+    if (req.user) {
+      await logAudit({
+        user: req.user,
+        action: 'create',
+        entityType: 'device',
+        entityName: device.name,
+        fieldName: 'name',
+        newValue: device.name,
+        req
+      });
+    }
+
     res.status(201).json({
       success: true,
       data: {
@@ -317,6 +331,9 @@ router.post('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   try {
+    // Получаем старые данные перед обновлением
+    const oldDevice = await Device.findById(req.params.id).lean();
+
     const {
       name,
       slug,
@@ -370,6 +387,45 @@ router.put('/:id', async (req, res) => {
 
     // Реинициализируем Modbus для применения изменений
     await reinitializeModbus();
+
+    // Логируем изменения
+    if (req.user && oldDevice) {
+      if (oldDevice.name !== device.name) {
+        await logAudit({
+          user: req.user,
+          action: 'update',
+          entityType: 'device',
+          entityName: device.name,
+          fieldName: 'name',
+          oldValue: oldDevice.name,
+          newValue: device.name,
+          req
+        });
+      }
+      if (oldDevice.slaveId !== device.slaveId) {
+        await logAudit({
+          user: req.user,
+          action: 'update',
+          entityType: 'device',
+          entityName: device.name,
+          fieldName: 'slaveId',
+          oldValue: oldDevice.slaveId,
+          newValue: device.slaveId,
+          req
+        });
+      }
+      if (oldDevice.isActive !== device.isActive) {
+        await logAudit({
+          user: req.user,
+          action: 'toggle',
+          entityType: 'device',
+          entityName: device.name,
+          oldValue: device.name,
+          newValue: device.isActive,
+          req
+        });
+      }
+    }
 
     res.json({
       success: true,
@@ -441,7 +497,8 @@ router.put('/:id', async (req, res) => {
  */
 router.delete('/:id', async (req, res) => {
   try {
-    const device = await Device.findByIdAndDelete(req.params.id).lean();
+    // Получаем данные устройства перед удалением
+    const device = await Device.findById(req.params.id).lean();
 
     if (!device) {
       return res.status(404).json({
@@ -450,11 +507,25 @@ router.delete('/:id', async (req, res) => {
       });
     }
 
+    await Device.findByIdAndDelete(req.params.id);
+
     // Удаляем все тэги устройства
     await Tag.deleteMany({ deviceId: req.params.id });
 
     // Реинициализируем Modbus для удаления устройства из polling
     await reinitializeModbus();
+
+    // Логируем удаление устройства
+    if (req.user) {
+      await logAudit({
+        user: req.user,
+        action: 'delete',
+        entityType: 'device',
+        entityName: device.name,
+        oldValue: device.name,
+        req
+      });
+    }
 
     res.json({
       success: true,

@@ -25,6 +25,8 @@ export const MonitorPage = () => {
         );
     }
 
+    // Показываем ошибку только если запрос действительно провалился
+    // "Modbus не инициализирован" обрабатывается на уровне API и возвращается как пустой массив
     if (error) {
         return (
             <div className={styles['monitorPage']}>
@@ -80,7 +82,7 @@ export const MonitorPage = () => {
                             ) : (
                                 <tr>
                                     <td colSpan={6} className={styles['monitorPage__empty']}>
-                                        Нет тегов
+                                        {tags === undefined ? 'Загрузка...' : 'Нет тегов'}
                                     </td>
                                 </tr>
                             )}

@@ -1,0 +1,68 @@
+@use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
+
+.auditLogsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    &__title {
+        margin: 0;
+        @include mixins.text-style(24px, null, 600, vars.$text-primary-light);
+    }
+
+    &__controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    &__filter {
+        padding: 8px 12px;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 4px;
+        background-color: vars.$bg-secondary-light;
+        color: vars.$text-primary-light;
+        font-size: 14px;
+        cursor: pointer;
+
+        &:focus {
+            outline: 2px solid vars.$intoxicate;
+            outline-offset: 2px;
+        }
+    }
+
+    &__delete-button {
+        color: vars.$red;
+        border-color: vars.$red;
+
+        &:hover {
+            background-color: rgba(vars.$red, 0.1);
+        }
+    }
+}
+
+:global(.dark) {
+    .auditLogsHeader {
+        &__title {
+            color: vars.$text-primary-dark;
+        }
+
+        &__filter {
+            background-color: vars.$bg-secondary-dark;
+            color: vars.$text-primary-dark;
+            border-color: vars.$border-color-dark;
+        }
+
+        &__delete-button {
+            border-color: vars.$red;
+
+            &:hover {
+                background-color: rgba(vars.$red, 0.2);
+            }
+        }
+    }
+}

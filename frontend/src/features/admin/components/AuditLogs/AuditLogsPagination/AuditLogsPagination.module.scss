@@ -1,0 +1,23 @@
+@use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
+
+.auditLogsPagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+
+    &__info {
+        @include mixins.text-style(14px, null, 400, vars.$text-secondary-light);
+    }
+}
+
+:global(.dark) {
+    .auditLogsPagination {
+        &__info {
+            color: vars.$text-secondary-dark;
+        }
+    }
+}
+

@@ -1,6 +1,7 @@
 import express from 'express';
 import { Tag, Device } from '../../../models/settings/index.js';
 import { reinitializeModbus } from '../../../utils/modbusReloader.js';
+import { logAudit } from '../../../utils/auditLogger.js';
 
 const router = express.Router();
 
@@ -299,6 +300,19 @@ router.post('/devices/:deviceId/tags', async (req, res) => {
     // Реинициализируем Modbus для применения изменений
     await reinitializeModbus();
 
+    // Логируем создание тэга
+    if (req.user) {
+      await logAudit({
+        user: req.user,
+        action: 'create',
+        entityType: 'tag',
+        entityName: tag.name,
+        fieldName: 'name',
+        newValue: tag.name,
+        req
+      });
+    }
+
     res.status(201).json({
       success: true,
       data: tag
@@ -399,6 +413,9 @@ router.put('/devices/:deviceId/tags/:id', async (req, res) => {
     const { deviceId, id } = req.params;
     const tagData = req.body;
 
+    // Получаем старые данные перед обновлением
+    const oldTag = await Tag.findOne({ _id: id, deviceId }).lean();
+
     const tag = await Tag.findOneAndUpdate(
       { _id: id, deviceId },
       tagData,
@@ -414,6 +431,34 @@ router.put('/devices/:deviceId/tags/:id', async (req, res) => {
 
     // Реинициализируем Modbus для применения изменений
     await reinitializeModbus();
+
+    // Логируем изменения
+    if (req.user && oldTag) {
+      if (oldTag.name !== tag.name) {
+        await logAudit({
+          user: req.user,
+          action: 'update',
+          entityType: 'tag',
+          entityName: tag.name,
+          fieldName: 'name',
+          oldValue: oldTag.name,
+          newValue: tag.name,
+          req
+        });
+      }
+      if (oldTag.address !== tag.address) {
+        await logAudit({
+          user: req.user,
+          action: 'update',
+          entityType: 'tag',
+          entityName: tag.name,
+          fieldName: 'address',
+          oldValue: oldTag.address,
+          newValue: tag.address,
+          req
+        });
+      }
+    }
 
     res.json({
       success: true,
@@ -478,7 +523,8 @@ router.delete('/devices/:deviceId/tags/:id', async (req, res) => {
   try {
     const { deviceId, id } = req.params;
 
-    const tag = await Tag.findOneAndDelete({ _id: id, deviceId }).lean();
+    // Получаем данные тэга перед удалением
+    const tag = await Tag.findOne({ _id: id, deviceId }).lean();
 
     if (!tag) {
       return res.status(404).json({
@@ -487,8 +533,22 @@ router.delete('/devices/:deviceId/tags/:id', async (req, res) => {
       });
     }
 
+    await Tag.findOneAndDelete({ _id: id, deviceId });
+
     // Реинициализируем Modbus для применения изменений
     await reinitializeModbus();
+
+    // Логируем удаление тэга
+    if (req.user) {
+      await logAudit({
+        user: req.user,
+        action: 'delete',
+        entityType: 'tag',
+        entityName: tag.name,
+        oldValue: tag.name,
+        req
+      });
+    }
 
     res.json({
       success: true,

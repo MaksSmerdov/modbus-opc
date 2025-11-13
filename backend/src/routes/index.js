@@ -4,6 +4,7 @@ import dataRouter from './data/index.js';
 import pollingRouter from './polling/polling.js';
 import authRouter from './auth/auth.js';
 import usersRouter from './users/user.js';
+import auditRouter from './audit/audit.js';
 import { authMiddleware, adminOrOperatorMiddleware, adminOnlyMiddleware } from '../middleware/auth.js';
 import { getModbusManager } from '../server.js';
 import { getServerSettings } from '../models/settings/index.js';
@@ -17,6 +18,9 @@ router.use('/auth', authRouter);
 // /users/me - доступен всем авторизованным
 // /users/* - только для admin (проверка внутри user.js)
 router.use('/users', authMiddleware, usersRouter);
+
+// API аудита - только для admin
+router.use('/audit', authMiddleware, auditRouter);
 
 // API конфигурации - только для admin и operator
 router.use('/config', authMiddleware, adminOrOperatorMiddleware, configRouter);

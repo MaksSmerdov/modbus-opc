@@ -1,0 +1,223 @@
+@use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
+
+.auditLogs {
+  margin-top: 48px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    margin: 0;
+    @include mixins.text-style(24px, null, 600, vars.$text-primary-light);
+  }
+
+  &__controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  &__filter {
+    padding: 8px 12px;
+    border: 1px solid vars.$border-color-light;
+    border-radius: 4px;
+    background-color: vars.$bg-secondary-light;
+    color: vars.$text-primary-light;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:focus {
+      outline: 2px solid vars.$intoxicate;
+      outline-offset: 2px;
+    }
+  }
+
+  &__loading {
+    padding: 40px;
+    text-align: center;
+    color: vars.$text-secondary-light;
+  }
+
+  &__table {
+    overflow-x: auto;
+  }
+
+  &__table-content {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background-color: vars.$table-header-bg-light;
+
+      th {
+        padding: 12px 16px;
+        text-align: left;
+        @include mixins.text-style(14px, null, 600, vars.$text-primary-light);
+        border-bottom: 2px solid vars.$table-border-light;
+        white-space: nowrap;
+
+        &:last-child {
+          text-align: center;
+          width: 80px;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid vars.$table-border-light;
+
+        &:hover {
+          background-color: vars.$table-row-hover-light;
+        }
+      }
+
+      td {
+        padding: 12px 16px;
+        @include mixins.text-style(14px, null, 400, vars.$text-primary-light);
+        word-break: break-word;
+
+        &:last-child {
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 40px;
+    color: vars.$text-secondary-light;
+  }
+
+  &__pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  &__page-info {
+    @include mixins.text-style(14px, null, 400, vars.$text-secondary-light);
+  }
+
+  &__delete-button {
+    color: vars.$red;
+    border-color: vars.$red;
+
+    &:hover {
+      background-color: rgba(vars.$red, 0.1);
+    }
+  }
+
+  &__date-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    p {
+      margin: 0;
+      @include mixins.text-style(14px, null, 400, vars.$text-primary-light);
+    }
+  }
+
+  &__date-input {
+    padding: 8px 12px;
+    border: 1px solid vars.$border-color-light;
+    border-radius: 4px;
+    background-color: vars.$bg-secondary-light;
+    color: vars.$text-primary-light;
+    font-size: 14px;
+    font-family: inherit;
+
+    &:focus {
+      outline: 2px solid vars.$intoxicate;
+      outline-offset: 2px;
+    }
+  }
+
+  &__date-warning {
+    @include mixins.text-style(12px, null, 400, vars.$text-secondary-light);
+    font-style: italic;
+  }
+}
+
+:global(.dark) {
+  .auditLogs {
+    &__title {
+      color: vars.$text-primary-dark;
+    }
+
+    &__loading {
+      color: vars.$text-secondary-dark;
+    }
+
+    &__filter {
+      background-color: vars.$bg-secondary-dark;
+      color: vars.$text-primary-dark;
+      border-color: vars.$border-color-dark;
+    }
+
+    &__table-content {
+      thead {
+        background-color: vars.$table-header-bg-dark;
+
+        th {
+          color: vars.$text-primary-dark;
+          border-bottom: 2px solid vars.$table-border-dark;
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid vars.$border-color-dark;
+
+          &:hover {
+            background-color: vars.$table-row-hover-dark;
+          }
+        }
+
+        td {
+          color: vars.$text-primary-dark;
+        }
+      }
+    }
+
+    &__page-info {
+      color: vars.$text-secondary-dark;
+    }
+
+    &__delete-button {
+      border-color: vars.$red;
+
+      &:hover {
+        background-color: rgba(vars.$red, 0.2);
+      }
+    }
+
+    &__date-modal {
+      p {
+        color: vars.$text-primary-dark;
+      }
+    }
+
+    &__date-input {
+      background-color: vars.$bg-secondary-dark;
+      color: vars.$text-primary-dark;
+      border-color: vars.$border-color-dark;
+    }
+
+    &__date-warning {
+      color: vars.$text-secondary-dark;
+    }
+  }
+}
+
