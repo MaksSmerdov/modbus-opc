@@ -6,7 +6,7 @@
     border: none;
     cursor: pointer;
     padding: 4px;
-    border-radius: 4px;
+    border-radius: 50%;
     @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
     display: flex;
     align-items: center;
@@ -80,6 +80,10 @@
     }
 
     &_delete {
+        &.iconButton_delete {
+            color: #f44336;
+        }
+    
         &:hover:not(:disabled) {
             color: #f44336;
             background-color: rgba(244, 67, 54, 0.1);

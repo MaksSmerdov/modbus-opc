@@ -6,7 +6,7 @@ import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
 import { transliterate } from '@/shared/utils/transliterate';
 import { Button } from '@/shared/ui/Button/Button';
-import { IconButton } from '@/shared/ui/IconButton';
+import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import { useThrottle } from '@/shared/hooks/useThrottle';
 import { ArrowBack, Code, PowerSettingsNew } from '@mui/icons-material';
@@ -14,6 +14,7 @@ import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { TagsTable, TagsValuesView } from '@/features/settings/tag';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './DevicePage.module.scss';
+import { PageHeader } from '@/shared/ui/PageHeader/PageHeader';
 
 const RESERVED_PATHS = ['admin', 'login', 'register'];
 
@@ -142,8 +143,11 @@ export const DevicePage = () => {
 
     return (
         <div className={`${styles['monitorPage']} page`}>
-            <div className={styles['devicePage__header']}>
-                <div className={styles['devicePage__headerLeft']}>
+            <PageHeader
+                title={device.name}
+                status={device.isActive ? 'Активен' : 'Неактивен'}
+                isActive={device.isActive}
+                leftContent={
                     <Button
                         variant="outlined"
                         size="small"
@@ -152,31 +156,31 @@ export const DevicePage = () => {
                     >
                         Назад
                     </Button>
-                    <h1 className={styles['devicePage__title']}>{device.name}</h1>
-
-                </div>
-                <div className={styles['devicePage__headerRight']}>
-                    {canManageDevices && (
-                        <IconButton
-                            icon={<PowerSettingsNew fontSize="small" />}
-                            tooltip={device.isActive ? 'Выключить устройство' : 'Включить устройство'}
-                            variant="power"
-                            active={device.isActive}
-                            onClick={handleToggleDevice}
-                            isLoading={isTogglingDevice}
-                        />
-                    )}
-                    <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<Code />}
-                        onClick={handleOpenApi}
-                        disabled={isTogglingDevice}
-                    >
-                        API JSON
-                    </Button>
-                </div>
-            </div>
+                }
+                rightContent={
+                    <>
+                        {canManageDevices && (
+                            <IconButton
+                                icon={<PowerSettingsNew fontSize="small" />}
+                                tooltip={device.isActive ? 'Выключить устройство' : 'Включить устройство'}
+                                variant="power"
+                                active={device.isActive}
+                                onClick={handleToggleDevice}
+                                isLoading={isTogglingDevice}
+                            />
+                        )}
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<Code />}
+                            onClick={handleOpenApi}
+                            disabled={isTogglingDevice}
+                        >
+                            API JSON
+                        </Button>
+                    </>
+                }
+            />
 
             <div className={styles['devicePage__content']}>
                 <div className={styles['devicePage__section']}>

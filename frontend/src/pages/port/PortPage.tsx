@@ -12,6 +12,8 @@ import { Add as AddIcon } from '@mui/icons-material';
 import type { Device, CreateDeviceData } from '@/features/settings/device/types';
 import styles from './PortPage.module.scss';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
+import { getErrorMessage } from '@/shared/utils/errorUtils';
+import { PageHeader } from '@/shared/ui/PageHeader/PageHeader';
 
 const RESERVED_PATHS = ['admin', 'login', 'register'];
 
@@ -72,8 +74,8 @@ export const PortPage = () => {
             setEditingDevice(null);
             showSuccess('Устройство успешно создано');
         } catch (error) {
-            console.error('Ошибка создания устройства:', error);
-            showError('Не удалось создать устройство');
+            const errorMessage = getErrorMessage(error, 'Не удалось создать устройство');
+            showError(errorMessage);
         }
     };
 
@@ -91,7 +93,8 @@ export const PortPage = () => {
             showSuccess('Устройство успешно обновлено');
         } catch (error) {
             console.error('Ошибка обновления устройства:', error);
-            showError('Не удалось обновить устройство');
+            const errorMessage = getErrorMessage(error, 'Не удалось обновить устройство');
+            showError(errorMessage);
         }
     };
 
@@ -102,14 +105,11 @@ export const PortPage = () => {
 
     return (
         <div className={`${styles['portPage']} page`}>
-            <div className={styles['portPage__header']}>
-                <h1 className={styles['portPage__title']}>{port.name}</h1>
-                <div className={styles['portPage__status']}>
-                    <span className={`${styles['portPage__statusBadge']} ${port.isActive ? styles['portPage__statusBadge_active'] : ''}`}>
-                        {port.isActive ? 'Активен' : 'Неактивен'}
-                    </span>
-                </div>
-            </div>
+            <PageHeader
+                title={port.name}
+                status={port.isActive ? 'Активен' : 'Неактивен'}
+                isActive={port.isActive}
+            />
 
             <div className={styles['portPage__content']}>
                 <div className={styles['portPage__section']}>

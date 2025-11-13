@@ -1,0 +1,30 @@
+@use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
+
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &__item {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+        white-space: nowrap;
+
+        &_clickable {
+            cursor: pointer;
+            @include mixins.transition(color);
+
+            &:hover {
+                color: vars.$intoxicate;
+            }
+        }
+    }
+
+    &__separator {
+        font-size: 16px !important;
+        @include mixins.theme-color(vars.$text-muted-light, vars.$text-muted-dark);
+    }
+}

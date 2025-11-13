@@ -31,10 +31,10 @@ export const SnackbarProvider = ({ children }: { children: React.ReactNode }) =>
         <NotistackProvider
             maxSnack={3}
             anchorOrigin={{
-                vertical: 'top',
+                vertical: 'bottom',
                 horizontal: 'center',
             }}
-            autoHideDuration={3000}
+            autoHideDuration={2000}
             dense={true}
             preventDuplicate
             className={styles['snackbarProvider']}

@@ -2,6 +2,7 @@ import { useGetMonitorQuery } from '@/features/settings/monitor/api/monitorApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import styles from './MonitorPage.module.scss';
+import { PageHeader } from '@/shared/ui/PageHeader/PageHeader';
 
 export const MonitorPage = () => {
     const { data: pollingStatus } = useGetPollingStatusQuery();
@@ -46,16 +47,11 @@ export const MonitorPage = () => {
 
     return (
         <div className={`${styles['monitorPage']} page`}>
-            <div className={styles['monitorPage__header']}>
-                <h1 className={styles['monitorPage__title']}>
-                    Мониторинг тегов
-                </h1>
-                {pollingStatus?.isPolling && (
-                    <span className={styles['monitorPage__status']}>
-                        Опрос активен
-                    </span>
-                )}
-            </div>
+            <PageHeader
+                title="Мониторинг тегов"
+                status={pollingStatus?.isPolling ? 'Опрос активен' : undefined}
+                isActive={pollingStatus?.isPolling ?? false}
+            />
             <div className={styles['monitorPage__content']}>
                 <div className={styles['monitorPage__tableWrapper']}>
                     <table className={styles['monitorPage__table']}>

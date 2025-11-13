@@ -1,0 +1,52 @@
+@use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid;
+    @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
+    gap: 16px;
+
+    &__left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    &__title {
+        margin: 0;
+        @include mixins.text-style(32px, null, 700, null);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__status {
+        padding: 6px 16px;
+        border-radius: 20px;
+        @include mixins.text-style(14px, null, 500, null);
+        @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
+        background-color: rgba(vars.$intoxicate, 0.2);
+        color: vars.$intoxicate;
+        white-space: nowrap;
+
+        &_inactive {
+            background-color: rgba(vars.$red, 0.15);
+            color: vars.$red;
+        }
+    }
+}

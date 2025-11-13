@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks/hooks';
 import { setThemeLocal } from '@/features/theme/store/themeSlice';
 import { useUpdateSettingsMutation } from '@/features/auth/api/authApi';
 import type { Theme } from '@/shared/types';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { LightMode, DarkMode } from '@mui/icons-material';
 import styles from './ThemeToggle.module.scss';
 
@@ -18,7 +18,6 @@ export const ThemeToggle = () => {
   }, []);
 
   const handleThemeToggle = async () => {
-    // Переключаем только между light и dark
     const currentTheme = theme === 'light' || theme === 'auto' ? 'dark' : 'light';
     const newTheme: Theme = currentTheme;
 
@@ -40,21 +39,20 @@ export const ThemeToggle = () => {
 
   if (!isMounted) {
     return (
-      <IconButton className={styles['themeToggle']} disabled>
-        <LightMode />
-      </IconButton>
+      <IconButton
+        icon={<LightMode />}
+        className={styles['themeToggle']}
+        disabled
+      />
     );
   }
 
   return (
-    <Tooltip title={isDark ? 'Сменить тему на светлую' : 'Сменить тему на темную'} arrow>
-      <IconButton
-        onClick={handleThemeToggle}
-        className={styles['themeToggle']}
-      >
-        {isDark ? <DarkMode /> : <LightMode />}
-      </IconButton>
-    </Tooltip>
-
+    <IconButton
+      icon={isDark ? <DarkMode /> : <LightMode />}
+      onClick={handleThemeToggle}
+      className={styles['themeToggle']}
+      tooltip={isDark ? 'Сменить тему на светлую' : 'Сменить тему на темную'}
+    />
   );
 };

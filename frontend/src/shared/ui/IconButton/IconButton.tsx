@@ -13,12 +13,11 @@ export interface IconButtonProps {
     active?: boolean;
     onClick?: () => void;
     className?: string;
-    'aria-label'?: string;
     isLoading?: boolean;
 }
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-    ({ icon, tooltip, disabled = false, variant = 'default', active = false, onClick, className, 'aria-label': ariaLabel, isLoading = false }, ref) => {
+    ({ icon, tooltip, disabled = false, variant = 'default', active = false, onClick, className, isLoading = false }, ref) => {
         const buttonClasses = classNames(
             styles['iconButton'],
             styles[`iconButton_${variant}`],
@@ -35,7 +34,6 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
                 className={buttonClasses}
                 onClick={onClick}
                 disabled={disabled || isLoading}
-                aria-label={ariaLabel || tooltip}
                 type="button"
             >
                 {isLoading ? (

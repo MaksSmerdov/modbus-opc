@@ -2,8 +2,9 @@ import { useState, useCallback, useMemo } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 import { PlayArrow, Stop } from '@mui/icons-material';
 import { useGetPollingStatusQuery, useStartPollingMutation, useStopPollingMutation } from '../../api/pollingApi';
-import { IconButton } from '@/shared/ui/IconButton';
+import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useThrottle } from '@/shared/hooks/useThrottle';
+import { useSnackbar } from '@/shared/ui/SnackbarProvider';
 import styles from './PollingToggle.module.scss';
 
 export const PollingToggle = () => {
@@ -16,6 +17,7 @@ export const PollingToggle = () => {
         pollingInterval: pollInterval,
         skip: !status,
     });
+    const { showSuccess, showError } = useSnackbar();
 
     const currentStatus = updatedStatus ?? status;
 
@@ -30,8 +32,10 @@ export const PollingToggle = () => {
         try {
             if (isPolling) {
                 await stopPolling().unwrap();
+                showError('Опрос устройств остановлен');
             } else {
                 await startPolling().unwrap();
+                showSuccess('Опрос устройств запущен');
             }
             setErrorMessage(null);
         } catch (error) {

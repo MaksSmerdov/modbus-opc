@@ -106,3 +106,36 @@
         box-sizing: border-box;
     }
 }
+
+// Стили для выпадающего меню Select (более специфичные, чем в global.scss)
+:global {
+    .MuiMenu-paper {
+        @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+    }
+
+    .MuiPopover-paper {
+        @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+    }
+
+    .MuiMenuItem-root {
+        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+
+        &:hover {
+            @include mixins.theme-property(background-color, rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.08));
+        }
+
+        &.Mui-selected {
+            @include mixins.theme-property(background-color, rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.12));
+
+            &:hover {
+                @include mixins.theme-property(background-color, rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.16));
+            }
+        }
+
+        &.Mui-focusVisible {
+            @include mixins.theme-property(background-color, rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.08));
+        }
+    }
+}

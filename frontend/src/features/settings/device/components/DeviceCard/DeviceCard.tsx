@@ -3,7 +3,7 @@ import { Delete, Edit, PowerSettingsNew, Description } from '@mui/icons-material
 import { useNavigate } from 'react-router-dom';
 import { transliterate } from '@/shared/utils/transliterate';
 import { useGetTagsQuery } from '@/features/settings/tag/api/tagsApi';
-import { IconButton } from '@/shared/ui/IconButton';
+import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useThrottle } from '@/shared/hooks/useThrottle';
 import { formatTagsCount, formatSaveInterval, getEditTooltip, getDeleteTooltip } from '../../utils/deviceUtils';
 import type { Device } from '../../types';

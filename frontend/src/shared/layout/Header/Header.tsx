@@ -4,9 +4,9 @@ import { useLogoutMutation } from '@/features/auth/api/authApi';
 import { ThemeToggle } from '@/features/theme';
 import { PollingToggle } from '@/features/polling';
 import styles from './Header.module.scss';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Logout, AdminPanelSettings, Person } from '@mui/icons-material';
+import { Logout, AdminPanelSettings, Person, Monitor } from '@mui/icons-material';
 
 export const Header: React.FC = () => {
     const navigate = useNavigate();
@@ -18,6 +18,7 @@ export const Header: React.FC = () => {
     const isOperator = useMemo(() => user?.role === 'operator', [user?.role]);
     const canManagePolling = useMemo(() => isAdmin || isOperator, [isAdmin, isOperator]);
     const isAdminPage = useMemo(() => location.pathname === '/admin', [location.pathname]);
+    const isMonitorPage = useMemo(() => location.pathname === '/monitor', [location.pathname]);
 
     const handleLogout = useCallback(async () => {
         try {
@@ -29,6 +30,10 @@ export const Header: React.FC = () => {
 
     const handleAdmin = useCallback(() => {
         navigate('/admin');
+    }, [navigate]);
+
+    const handleMonitor = useCallback(() => {
+        navigate('/monitor');
     }, [navigate]);
 
     return (
@@ -49,26 +54,28 @@ export const Header: React.FC = () => {
                             <Person className={styles['header__userIcon']} />
                             <span className={styles['header__userName']}>{user?.name}</span>
                         </div>
+                        <IconButton
+                            icon={<Monitor />}
+                            onClick={handleMonitor}
+                            className={`${styles['header__monitorButton']} ${isMonitorPage ? styles['header__monitorButton_active'] : ''}`}
+                            tooltip="Мониторинг"
+                            active={isMonitorPage}
+                        />
                         {isAdmin && (
-                            <Tooltip title="Админ панель" arrow>
-                                <IconButton
-                                    onClick={handleAdmin}
-                                    className={`${styles['header__adminButton']} ${isAdminPage ? styles['header__adminButton_active'] : ''}`}
-                                    size="small"
-                                >
-                                    <AdminPanelSettings />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-                        <Tooltip title="Выйти" arrow>
                             <IconButton
-                                onClick={handleLogout}
-                                className={styles['header__logoutButton']}
-                                size="small"
-                            >
-                                <Logout />
-                            </IconButton>
-                        </Tooltip>
+                                icon={<AdminPanelSettings />}
+                                onClick={handleAdmin}
+                                className={`${styles['header__adminButton']} ${isAdminPage ? styles['header__adminButton_active'] : ''}`}
+                                tooltip="Админ панель"
+                                active={isAdminPage}
+                            />
+                        )}
+                        <IconButton
+                            icon={<Logout />}
+                            onClick={handleLogout}
+                            className={styles['header__logoutButton']}
+                            tooltip="Выйти"
+                        />
                     </div>
                 )}
             </div>

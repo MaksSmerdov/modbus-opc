@@ -3,16 +3,10 @@ import { useAppSelector } from '../hooks/hooks';
 import { AdminPage } from '@/features/admin';
 import { AppLayout, ProtectedRoute } from '@/shared/layout';
 import { AuthPage } from '@/pages/auth/AuthPage';
+import { HomePage } from '@/pages/home/HomePage';
 import { PortPage } from '@/pages/port/PortPage';
 import { DevicePage } from '@/pages/device/DevicePage';
 import { MonitorPage } from '@/pages/monitor/MonitorPage';
-
-const IndexRedirect = () => {
-    const { user } = useAppSelector((state) => state.auth);
-    if (user?.role === 'viewer') {
-        return <Navigate to="/monitor" replace />;
-    } 
-};
 
 export const AppRoutes = () => {
     const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -37,7 +31,7 @@ export const AppRoutes = () => {
                     )
                 }
             >
-                <Route index element={<IndexRedirect />} />
+                <Route index element={<HomePage />} />
                 <Route
                     path="admin"
                     element={

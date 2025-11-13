@@ -31,29 +31,23 @@ export function useThrottle<T extends (...args: unknown[]) => void>(
             const now = Date.now();
             const timeSinceLastRun = now - lastRun.current;
 
-            // Отменяем предыдущие таймеры
             clearTimers();
 
             if (timeSinceLastRun >= delay) {
-                // Можно выполнить сразу
                 lastRun.current = now;
                 setIsLoading(true);
                 callback(...args);
-                // Сбрасываем состояние загрузки после задержки
                 loadingTimerRef.current = setTimeout(() => {
                     setIsLoading(false);
                     loadingTimerRef.current = null;
                 }, delay);
             } else {
-                // Нужно подождать
                 setIsLoading(true);
                 const remainingTime = delay - timeSinceLastRun;
 
-                // Планируем выполнение после истечения задержки
                 timeoutRef.current = setTimeout(() => {
                     lastRun.current = Date.now();
                     callback(...args);
-                    // Сбрасываем состояние загрузки после выполнения
                     loadingTimerRef.current = setTimeout(() => {
                         setIsLoading(false);
                         loadingTimerRef.current = null;

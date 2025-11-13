@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from '../Header/Header';
 import { Sidebar } from '../Sidebar/Sidebar';
+import { Breadcrumbs } from '../Breadcrumbs/Breadcrumbs';
 import { useAppSelector } from '@/app/hooks/hooks';
 import styles from './AppLayout.module.scss';
 
@@ -30,7 +31,12 @@ export const AppLayout: React.FC = () => {
           <Sidebar isCollapsed={isSidebarCollapsed} onToggle={handleToggleSidebar} />
         )}
         <main className={mainClassName}>
-          <Outlet />
+          <div className={styles['appLayout__breadcrumbs']}>
+            <Breadcrumbs />
+          </div>
+          <div className={styles['appLayout__contentWrapper']}>
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

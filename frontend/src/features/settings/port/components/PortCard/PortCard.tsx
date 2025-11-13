@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 import type { Port } from '../../types';
 import { transliterate } from '@/shared/utils/transliterate';
-import { IconButton } from '@/shared/ui/IconButton';
+import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useThrottle } from '@/shared/hooks/useThrottle';
 import { formatPortInfo, formatDevicesCount, getEditTooltip, getDeleteTooltip } from '../../utils/portUtils';
 import styles from './PortCard.module.scss';

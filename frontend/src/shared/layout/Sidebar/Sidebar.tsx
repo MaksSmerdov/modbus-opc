@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Add as AddIcon, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Button } from '@/shared/ui/Button/Button';
-import { IconButton } from '@/shared/ui/IconButton';
+import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { Modal } from '@/shared/ui/Modal/Modal';
 import { PortsList, AddPortForm } from '@/features/settings/port';
 import { useCreatePortMutation, useUpdatePortMutation } from '@/features/settings/port/api/portsApi';
 import { useSnackbar } from '@/shared/ui/SnackbarProvider';
+import { getErrorMessage } from '@/shared/utils/errorUtils';
 import type { Port, CreatePortData } from '@/features/settings/port/types';
 import styles from './Sidebar.module.scss';
 
@@ -17,9 +18,22 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const [isPortModalOpen, setIsPortModalOpen] = useState(false);
   const [editingPort, setEditingPort] = useState<Port | null>(null);
+  const [showFloatingButtons, setShowFloatingButtons] = useState(false);
   const [createPort, { isLoading: isCreating }] = useCreatePortMutation();
   const [updatePort, { isLoading: isUpdating }] = useUpdatePortMutation();
   const { showSuccess, showError } = useSnackbar();
+
+  // Управление видимостью floatingButtons с задержкой
+  useEffect(() => {
+    if (isCollapsed) {
+      const timer = setTimeout(() => {
+        setShowFloatingButtons(true);
+      }, 150); 
+      return () => clearTimeout(timer);
+    } else {
+      setShowFloatingButtons(false);
+    }
+  }, [isCollapsed]);
 
   const handleAddPort = useCallback(async (portData: CreatePortData) => {
     try {
@@ -28,8 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       setEditingPort(null);
       showSuccess('Порт успешно создан');
     } catch (error) {
-      console.error('Ошибка создания порта:', error);
-      showError('Не удалось создать порт');
+      showError(getErrorMessage(error));
     }
   }, [createPort, showSuccess, showError]);
 
@@ -46,8 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       setEditingPort(null);
       showSuccess('Порт успешно обновлен');
     } catch (error) {
-      console.error('Ошибка обновления порта:', error);
-      showError('Не удалось обновить порт');
+      showError(getErrorMessage(error));
     }
   }, [editingPort, updatePort, showSuccess, showError]);
 
@@ -89,13 +101,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         </div>
       </aside>
 
-      {isCollapsed && (
+      <div className={`${styles['sidebar__floatingButtons']} ${showFloatingButtons ? styles['sidebar__floatingButtons_visible'] : ''}`}>
         <IconButton
           icon={<ChevronRight />}
           onClick={onToggle}
-          className={`${isCollapsed}  ? ${styles['sidebar__floatingToggle']}`}
+          tooltip="Развернуть боковую панель"
         />
-      )}
+        <IconButton
+          icon={<AddIcon />}
+          onClick={handleOpenModal}
+          tooltip="Добавить порт"
+        />
+      </div>
 
       <Modal
         open={isPortModalOpen}

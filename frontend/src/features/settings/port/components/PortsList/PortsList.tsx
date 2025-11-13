@@ -20,7 +20,7 @@ export const PortsList = memo(({ onEdit }: PortsListProps) => {
     const { data: ports, isLoading, error } = useGetPortsQuery();
     const { data: devices } = useGetDevicesQuery();
     // Сохраняем предыдущее количество портов для отображения скелетонов
-    const previousPortsCountRef = useRef<number>(3);
+    const previousPortsCountRef = useRef<number>(0);
     const { isPolling } = useGetPollingStatusQuery(undefined, {
         selectFromResult: ({ data }) => ({
             isPolling: data?.isPolling ?? false,

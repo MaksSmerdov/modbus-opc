@@ -90,18 +90,28 @@
         min-width: 0;
     }
 
-    &__floatingToggle {
+    &__floatingButtons {
+        height: 40px;
+        padding: 8px;
         position: fixed;
         left: 8px;
-        top: 87px;
+        top: 83px;
         z-index: 101;
-        @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
-        border: 1px solid;
-        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+        border: 1px solid transparent;
+        border-radius: 100px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0s 0s;
 
-        @include mixins.dark-theme {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        &_visible {
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.3s 0s;
         }
     }
+
 }
