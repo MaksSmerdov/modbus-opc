@@ -24,6 +24,7 @@ export const PortPage = () => {
     const { showSuccess, showError } = useSnackbar();
     const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(false);
     const [editingDevice, setEditingDevice] = useState<Device | null>(null);
+    const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
     const [createDevice, { isLoading: isCreating }] = useCreateDeviceMutation();
     const [updateDevice, { isLoading: isUpdating }] = useUpdateDeviceMutation();
 
@@ -81,6 +82,7 @@ export const PortPage = () => {
 
     const handleEditDevice = (device: Device) => {
         setEditingDevice(device);
+        setModalMode('edit');
         setIsDeviceModalOpen(true);
     };
 
@@ -100,7 +102,13 @@ export const PortPage = () => {
 
     const handleModalClose = () => {
         setIsDeviceModalOpen(false);
+        // Не сбрасываем editingDevice и modalMode здесь
+    };
+
+    const handleModalExited = () => {
+        // Сбрасываем состояние только после полного закрытия модалки
         setEditingDevice(null);
+        setModalMode('create');
     };
 
     return (
@@ -122,6 +130,7 @@ export const PortPage = () => {
                                 startIcon={<AddIcon />}
                                 onClick={() => {
                                     setEditingDevice(null);
+                                    setModalMode('create');
                                     setIsDeviceModalOpen(true);
                                 }}
                             >
@@ -136,6 +145,7 @@ export const PortPage = () => {
             <Modal
                 open={isDeviceModalOpen}
                 onClose={handleModalClose}
+                onExited={handleModalExited}
                 title={editingDevice ? 'Редактировать устройство' : 'Добавить устройство'}
                 maxWidth="sm"
                 fullWidth
@@ -146,7 +156,7 @@ export const PortPage = () => {
                     isLoading={isCreating || isUpdating}
                     portId={port._id}
                     initialData={editingDevice || undefined}
-                    mode={editingDevice ? 'edit' : 'create'}
+                    mode={modalMode}
                 />
             </Modal>
         </div>

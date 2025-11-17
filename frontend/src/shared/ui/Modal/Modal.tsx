@@ -7,6 +7,7 @@ import styles from './Modal.module.scss';
 export interface ModalProps {
     open: boolean;
     onClose: () => void;
+    onExited?: () => void;
     title?: string;
     children: ReactNode;
     actions?: ReactNode;
@@ -20,6 +21,7 @@ export interface ModalProps {
 export const Modal = ({
     open,
     onClose,
+    onExited,
     title,
     children,
     actions,
@@ -43,6 +45,7 @@ export const Modal = ({
         <Dialog
             open={open}
             onClose={handleClose}
+            slotProps={onExited ? { transition: { onExited } } : undefined}
             maxWidth={maxWidth}
             fullWidth={fullWidth}
             className={classNames(styles['modal'], className)}

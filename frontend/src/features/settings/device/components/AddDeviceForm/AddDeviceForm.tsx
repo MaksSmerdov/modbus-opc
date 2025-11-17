@@ -35,7 +35,7 @@ export const AddDeviceForm = ({
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: { errors, isDirty },
         watch,
         setValue,
     } = useForm<DeviceFormData>({
@@ -128,7 +128,12 @@ export const AddDeviceForm = ({
                 <Button variant="outlined" onClick={onCancel} disabled={isLoading} fullWidth>
                     Отмена
                 </Button>
-                <Button type="submit" variant="contained" disabled={isLoading} fullWidth>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={isLoading || (mode === 'edit' && !isDirty)}
+                    fullWidth
+                >
                     {isLoading
                         ? (mode === 'edit' ? 'Сохранение...' : 'Создание...')
                         : (mode === 'edit' ? 'Сохранить изменения' : 'Создать устройство')

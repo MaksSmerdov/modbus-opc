@@ -43,7 +43,7 @@ export const AddPortForm = ({
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: { errors, isDirty },
         setValue,
         watch,
         reset,
@@ -115,7 +115,12 @@ export const AddPortForm = ({
                     <Button variant="outlined" onClick={onCancel} disabled={isLoading} fullWidth>
                         Отмена
                     </Button>
-                    <Button type="submit" variant="contained" disabled={isLoading} fullWidth>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={isLoading || (mode === 'edit' && !isDirty)}
+                        fullWidth
+                    >
                         {isLoading
                             ? (mode === 'edit' ? 'Сохранение...' : 'Создание...')
                             : (mode === 'edit' ? 'Сохранить изменения' : 'Создать порт')

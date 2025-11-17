@@ -20,6 +20,22 @@
     font-size: 16px;
     color: vars.$text-secondary-light;
   }
+
+  &__tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid vars.$border-color-light;
+    padding-bottom: 16px;
+  }
+
+  &__tab {
+    min-width: 150px;
+  }
+
+  &__content {
+    margin-top: 24px;
+  }
 }
 
 :global(.dark) {
@@ -37,6 +53,10 @@
 
     &__subtitle {
       color: vars.$text-secondary-dark;
+    }
+
+    &__tabs {
+      border-bottom-color: vars.$border-color-dark;
     }
   }
 }

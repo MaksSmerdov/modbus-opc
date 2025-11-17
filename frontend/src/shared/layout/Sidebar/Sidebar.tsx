@@ -18,6 +18,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const [isPortModalOpen, setIsPortModalOpen] = useState(false);
   const [editingPort, setEditingPort] = useState<Port | null>(null);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [showFloatingButtons, setShowFloatingButtons] = useState(false);
   const [createPort, { isLoading: isCreating }] = useCreatePortMutation();
   const [updatePort, { isLoading: isUpdating }] = useUpdatePortMutation();
@@ -28,7 +29,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     if (isCollapsed) {
       const timer = setTimeout(() => {
         setShowFloatingButtons(true);
-      }, 150); 
+      }, 150);
       return () => clearTimeout(timer);
     } else {
       setShowFloatingButtons(false);
@@ -48,6 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
   const handleEditPort = useCallback((port: Port) => {
     setEditingPort(port);
+    setModalMode('edit');
     setIsPortModalOpen(true);
   }, []);
 
@@ -65,11 +67,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
   const handleModalClose = useCallback(() => {
     setIsPortModalOpen(false);
+    // Не сбрасываем editingPort и modalMode здесь, чтобы избежать мерцания
+  }, []);
+
+  const handleModalExited = useCallback(() => {
+    // Сбрасываем состояние только после полного закрытия модалки
     setEditingPort(null);
+    setModalMode('create');
   }, []);
 
   const handleOpenModal = useCallback(() => {
     setEditingPort(null);
+    setModalMode('create');
     setIsPortModalOpen(true);
   }, []);
 
@@ -117,6 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       <Modal
         open={isPortModalOpen}
         onClose={handleModalClose}
+        onExited={handleModalExited}
         title={editingPort ? 'Редактировать порт' : 'Добавить порт'}
         maxWidth="sm"
         fullWidth
@@ -126,7 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           onCancel={handleModalClose}
           isLoading={isCreating || isUpdating}
           initialData={editingPort || undefined}
-          mode={editingPort ? 'edit' : 'create'}
+          mode={modalMode}
         />
       </Modal>
     </>

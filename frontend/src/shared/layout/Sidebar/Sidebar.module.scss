@@ -104,11 +104,13 @@
         border: 1px solid transparent;
         border-radius: 100px;
         opacity: 0;
+        visibility: hidden;
         pointer-events: none;
         transition: opacity 0s 0s;
 
         &_visible {
             opacity: 1;
+            visibility: visible;
             pointer-events: auto;
             transition: opacity 0.3s 0s;
         }
