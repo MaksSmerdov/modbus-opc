@@ -5,81 +5,27 @@
     flex-direction: column;
     gap: 16px;
 
-    &__wrapper {
-        overflow-x: auto;
-        border: 1px solid vars.$border-color-light;
-        border-radius: 8px;
-    }
-
     &__table {
-        width: 100%;
-        table-layout: fixed;
-        border-collapse: collapse;
-        background-color: vars.$bg-primary-light;
-        font-size: 0.875rem;
 
-        th {
-            background-color: vars.$bg-secondary-light;
-            padding: 12px 8px;
-            text-align: center;
-            font-weight: 600;
-            color: vars.$text-primary-light;
-            border-bottom: 2px solid vars.$border-color-light;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 1;
+        // Переопределяем стили для этой таблицы, если нужно
+        :global(.table__wrapper) {
+            border: 1px solid vars.$border-color-light;
+            border-radius: 8px;
         }
 
-        // Ширина колонок
-        th:nth-child(1),
-        // Название
-        td:nth-child(1) {
-            width: 25%;
-        }
+        :global(.table__content) {
+            table-layout: fixed;
 
-        th:nth-child(2),
-        // Адрес
-        td:nth-child(2) {
-            width: 12%;
-        }
-
-        th:nth-child(4),
-        // Function Code
-        td:nth-child(4) {
-            width: 10%;
-        }
-
-        th:nth-child(5),
-        // Тип данных
-        td:nth-child(5) {
-            width: 10%;
-        }
-
-        th:nth-child(9),
-        // Ед. изм. (после всех динамических колонок)
-        td:nth-child(9) {
-            width: 8%;
-        }
-
-        td {
-            padding: 8px;
-            border-bottom: 1px solid vars.$border-color-light;
-            color: vars.$text-primary-light;
-            text-align: center;
-            overflow: hidden;
-            min-width: 0;
-        }
-
-        tr {
-            transition: background-color 0.2s ease;
-
-            &:hover {
-                background-color: vars.$bg-secondary-light;
+            td {
+                padding: 8px;
+                overflow: hidden;
+                min-width: 0;
             }
 
-            &_editing {
-                background-color: rgba(vars.$intoxicate, 0.1);
+            tr {
+                &_editing {
+                    background-color: rgba(vars.$intoxicate, 0.1);
+                }
             }
         }
     }
@@ -87,31 +33,16 @@
 
 :global(.dark) {
     .tagsTable {
-        &__wrapper {
-            border-color: vars.$border-color-dark;
-        }
-
         &__table {
-            background-color: vars.$bg-primary-dark;
-
-            th {
-                background-color: vars.$bg-secondary-dark;
-                color: vars.$text-primary-dark;
-                border-bottom-color: vars.$border-color-dark;
+            :global(.table__wrapper) {
+                border-color: vars.$border-color-dark;
             }
 
-            td {
-                border-bottom-color: vars.$border-color-dark;
-                color: vars.$text-primary-dark;
-            }
-
-            tr {
-                &:hover {
-                    background-color: vars.$bg-secondary-dark;
-                }
-
-                &_editing {
-                    background-color: rgba(vars.$intoxicate, 0.2);
+            :global(.table__content) {
+                tr {
+                    &_editing {
+                        background-color: rgba(vars.$intoxicate, 0.2);
+                    }
                 }
             }
         }

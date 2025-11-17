@@ -17,6 +17,7 @@
         flex: 1;
         margin-left: 240px;
         overflow-y: auto;
+        scrollbar-gutter: stable; // Резервируем место для скроллбара
         transition: margin-left 0.3s ease;
         height: calc(100vh - 79px);
 
@@ -45,5 +46,6 @@
         padding: 16px 64px;
         flex: 1;
         overflow-y: auto;
+        scrollbar-gutter: stable; // Резервируем место для скроллбара
     }
 }

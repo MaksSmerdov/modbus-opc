@@ -3,6 +3,7 @@ import { usersApi } from '../../api/usersApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { UserRow } from '../UserRow/UserRow';
 import { Button } from '../../../../shared/ui/Button/Button';
+import { Table, type TableColumn } from '../../../../shared/ui/Table/Table';
 import type { User } from '../../../../shared/types';
 import styles from './UsersList.module.scss';
 
@@ -94,6 +95,14 @@ export const UsersList = () => {
     );
   }
 
+  const columns: TableColumn[] = [
+    { key: 'name', label: 'Имя' },
+    { key: 'email', label: 'Email' },
+    { key: 'role', label: 'Роль' },
+    { key: 'createdAt', label: 'Дата регистрации' },
+    { key: 'actions', label: 'Действия' },
+  ];
+
   return (
     <div className={styles['usersList']}>
       <div className={styles['usersList__header']}>
@@ -103,29 +112,19 @@ export const UsersList = () => {
         </Button>
       </div>
 
-      <div className={styles['usersList__table']}>
-        <table className={styles['usersList__table-content']}>
-          <thead>
-            <tr>
-              <th>Имя</th>
-              <th>Email</th>
-              <th>Роль</th>
-              <th>Дата регистрации</th>
-              <th>Действия</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <UserRow
-                key={user.id}
-                user={user}
-                onRoleUpdate={handleRoleUpdate}
-                onDelete={handleDelete}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        columns={columns}
+        data={users}
+        emptyMessage="Нет пользователей"
+        renderRow={(user) => (
+          <UserRow
+            key={user.id}
+            user={user}
+            onRoleUpdate={handleRoleUpdate}
+            onDelete={handleDelete}
+          />
+        )}
+      />
     </div>
   );
 };

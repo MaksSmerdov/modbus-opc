@@ -1,6 +1,7 @@
 import { useGetMonitorQuery } from '@/features/settings/monitor/api/monitorApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
+import { Table, type TableColumn } from '@/shared/ui/Table/Table';
 import styles from './MonitorPage.module.scss';
 import { PageHeader } from '@/shared/layout/PageHeader/PageHeader';
 
@@ -47,6 +48,15 @@ export const MonitorPage = () => {
         return String(value);
     };
 
+    const columns: TableColumn[] = [
+        { key: 'port', label: 'Порт' },
+        { key: 'device', label: 'Устройство' },
+        { key: 'tag', label: 'Название тега' },
+        { key: 'category', label: 'Категория' },
+        { key: 'value', label: 'Значение' },
+        { key: 'unit', label: 'Ед. изм.' },
+    ];
+
     return (
         <div className={`${styles['monitorPage']} page`}>
             <PageHeader
@@ -55,40 +65,22 @@ export const MonitorPage = () => {
                 isActive={pollingStatus?.isPolling ?? false}
             />
             <div className={styles['monitorPage__content']}>
-                <div className={styles['monitorPage__tableWrapper']}>
-                    <table className={styles['monitorPage__table']}>
-                        <thead>
-                            <tr>
-                                <th>Порт</th>
-                                <th>Устройство</th>
-                                <th>Название тега</th>
-                                <th>Категория</th>
-                                <th>Значение</th>
-                                <th>Ед. изм.</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tags && tags.length > 0 ? (
-                                tags.map((tag) => (
-                                    <tr key={tag._id}>
-                                        <td>{tag.portName}</td>
-                                        <td>{tag.deviceName}</td>
-                                        <td>{tag.tagName}</td>
-                                        <td>{tag.category}</td>
-                                        <td>{formatValue(tag.value)}</td>
-                                        <td>{tag.unit || '—'}</td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={6} className={styles['monitorPage__empty']}>
-                                        {tags === undefined ? 'Загрузка...' : 'В системе нет тегов для отображения'}
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                <Table
+                    columns={columns}
+                    data={tags || []}
+                    emptyMessage={tags === undefined ? 'Загрузка...' : 'В системе нет тегов для отображения'}
+                    stickyHeader
+                    renderRow={(tag) => (
+                        <tr key={tag._id}>
+                            <td>{tag.portName}</td>
+                            <td>{tag.deviceName}</td>
+                            <td>{tag.tagName}</td>
+                            <td>{tag.category}</td>
+                            <td>{formatValue(tag.value)}</td>
+                            <td>{tag.unit || '—'}</td>
+                        </tr>
+                    )}
+                />
             </div>
         </div>
     );

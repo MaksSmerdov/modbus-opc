@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Table, type TableColumn } from '@/shared/ui/Table/Table';
 import type { Tag } from '../../types';
 import type { DeviceData } from '@/features/settings/device/api/deviceDataApi';
 import styles from './TagsValuesView.module.scss';
@@ -18,6 +19,12 @@ interface TagWithValue {
 interface GroupedTags {
     [category: string]: TagWithValue[];
 }
+
+const columns: TableColumn[] = [
+    { key: 'name', label: 'Название', width: '30%' },
+    { key: 'value', label: 'Значение', width: '25%' },
+    { key: 'unit', label: 'Ед. изм.', width: '15%' },
+];
 
 export const TagsValuesView = ({ tags, deviceData }: TagsValuesViewProps) => {
     const tagsWithValues = useMemo(() => {
@@ -94,41 +101,36 @@ export const TagsValuesView = ({ tags, deviceData }: TagsValuesViewProps) => {
                                 <h3 className={styles['tagsValuesView__groupTitle']}>{category}</h3>
                             </div>
                         )}
-                        <table className={styles['tagsValuesView__table']}>
-                            <thead>
-                                <tr>
-                                    <th>Название</th>
-                                    <th>Значение</th>
-                                    <th>Ед. изм.</th>
+                        <Table
+                            columns={columns}
+                            data={categoryTags}
+                            emptyMessage="Нет тегов в этой категории"
+                            className={styles['tagsValuesView__table']}
+                            renderRow={({ tag, value, unit, isAlarm }) => (
+                                <tr
+                                    key={tag._id}
+                                    className={isAlarm ? styles['tagsValuesView__row_alarm'] : ''}
+                                >
+                                    <td className={styles['tagsValuesView__cell']}>
+                                        <span className={styles['tagsValuesView__name']}>{tag.name}</span>
+                                    </td>
+                                    <td className={styles['tagsValuesView__cell']}>
+                                        {value !== null && value !== undefined ? (
+                                            <span className={`${styles['tagsValuesView__value']} ${isAlarm ? styles['tagsValuesView__value_alarm'] : ''}`}>
+                                                {typeof value === 'boolean' ? (value ? 'Да' : 'Нет') : String(value)}
+                                            </span>
+                                        ) : (
+                                            <span className={styles['tagsValuesView__noData']}>Нет данных</span>
+                                        )}
+                                    </td>
+                                    <td className={styles['tagsValuesView__cell']}>
+                                        {unit && (
+                                            <span className={styles['tagsValuesView__unit']}>{unit}</span>
+                                        )}
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {categoryTags.map(({ tag, value, unit, isAlarm }) => (
-                                    <tr
-                                        key={tag._id}
-                                        className={isAlarm ? styles['tagsValuesView__row_alarm'] : ''}
-                                    >
-                                        <td className={styles['tagsValuesView__cell']}>
-                                            <span className={styles['tagsValuesView__name']}>{tag.name}</span>
-                                        </td>
-                                        <td className={styles['tagsValuesView__cell']}>
-                                            {value !== null && value !== undefined ? (
-                                                <span className={`${styles['tagsValuesView__value']} ${isAlarm ? styles['tagsValuesView__value_alarm'] : ''}`}>
-                                                    {typeof value === 'boolean' ? (value ? 'Да' : 'Нет') : String(value)}
-                                                </span>
-                                            ) : (
-                                                <span className={styles['tagsValuesView__noData']}>Нет данных</span>
-                                            )}
-                                        </td>
-                                        <td className={styles['tagsValuesView__cell']}>
-                                            {unit && (
-                                                <span className={styles['tagsValuesView__unit']}>{unit}</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                            )}
+                        />
                     </div>
                 ))}
             </div>

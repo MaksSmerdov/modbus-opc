@@ -1,0 +1,106 @@
+@use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
+
+.table {
+    &__wrapper {
+        overflow-x: auto;
+        border: 1px solid vars.$border-color-light;
+        border-radius: 8px;
+    }
+
+    &__content {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: vars.$bg-primary-light;
+        font-size: 0.875rem;
+
+        thead {
+            background-color: vars.$table-header-bg-light;
+
+            th {
+                padding: 12px 16px;
+                text-align: center;
+                @include mixins.text-style(14px, null, 600, vars.$text-primary-light);
+                border-bottom: 2px solid vars.$table-border-light;
+                white-space: nowrap;
+            }
+        }
+
+        tbody {
+            tr {
+                border-bottom: 1px solid vars.$table-border-light;
+                transition: background-color 0.2s ease;
+
+                &:hover {
+                    background-color: vars.$table-row-hover-light;
+                }
+
+                &:last-child {
+                    td {
+                        border-bottom: none;
+                    }
+                }
+            }
+
+            td {
+                padding: 12px 16px;
+                text-align: center;
+                @include mixins.text-style(14px, null, 400, vars.$text-primary-light);
+                word-break: break-word;
+            }
+        }
+    }
+
+    &__header_sticky {
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 40px;
+        color: vars.$text-secondary-light;
+    }
+}
+
+:global(.dark) {
+    .table {
+        &__wrapper {
+            border-color: vars.$border-color-dark;
+        }
+
+        &__content {
+            background-color: vars.$bg-primary-dark;
+
+            thead {
+                background-color: vars.$table-header-bg-dark;
+
+                th {
+                    color: vars.$text-primary-dark;
+                    border-bottom-color: vars.$table-border-dark;
+                }
+            }
+
+            tbody {
+                tr {
+                    border-bottom-color: vars.$table-border-dark;
+
+                    &:hover {
+                        background-color: vars.$table-row-hover-dark;
+                    }
+                }
+
+                td {
+                    color: vars.$text-primary-dark;
+                }
+            }
+        }
+
+        &__empty {
+            color: vars.$text-secondary-dark;
+        }
+    }
+}

@@ -35,68 +35,11 @@
     }
 
     &__table {
-        width: 100%;
-        table-layout: fixed;
-        border-collapse: collapse;
-        background-color: vars.$bg-primary-light;
-        font-size: 0.875rem;
-        border: 1px solid vars.$border-color-light;
-        border-radius: 8px;
-        overflow: hidden;
 
-        th {
-            background-color: vars.$bg-secondary-light;
-            padding: 12px 8px;
-            text-align: left;
-            font-weight: 600;
-            color: vars.$text-primary-light;
-            border-bottom: 2px solid vars.$border-color-light;
-            white-space: nowrap;
-
-            &:nth-child(1) {
-                width: 30%;
-            }
-
-            &:nth-child(2) {
-                width: 25%;
-            }
-
-            &:nth-child(3) {
-                width: 15%;
-            }
-
-            &:nth-child(4) {
-                width: 30%;
-            }
-        }
-
-        td {
-            padding: 12px 8px;
-            border-bottom: 1px solid vars.$border-color-light;
-            color: vars.$text-primary-light;
-            text-align: left;
-            overflow: hidden;
-            min-width: 0;
-        }
-
-        tr {
-            transition: background-color 0.2s ease;
-
-            &:hover {
-                background-color: vars.$bg-secondary-light;
-            }
-
-            &:last-child td {
-                border-bottom: none;
-            }
-
-            &_alarm {
-                background-color: rgba(244, 67, 54, 0.05);
-
-                &:hover {
-                    background-color: rgba(244, 67, 54, 0.1);
-                }
-            }
+        // Переопределяем стили для этой таблицы, если нужно
+        :global(.table__wrapper) {
+            border: 1px solid vars.$border-color-light;
+            border-radius: 8px;
         }
     }
 
@@ -130,9 +73,12 @@
         font-style: italic;
     }
 
-    &__description {
-        font-size: 0.875rem;
-        color: vars.$text-secondary-light;
+    &__row_alarm {
+        background-color: rgba(244, 67, 54, 0.05);
+
+        &:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+        }
     }
 }
 
@@ -147,32 +93,8 @@
         }
 
         &__table {
-            background-color: vars.$bg-primary-dark;
-            border-color: vars.$border-color-dark;
-
-            th {
-                background-color: vars.$bg-secondary-dark;
-                color: vars.$text-primary-dark;
-                border-bottom-color: vars.$border-color-dark;
-            }
-
-            td {
-                border-bottom-color: vars.$border-color-dark;
-                color: vars.$text-primary-dark;
-            }
-
-            tr {
-                &:hover {
-                    background-color: vars.$bg-secondary-dark;
-                }
-
-                &_alarm {
-                    background-color: rgba(244, 67, 54, 0.1);
-
-                    &:hover {
-                        background-color: rgba(244, 67, 54, 0.15);
-                    }
-                }
+            :global(.table__wrapper) {
+                border-color: vars.$border-color-dark;
             }
         }
 
@@ -196,9 +118,12 @@
             color: vars.$text-secondary-dark;
         }
 
-        &__description {
-            color: vars.$text-secondary-dark;
+        &__row_alarm {
+            background-color: rgba(244, 67, 54, 0.1);
+
+            &:hover {
+                background-color: rgba(244, 67, 54, 0.15);
+            }
         }
     }
 }
-
