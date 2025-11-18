@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const HomePage = () => {
     const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+
     const navigate = useNavigate();
 
     const userName = useMemo(() => {

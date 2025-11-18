@@ -4,7 +4,7 @@ import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
 import { DeviceCard } from '../DeviceCard/DeviceCard';
 import { DeviceCardSkeleton } from '../DeviceCard/DeviceCardSkeleton';
-import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
+import { ConfirmModal } from '@/shared/components/ConfirmModal/ConfirmModal';
 import { useDeviceDeletion } from '../../hooks/useDeviceDeletion';
 import { useDeviceToggle } from '../../hooks/useDeviceToggle';
 import { useDeviceLogToggle } from '../../hooks/useDeviceLogToggle';

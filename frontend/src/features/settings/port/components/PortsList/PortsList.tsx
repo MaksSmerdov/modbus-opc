@@ -5,7 +5,7 @@ import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
 import { PortCard } from '../PortCard/PortCard';
 import { PortCardSkeleton } from '../PortCard/PortCardSkeleton';
-import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
+import { ConfirmModal } from '@/shared/components/ConfirmModal/ConfirmModal';
 import { usePortDeletion } from '../../hooks/usePortDeletion';
 import { usePortToggle } from '../../hooks/usePortToggle';
 import { countDevicesByPort } from '../../utils/portUtils';

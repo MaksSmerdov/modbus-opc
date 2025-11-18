@@ -78,3 +78,13 @@ export interface PortResponse {
     data: Port;
 }
 
+export interface AvailablePorts {
+    name: string;
+}
+
+export interface AvailablePortsResponse {
+    success: true;
+    count: number;
+    data: AvailablePorts[];
+}
+

@@ -1,7 +1,7 @@
 import { Delete } from '@mui/icons-material';
 import type { AuditLog } from '../../../api/auditApi';
 import { IconButton } from '../../../../../shared/ui/IconButton/IconButton';
-import { Table, type TableColumn } from '../../../../../shared/ui/Table/Table';
+import { Table, type TableColumn } from '../../../../../shared/components/Table/Table';
 import { formatAuditLogDate, formatAuditLogUser, formatAuditLogOldValue } from '../utils/formatAuditLog';
 
 interface AuditLogsTableProps {

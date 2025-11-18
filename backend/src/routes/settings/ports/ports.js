@@ -1,5 +1,6 @@
+import { SerialPort } from 'serialport';
 import express from 'express';
-import { Port, Device } from '../../../models/settings/index.js';
+import { Port, Device } from '../../../models/index.js';
 import { reinitializeModbus } from '../../../utils/modbusReloader.js';
 import { logAudit } from '../../../utils/auditLogger.js';
 
@@ -87,6 +88,64 @@ router.get('/', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Ошибка получения портов'
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /api/config/ports/available:
+ *   get:
+ *     summary: Получить список доступных COM-портов системы
+ *     tags: [Ports]
+ *     description: Возвращает список всех доступных последовательных портов (COM-портов) на системе
+ *     responses:
+ *       200:
+ *         description: Список доступных COM-портов
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 count:
+ *                   type: integer
+ *                   description: Количество доступных портов
+ *                   example: 3
+ *                 data:
+ *                   type: array
+ *                   description: Массив доступных портов
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         description: Путь к порту (например, COM1, /dev/ttyUSB0)
+ *                         example: COM3
+ *       500:
+ *         description: Ошибка получения списка портов
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/available', async (req, res) => {
+  try {
+    const ports = await SerialPort.list();
+    const formattedPorts = ports.map(p => ({ name: p.path }));
+
+    res.json({
+      success: true,
+      count: formattedPorts.length,
+      data: formattedPorts
+    });
+  } catch (e) {
+    console.error('Ошибка получения доступных портов:', e);
+    res.status(500).json({
+      success: false,
+      error: e.message || 'Ошибка получения списка доступных портов'
     });
   }
 });

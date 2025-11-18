@@ -14,7 +14,7 @@ import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { TagsTable, TagsValuesView } from '@/features/settings/tag';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './DevicePage.module.scss';
-import { PageHeader } from '@/shared/layout/PageHeader/PageHeader';
+import { PageHeader } from '@/shared/components/PageHeader/PageHeader';
 
 const RESERVED_PATHS = ['admin', 'login', 'register'];
 

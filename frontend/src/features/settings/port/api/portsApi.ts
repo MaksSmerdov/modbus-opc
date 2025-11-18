@@ -5,6 +5,8 @@ import type {
     PortResponse,
     CreatePortData,
     UpdatePortData,
+    AvailablePorts,
+    AvailablePortsResponse,
 } from '../types';
 
 export const portsApi = baseApi.injectEndpoints({
@@ -21,6 +23,13 @@ export const portsApi = baseApi.injectEndpoints({
             query: (id) => `/config/ports/${id}`,
             providesTags: (_result, _error, id) => [{ type: 'Ports', id }],
             transformResponse: (response: PortResponse) => response.data,
+        }),
+
+        // Получить список доступных COM-портов
+        getAvailablePorts: builder.query<AvailablePorts[], void>({
+            query: () => `/config/ports/available`,
+            providesTags: ['Ports'],
+            transformResponse: (response: AvailablePortsResponse) => response.data,
         }),
 
         // Создать новый порт
@@ -64,6 +73,7 @@ export const portsApi = baseApi.injectEndpoints({
 
 export const {
     useGetPortsQuery,
+    useGetAvailablePortsQuery,
     useLazyGetPortsQuery,
     useGetPortQuery,
     useLazyGetPortQuery,

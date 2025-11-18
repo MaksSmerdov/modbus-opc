@@ -1,9 +1,9 @@
 import { useGetMonitorQuery } from '@/features/settings/monitor/api/monitorApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
-import { Table, type TableColumn } from '@/shared/ui/Table/Table';
+import { Table, type TableColumn } from '@/shared/components/Table/Table';
 import styles from './MonitorPage.module.scss';
-import { PageHeader } from '@/shared/layout/PageHeader/PageHeader';
+import { PageHeader } from '@/shared/components/PageHeader/PageHeader';
 
 export const MonitorPage = () => {
     const { data: pollingStatus } = useGetPollingStatusQuery();

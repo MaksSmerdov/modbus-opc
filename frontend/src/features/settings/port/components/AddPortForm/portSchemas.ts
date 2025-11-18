@@ -4,7 +4,10 @@ import { z } from 'zod';
 export const rtuPortSchema = z.object({
     name: z.string().min(1, 'Название обязательно'),
     connectionType: z.literal('RTU'),
-    port: z.string().min(1, 'Порт обязателен'),
+    port: z
+        .string()
+        .min(1, 'Порт обязателен')
+        .regex(/^COM\d+$/i, 'Порт должен быть в формате COM1, COM2, COM3 и т.д.'),
     baudRate: z.number().optional(),
     dataBits: z.number().optional(),
     stopBits: z.number().optional(),

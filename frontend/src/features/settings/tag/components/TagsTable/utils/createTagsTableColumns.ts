@@ -1,4 +1,4 @@
-import type { TableColumn } from '@/shared/ui/Table/Table';
+import type { TableColumn } from '@/shared/components/Table/Table';
 
 interface ColumnVisibility {
     hasStringTags: boolean;

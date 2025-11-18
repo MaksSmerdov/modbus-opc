@@ -2,6 +2,8 @@ import { Input } from '@/shared/ui/Input/Input';
 import { Select } from '@/shared/ui/Select/Select';
 import { MenuItem } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
+import { useGetAvailablePortsQuery } from '../../../api/portsApi';
+import type { AvailablePorts } from '../../../types';
 import type { PortFormData } from '../portSchemas';
 import { getRTUFieldError } from '../utils/formUtils';
 import styles from '../AddPortForm.module.scss';
@@ -14,16 +16,39 @@ interface RTUFieldsProps {
 
 export const RTUFields = ({ isLoading = false, errors, watchedConnectionType }: RTUFieldsProps) => {
     const { register } = useFormContext<PortFormData>();
+    const { data: availablePorts = [], error: portsError } = useGetAvailablePortsQuery();
+
+    const portError = getRTUFieldError('port', watchedConnectionType, errors);
+
+    const helperText = portError?.message ||
+        (portsError
+            ? 'Ошибка загрузки списка портов'
+            : availablePorts.length > 0
+                ? 'Выберите из списка или введите вручную (формат: COM1, COM2 и т.д.)'
+                : 'Введите COM порт вручную (формат: COM1, COM2 и т.д.)');
 
     return (
         <>
-            <Input
-                label="COM порт"
-                {...register('port')}
-                error={!!getRTUFieldError('port', watchedConnectionType, errors)}
-                helperText={getRTUFieldError('port', watchedConnectionType, errors)?.message || 'Например: COM1, COM2'}
-                disabled={isLoading}
-            />
+            <div style={{ position: 'relative' }}>
+                <Input
+                    {...register('port')}
+                    label="COM порт"
+                    error={!!portError}
+                    helperText={helperText}
+                    disabled={isLoading}
+                    placeholder="COM1"
+                    inputProps={{
+                        list: availablePorts.length > 0 ? 'available-ports-list' : undefined,
+                    }}
+                />
+                {availablePorts.length > 0 && (
+                    <datalist id="available-ports-list">
+                        {availablePorts.map((port: AvailablePorts) => (
+                            <option key={port.name} value={port.name} />
+                        ))}
+                    </datalist>
+                )}
+            </div>
             <div className={styles['form__row']}>
                 <Select
                     {...register('baudRate', { valueAsNumber: true })}

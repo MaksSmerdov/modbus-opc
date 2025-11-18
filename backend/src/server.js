@@ -8,6 +8,7 @@ import apiRouter, { setModbusManager } from './routes/index.js';
 import { setReinitializeFunction } from './utils/modbusReloader.js';
 import { swaggerSpec } from './config/swagger.js';
 import { getServerSettings } from './models/settings/index.js';
+import { SerialPort } from 'serialport';
 
 const app = express();
 const { port, host } = config.server;

@@ -3,7 +3,7 @@ import { usersApi } from '../../api/usersApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { UserRow } from '../UserRow/UserRow';
 import { Button } from '../../../../shared/ui/Button/Button';
-import { Table, type TableColumn } from '../../../../shared/ui/Table/Table';
+import { Table, type TableColumn } from '../../../../shared/components/Table/Table';
 import type { User } from '../../../../shared/types';
 import styles from './UsersList.module.scss';
 

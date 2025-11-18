@@ -13,7 +13,7 @@ import type { Device, CreateDeviceData } from '@/features/settings/device/types'
 import styles from './PortPage.module.scss';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { getErrorMessage } from '@/shared/utils/errorUtils';
-import { PageHeader } from '@/shared/layout/PageHeader/PageHeader';
+import { PageHeader } from '@/shared/components/PageHeader/PageHeader';
 
 const RESERVED_PATHS = ['admin', 'login', 'register'];
 

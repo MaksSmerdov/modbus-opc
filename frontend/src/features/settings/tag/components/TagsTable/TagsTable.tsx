@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useUpdateTagMutation } from '../../api/tagsApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
-import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
+import { ConfirmModal } from '@/shared/components/ConfirmModal/ConfirmModal';
 import { TagDetailsModal } from '../TagDetailsModal/TagDetailsModal';
 import { ByteOrderModal } from '../ByteOrderModal/ByteOrderModal';
 import { TagsTableToolbar } from './TagsTableToolbar/TagsTableToolbar';
 import { TagsTableRow } from './TagsTableRow/TagsTableRow';
-import { Table } from '@/shared/ui/Table/Table';
+import { Table } from '@/shared/components/Table/Table';
 import { useTagEditing } from './hooks/useTagEditing';
 import { useColumnVisibility } from './hooks/useColumnVisibility';
 import { createTagsTableColumns } from './utils/createTagsTableColumns';

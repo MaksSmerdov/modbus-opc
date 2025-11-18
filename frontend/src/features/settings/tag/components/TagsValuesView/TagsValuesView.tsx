@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Table, type TableColumn } from '@/shared/ui/Table/Table';
+import { Table, type TableColumn } from '@/shared/components/Table/Table';
 import type { Tag } from '../../types';
 import type { DeviceData } from '@/features/settings/device/api/deviceDataApi';
 import styles from './TagsValuesView.module.scss';

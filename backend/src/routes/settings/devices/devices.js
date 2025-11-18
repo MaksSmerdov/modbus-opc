@@ -1,5 +1,5 @@
 import express from 'express';
-import { Device, Port, Tag } from '../../../models/settings/index.js';
+import { Device, Port, Tag } from '../../../models/index.js';
 import { reinitializeModbus } from '../../../utils/modbusReloader.js';
 import { logAudit } from '../../../utils/auditLogger.js';
 

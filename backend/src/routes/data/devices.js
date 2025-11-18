@@ -1,5 +1,5 @@
 import express from 'express';
-import { getDeviceModel } from '../../models/data/index.js';
+import { getDeviceModel } from '../../models/index.js';
 import { formatDate } from '../../utils/dateFormatter.js';
 import { getModbusManager } from '../../server.js';
 
