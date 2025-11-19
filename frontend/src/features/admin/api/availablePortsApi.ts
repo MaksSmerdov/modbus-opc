@@ -28,17 +28,17 @@ export interface AvailablePortSettingsItemResponse {
 export const availablePortsApi = {
   // Получить настройки всех портов
   getPortsSettings: async () => {
-    return api.get<AvailablePortSettings[]>('/config/available-ports');
+    return api.get<AvailablePortSettings[]>('/config/ports/available/settings');
   },
 
   // Обновить настройки порта
   updatePortSettings: async (portName: string, data: UpdateAvailablePortSettingsData) => {
-    return api.put<AvailablePortSettings>(`/config/available-ports/${portName}`, data);
+    return api.put<AvailablePortSettings>(`/config/ports/available/settings/${portName}`, data);
   },
 
   // Удалить настройки порта
   deletePortSettings: async (portName: string) => {
-    return api.delete(`/config/available-ports/${portName}`);
+    return api.delete(`/config/ports/available/settings/${portName}`);
   },
 };
 

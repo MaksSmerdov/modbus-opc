@@ -1,16 +1,75 @@
 import express from 'express';
-import { AvailablePort } from '../../models/settings/index.js';
-import { logAudit } from '../../utils/auditLogger.js';
-import { adminOnlyMiddleware } from '../../middleware/auth.js';
+import { AvailablePort } from '../../../models/settings/index.js';
+import { logAudit } from '../../../utils/auditLogger.js';
+import { adminOnlyMiddleware } from '../../../middleware/auth.js';
+import { getAllAvailablePorts } from '../../../utils/portScanner.js';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /api/config/available-ports:
+ * /api/config/ports/available:
+ *   get:
+ *     summary: Получить список доступных COM-портов системы
+ *     tags: [Ports]
+ *     description: Возвращает список всех доступных последовательных портов (COM-портов) на системе
+ *     responses:
+ *       200:
+ *         description: Список доступных COM-портов
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 count:
+ *                   type: integer
+ *                   description: Количество доступных портов
+ *                   example: 3
+ *                 data:
+ *                   type: array
+ *                   description: Массив доступных портов
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         description: Путь к порту (например, COM1, /dev/ttyUSB0)
+ *                         example: COM3
+ *       500:
+ *         description: Ошибка получения списка портов
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/', async (req, res) => {
+  try {
+    const userRole = req.user?.role || 'viewer';
+    const ports = await getAllAvailablePorts(userRole, AvailablePort);
+
+    res.json({
+      success: true,
+      count: ports.length,
+      data: ports
+    });
+  } catch (e) {
+    console.error('Ошибка получения доступных портов:', e);
+    res.status(500).json({
+      success: false,
+      error: e.message || 'Ошибка получения списка доступных портов'
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /api/config/ports/available/settings:
  *   get:
  *     summary: Получить настройки всех доступных COM-портов (только для админа)
- *     tags: [AvailablePorts]
+ *     tags: [Ports]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -39,7 +98,7 @@ const router = express.Router();
  *                       isHidden:
  *                         type: boolean
  */
-router.get('/', adminOnlyMiddleware, async (req, res) => {
+router.get('/settings', adminOnlyMiddleware, async (req, res) => {
   try {
     const settings = await AvailablePort.find()
       .sort({ portName: 1 })
@@ -61,10 +120,10 @@ router.get('/', adminOnlyMiddleware, async (req, res) => {
 
 /**
  * @swagger
- * /api/config/available-ports/{portName}:
+ * /api/config/ports/available/settings/{portName}:
  *   put:
  *     summary: Обновить настройки COM-порта (только для админа)
- *     tags: [AvailablePorts]
+ *     tags: [Ports]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -93,7 +152,7 @@ router.get('/', adminOnlyMiddleware, async (req, res) => {
  *       500:
  *         description: Ошибка сервера
  */
-router.put('/:portName', adminOnlyMiddleware, async (req, res) => {
+router.put('/settings/:portName', adminOnlyMiddleware, async (req, res) => {
   try {
     const { portName } = req.params;
     const { description, isHidden } = req.body;
@@ -114,7 +173,7 @@ router.put('/:portName', adminOnlyMiddleware, async (req, res) => {
     }
 
     const normalizedPortName = portName.toUpperCase();
-    
+
     if (!normalizedPortName.match(/^COM\d+$/)) {
       return res.status(400).json({
         success: false,
@@ -152,7 +211,7 @@ router.put('/:portName', adminOnlyMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error('Ошибка обновления настроек порта:', error);
-    
+
     if (error.name === 'ValidationError') {
       return res.status(400).json({
         success: false,
@@ -169,10 +228,10 @@ router.put('/:portName', adminOnlyMiddleware, async (req, res) => {
 
 /**
  * @swagger
- * /api/config/available-ports/{portName}:
+ * /api/config/ports/available/settings/{portName}:
  *   delete:
  *     summary: Удалить настройки COM-порта (только для админа)
- *     tags: [AvailablePorts]
+ *     tags: [Ports]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -190,7 +249,7 @@ router.put('/:portName', adminOnlyMiddleware, async (req, res) => {
  *       500:
  *         description: Ошибка сервера
  */
-router.delete('/:portName', adminOnlyMiddleware, async (req, res) => {
+router.delete('/settings/:portName', adminOnlyMiddleware, async (req, res) => {
   try {
     const { portName } = req.params;
     const normalizedPortName = portName.toUpperCase();
