@@ -134,7 +134,15 @@ router.get('/', async (req, res) => {
 router.get('/available', async (req, res) => {
   try {
     const ports = await SerialPort.list();
-    const formattedPorts = ports.map(p => ({ name: p.path }));
+    const formattedPorts = ports.map(p => ({
+      name: p.path,
+      manufacturer: p.manufacturer || null,
+      serialNumber: p.serialNumber || null,
+      pnpId: p.pnpId || null,
+      vendorId: p.vendorId || null,
+      productId: p.productId || null,
+      locationId: p.locationId || null
+    }));
 
     res.json({
       success: true,

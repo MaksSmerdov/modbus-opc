@@ -80,6 +80,12 @@ export interface PortResponse {
 
 export interface AvailablePorts {
     name: string;
+    manufacturer: string | null;
+    serialNumber: string | null;
+    pnpId: string | null;
+    vendorId: string | null;
+    productId: string | null;
+    locationId: string | null;
 }
 
 export interface AvailablePortsResponse {
