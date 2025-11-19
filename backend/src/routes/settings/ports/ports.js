@@ -1,10 +1,14 @@
 import { SerialPort } from 'serialport';
 import express from 'express';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { Port, Device } from '../../../models/index.js';
 import { reinitializeModbus } from '../../../utils/modbusReloader.js';
 import { logAudit } from '../../../utils/auditLogger.js';
 
 const router = express.Router();
+
+const execAsync = promisify(exec);
 
 /**
  * Форматирует порт для ответа - оставляет только релевантные поля
@@ -37,6 +41,76 @@ function formatPort(port) {
   }
 
   return base;
+}
+
+/**
+ * Получает все COM-порты из Windows через WMI (включая виртуальные)
+ * @returns {Promise<Array<{name: string, description?: string}>>}
+ */
+async function getWindowsCOMPorts() {
+  try {
+    // Используем PowerShell для получения всех COM-портов через WMI
+    const command = `powershell -Command "Get-WmiObject Win32_SerialPort | Select-Object DeviceID, Name | ConvertTo-Json"`;
+    const { stdout } = await execAsync(command, { encoding: 'utf8' });
+
+    if (!stdout || stdout.trim() === '') {
+      return [];
+    }
+
+    // PowerShell может вернуть массив или один объект
+    const ports = JSON.parse(stdout);
+    const portsArray = Array.isArray(ports) ? ports : [ports];
+
+    return portsArray.map(port => ({
+      name: port.DeviceID || null,
+      description: port.Name || null
+    })).filter(port => port.name && port.name.startsWith('COM'));
+  } catch (error) {
+    console.error('Ошибка получения COM-портов через WMI:', error);
+    return [];
+  }
+}
+
+/**
+ * Объединяет порты из SerialPort.list() и Windows WMI, убирая дубликаты
+ */
+async function getAllAvailablePorts() {
+  // Получаем порты через serialport (физические порты с метаданными)
+  const serialPorts = await SerialPort.list();
+  const serialPortsMap = new Map();
+
+  serialPorts.forEach(p => {
+    serialPortsMap.set(p.path, {
+      name: p.path,
+      manufacturer: p.manufacturer || null,
+      serialNumber: p.serialNumber || null,
+      pnpId: p.pnpId || null,
+      vendorId: p.vendorId || null,
+      productId: p.productId || null,
+      locationId: p.locationId || null
+    });
+  });
+
+  // Получаем все COM-порты из Windows (включая виртуальные)
+  const windowsPorts = await getWindowsCOMPorts();
+
+  // Добавляем виртуальные порты, которых нет в serialport
+  windowsPorts.forEach(winPort => {
+    if (!serialPortsMap.has(winPort.name)) {
+      serialPortsMap.set(winPort.name, {
+        name: winPort.name,
+        manufacturer: null,
+        serialNumber: null,
+        pnpId: null,
+        vendorId: null,
+        productId: null,
+        locationId: null,
+        description: winPort.description || null
+      });
+    }
+  });
+
+  return Array.from(serialPortsMap.values());
 }
 
 /**
@@ -133,21 +207,12 @@ router.get('/', async (req, res) => {
  */
 router.get('/available', async (req, res) => {
   try {
-    const ports = await SerialPort.list();
-    const formattedPorts = ports.map(p => ({
-      name: p.path,
-      manufacturer: p.manufacturer || null,
-      serialNumber: p.serialNumber || null,
-      pnpId: p.pnpId || null,
-      vendorId: p.vendorId || null,
-      productId: p.productId || null,
-      locationId: p.locationId || null
-    }));
+    const ports = await getAllAvailablePorts();
 
     res.json({
       success: true,
-      count: formattedPorts.length,
-      data: formattedPorts
+      count: ports.length,
+      data: ports
     });
   } catch (e) {
     console.error('Ошибка получения доступных портов:', e);

@@ -86,6 +86,7 @@ export interface AvailablePorts {
     vendorId: string | null;
     productId: string | null;
     locationId: string | null;
+    description?: string | null; // Описание порта из Windows (для виртуальных портов)
 }
 
 export interface AvailablePortsResponse {
