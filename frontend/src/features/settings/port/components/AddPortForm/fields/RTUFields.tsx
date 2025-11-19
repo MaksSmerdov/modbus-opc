@@ -16,7 +16,10 @@ interface RTUFieldsProps {
 
 export const RTUFields = ({ isLoading = false, errors, watchedConnectionType }: RTUFieldsProps) => {
     const { register } = useFormContext<PortFormData>();
-    const { data: availablePorts = [], error: portsError } = useGetAvailablePortsQuery();
+    // Добавляем refetchOnMountOrArgChange для обновления при открытии модалки
+    const { data: availablePorts = [], error: portsError } = useGetAvailablePortsQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+    });
 
     const portError = getRTUFieldError('port', watchedConnectionType, errors);
 

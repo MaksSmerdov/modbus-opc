@@ -1,4 +1,3 @@
-import { SerialPort } from 'serialport';
 import express from 'express';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -45,59 +44,131 @@ function formatPort(port) {
 
 /**
  * Получает все COM-порты из Windows через WMI (включая виртуальные)
+ * Использует wmic вместо PowerShell для большей надежности
  * @returns {Promise<Array<{name: string, description?: string}>>}
  */
-async function getWindowsCOMPorts() {
+async function getWindowsCOMPortsWMI() {
   try {
-    // Используем PowerShell для получения всех COM-портов через WMI
-    const command = `powershell -Command "Get-WmiObject Win32_SerialPort | Select-Object DeviceID, Name | ConvertTo-Json"`;
+    // Используем wmic для получения всех COM-портов
+    const command = `wmic path Win32_SerialPort get DeviceID,Name /format:csv`;
     const { stdout } = await execAsync(command, { encoding: 'utf8' });
 
     if (!stdout || stdout.trim() === '') {
       return [];
     }
 
-    // PowerShell может вернуть массив или один объект
-    const ports = JSON.parse(stdout);
-    const portsArray = Array.isArray(ports) ? ports : [ports];
+    // Парсим CSV формат wmic
+    const lines = stdout.split('\n').filter(line => line.trim() && !line.startsWith('Node'));
+    const ports = [];
 
-    return portsArray.map(port => ({
-      name: port.DeviceID || null,
-      description: port.Name || null
-    })).filter(port => port.name && port.name.startsWith('COM'));
+    for (const line of lines) {
+      const parts = line.split(',');
+      if (parts.length >= 3) {
+        const deviceId = parts[parts.length - 2]?.trim();
+        const name = parts[parts.length - 1]?.trim();
+        if (deviceId && deviceId.startsWith('COM')) {
+          ports.push({
+            name: deviceId,
+            description: name || null
+          });
+        }
+      }
+    }
+
+    return ports;
   } catch (error) {
-    console.error('Ошибка получения COM-портов через WMI:', error);
+    console.error('Ошибка получения COM-портов через WMI (wmic):', error.message);
     return [];
   }
 }
 
 /**
- * Объединяет порты из SerialPort.list() и Windows WMI, убирая дубликаты
+ * Получает COM-порты из реестра Windows (самый надежный метод для виртуальных портов)
+ * @returns {Promise<Array<{name: string}>>}
  */
-async function getAllAvailablePorts() {
-  // Получаем порты через serialport (физические порты с метаданными)
-  const serialPorts = await SerialPort.list();
-  const serialPortsMap = new Map();
+async function getWindowsCOMPortsFromRegistry() {
+  try {
+    // Читаем реестр Windows через reg query
+    const command = `reg query "HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM"`;
+    const { stdout } = await execAsync(command, { encoding: 'utf8' });
 
-  serialPorts.forEach(p => {
-    serialPortsMap.set(p.path, {
-      name: p.path,
-      manufacturer: p.manufacturer || null,
-      serialNumber: p.serialNumber || null,
-      pnpId: p.pnpId || null,
-      vendorId: p.vendorId || null,
-      productId: p.productId || null,
-      locationId: p.locationId || null
-    });
+    if (!stdout || stdout.trim() === '') {
+      return [];
+    }
+
+    const ports = [];
+    const lines = stdout.split('\n');
+
+    for (const line of lines) {
+      // Формат: "    \\Device\\Serial0    REG_SZ    COM1"
+      const match = line.match(/COM\d+/i);
+      if (match) {
+        ports.push({
+          name: match[0].toUpperCase()
+        });
+      }
+    }
+
+    return ports;
+  } catch (error) {
+    console.error('Ошибка получения COM-портов из реестра:', error.message);
+    return [];
+  }
+}
+
+/**
+ * Получает все COM-порты из Windows через WMI (включая виртуальные)
+ * Пробует несколько методов для максимального покрытия
+ * @returns {Promise<Array<{name: string, description?: string}>>}
+ */
+async function getWindowsCOMPorts() {
+  // Пробуем несколько методов и объединяем результаты
+  const [wmiPorts, registryPorts] = await Promise.all([
+    getWindowsCOMPortsWMI(),
+    getWindowsCOMPortsFromRegistry()
+  ]);
+
+  // Объединяем результаты, убирая дубликаты
+  const portsMap = new Map();
+
+  // Добавляем порты из WMI (с описанием)
+  wmiPorts.forEach(port => {
+    portsMap.set(port.name, port);
   });
 
+  // Добавляем порты из реестра (если их еще нет)
+  registryPorts.forEach(port => {
+    if (!portsMap.has(port.name)) {
+      portsMap.set(port.name, port);
+    }
+  });
+
+  const allPorts = Array.from(portsMap.values());
+
+  return allPorts;
+}
+
+/**
+ * Получает все доступные COM-порты из Windows
+ * Использует WMI и реестр для максимального покрытия (включая виртуальные порты)
+ * Фильтрует скрытые порты для не-админов
+ * @param {string} userRole - Роль пользователя ('admin', 'operator', 'viewer')
+ * @returns {Promise<Array<{name: string, manufacturer: string | null, ...}>>}
+ */
+async function getAllAvailablePorts(userRole = 'viewer') {
   // Получаем все COM-порты из Windows (включая виртуальные)
   const windowsPorts = await getWindowsCOMPorts();
 
-  // Добавляем виртуальные порты, которых нет в serialport
-  windowsPorts.forEach(winPort => {
-    if (!serialPortsMap.has(winPort.name)) {
-      serialPortsMap.set(winPort.name, {
+  // Получаем настройки портов из БД
+  const { AvailablePort } = await import('../../../models/settings/index.js');
+  const portSettings = await AvailablePort.find().lean();
+  const settingsMap = new Map(portSettings.map(s => [s.portName, s]));
+
+  // Форматируем порты с учетом настроек
+  const formattedPorts = windowsPorts
+    .map(winPort => {
+      const settings = settingsMap.get(winPort.name);
+      return {
         name: winPort.name,
         manufacturer: null,
         serialNumber: null,
@@ -105,12 +176,18 @@ async function getAllAvailablePorts() {
         vendorId: null,
         productId: null,
         locationId: null,
-        description: winPort.description || null
-      });
-    }
-  });
+        description: settings?.description || winPort.description || null
+      };
+    })
+    // Фильтруем скрытые порты для не-админов
+    .filter(port => {
+      const settings = settingsMap.get(port.name);
+      return userRole === 'admin' || !settings?.isHidden;
+    });
 
-  return Array.from(serialPortsMap.values());
+  console.log(`Итого доступно портов: ${formattedPorts.length}`, formattedPorts.map(p => p.name));
+
+  return formattedPorts;
 }
 
 /**
@@ -207,7 +284,8 @@ router.get('/', async (req, res) => {
  */
 router.get('/available', async (req, res) => {
   try {
-    const ports = await getAllAvailablePorts();
+    const userRole = req.user?.role || 'viewer';
+    const ports = await getAllAvailablePorts(userRole);
 
     res.json({
       success: true,

@@ -3,10 +3,11 @@ import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '@/app/hooks/hooks.ts';
 import { UsersList } from '../../features/admin/components/UsersList/UsersList';
 import { AuditLogs } from '../../features/admin/components/AuditLogs/AuditLogs';
+import { AvailablePortsSettings } from '../../features/admin/components/AvailablePortsSettings/AvailablePortsSettings';
 import { Button } from '@/shared/ui/Button/Button';
 import styles from './AdminPage.module.scss';
 
-type TabType = 'users' | 'audit';
+type TabType = 'users' | 'audit' | 'ports';
 
 export const AdminPage = () => {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
@@ -40,11 +41,19 @@ export const AdminPage = () => {
           >
             Журнал действий
           </Button>
+          <Button
+            variant={activeTab === 'ports' ? 'contained' : 'outlined'}
+            onClick={() => setActiveTab('ports')}
+            className={styles['adminPage__tab']}
+          >
+            COM-порты
+          </Button>
         </div>
 
         <div className={styles['adminPage__content']}>
           {activeTab === 'users' && <UsersList />}
           {activeTab === 'audit' && <AuditLogs />}
+          {activeTab === 'ports' && <AvailablePortsSettings />}
         </div>
       </div>
     </div>

@@ -1,0 +1,64 @@
+@use "@/shared/styles/variables" as vars;
+@use "@/shared/styles/mixins" as mixins;
+
+.availablePortsSettings {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    margin: 0;
+    @include mixins.text-style(24px, null, 600, vars.$text-primary-light);
+  }
+
+  &__loading,
+  &__error {
+    padding: 40px;
+    text-align: center;
+    color: vars.$text-secondary-light;
+  }
+
+  &__error {
+    color: vars.$red;
+  }
+
+  &__hidden {
+    color: vars.$text-secondary-light;
+    font-style: italic;
+  }
+
+  &__notFound {
+    color: vars.$text-secondary-light;
+    font-size: 12px;
+    font-style: italic;
+  }
+}
+
+:global(.dark) {
+  .availablePortsSettings {
+    &__title {
+      color: vars.$text-primary-dark;
+    }
+
+    &__loading,
+    &__error {
+      color: vars.$text-secondary-dark;
+    }
+
+    &__error {
+      color: vars.$red;
+    }
+
+    &__hidden {
+      color: vars.$text-secondary-dark;
+    }
+
+    &__notFound {
+      color: vars.$text-secondary-dark;
+    }
+  }
+}
+
