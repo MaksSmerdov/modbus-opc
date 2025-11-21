@@ -9,6 +9,22 @@ import type {
     AvailablePortsResponse,
 } from '../types';
 
+// Добавить интерфейс для настроек портов
+export interface AvailablePortSettings {
+    _id: string;
+    portName: string;
+    description: string | null;
+    isHidden: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface AvailablePortSettingsResponse {
+    success: true;
+    count: number;
+    data: AvailablePortSettings[];
+}
+
 export const portsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // Получить список всех портов
@@ -30,6 +46,13 @@ export const portsApi = baseApi.injectEndpoints({
             query: () => `/config/ports/available`,
             providesTags: ['Ports'],
             transformResponse: (response: AvailablePortsResponse) => response.data,
+        }),
+
+        // Получить настройки доступных портов
+        getAvailablePortsSettings: builder.query<AvailablePortSettings[], void>({
+            query: () => '/config/ports/available/settings',
+            providesTags: ['Ports'],
+            transformResponse: (response: AvailablePortSettingsResponse) => response.data,
         }),
 
         // Создать новый порт
@@ -68,17 +91,33 @@ export const portsApi = baseApi.injectEndpoints({
                 'Ports',
             ],
         }),
+
+        // Обновить настройки доступного порта
+        updateAvailablePortSettings: builder.mutation<
+            AvailablePortSettings,
+            { portName: string; data: { description?: string | null; isHidden?: boolean } }
+        >({
+            query: ({ portName, data }) => ({
+                url: `/config/ports/available/settings/${portName}`,
+                method: 'PUT',
+                body: data,
+            }),
+            transformResponse: (response: { success: true; data: AvailablePortSettings }) => response.data,
+            invalidatesTags: ['Ports'],
+        }),
     }),
 });
 
 export const {
     useGetPortsQuery,
     useGetAvailablePortsQuery,
+    useGetAvailablePortsSettingsQuery,
     useLazyGetPortsQuery,
     useGetPortQuery,
     useLazyGetPortQuery,
     useCreatePortMutation,
     useUpdatePortMutation,
     useDeletePortMutation,
+    useUpdateAvailablePortSettingsMutation,
 } = portsApi;
 

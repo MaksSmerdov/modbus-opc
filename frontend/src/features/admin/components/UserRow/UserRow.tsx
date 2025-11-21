@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { Delete } from '@mui/icons-material';
 import { useAppSelector } from '../../../../app/hooks/hooks';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
+import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import type { User, UserRole } from '../../../../shared/types';
 import styles from './UserRow.module.scss';
-import { Button } from '@/shared/ui/Button/Button';
+import { Select } from '@/shared/ui/Select/Select';
+import { MenuItem } from '@mui/material';
 
 interface UserRowProps {
   user: User;
@@ -61,34 +64,35 @@ export const UserRow = ({ user, onRoleUpdate, onDelete }: UserRowProps) => {
   };
 
   return (
-    <tr className={styles['userRow']}>
-      <td className={styles['userRow__name']}>{user.name}</td>
+    <tr>
+      <td>{user.name}</td>
       <td className={styles['userRow__email']}>{user.email}</td>
-      <td className={styles['userRow__role']}>
+      <td>
         {isCurrentUser ? (
-          <span className={styles['userRow__current-user']}>
-            {user.role} (вы)
-          </span>
+          <span className={styles['userRow__current-user']}>{user.role} (вы)</span>
         ) : (
-          <select
+          <Select
             value={selectedRole}
             onChange={(e) => handleRoleChange(e.target.value as UserRole)}
             disabled={isUpdating}
+            fullWidth={true}
             className={styles['userRow__select']}
           >
-            <option value="viewer">Viewer</option>
-            <option value="operator">Operator</option>
-            <option value="admin">Admin</option>
-          </select>
+            <MenuItem value='viewer'>Viewer</MenuItem>
+            <MenuItem value='operator'>Operator</MenuItem>
+            <MenuItem value='admin'>Admin</MenuItem>
+          </Select>
         )}
       </td>
-      <td className={styles['userRow__date']}>
-        {user.createdAt ? formatDate(user.createdAt) : '-'}
-      </td>
-      <td className={styles['userRow__actions']}>
-        <Button variant="outlined" size="small" onClick={handleDelete} disabled={isCurrentUser || isDeleting}>
-          Удалить
-        </Button>
+      <td>{user.createdAt ? formatDate(user.createdAt) : '-'}</td>
+      <td>
+        <IconButton
+          icon={<Delete />}
+          tooltip={isCurrentUser ? 'Нельзя удалить себя' : 'Удалить пользователя'}
+          variant='delete'
+          onClick={handleDelete}
+          disabled={isCurrentUser || isDeleting}
+        />
       </td>
     </tr>
   );

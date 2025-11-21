@@ -37,6 +37,10 @@ const router = express.Router();
  */
 router.get('/', portsController.getPorts);
 
+// Подключаем роуты для управления доступными портами
+// GET /config/ports/available - получение доступных портов
+// GET/PUT/DELETE /config/ports/available/settings - управление настройками портов
+router.use('/available', availablePortsRouter);
 
 /**
  * @swagger
@@ -224,10 +228,6 @@ router.put('/:id', portsController.updatePort);
  */
 router.delete('/:id', portsController.deletePort);
 
-// Подключаем роуты для управления доступными портами
-// GET /config/ports/available - получение доступных портов
-// GET/PUT/DELETE /config/ports/available/settings - управление настройками портов
-router.use('/available', availablePortsRouter);
 
 export default router;
 

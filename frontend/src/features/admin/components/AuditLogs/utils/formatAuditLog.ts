@@ -1,5 +1,3 @@
-import type { AuditLog } from '../../../api/auditApi';
-
 export const formatAuditLogDate = (dateString: string): string => {
     return new Date(dateString).toLocaleString('ru-RU', {
         day: '2-digit',

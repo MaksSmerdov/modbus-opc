@@ -37,6 +37,30 @@ export const AppRoutes = () => {
                     path="admin"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
+                            <Navigate to="/admin/users-list" replace />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="admin/users-list"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <AdminPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="admin/audit-log"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <AdminPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="admin/com-ports"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
                             <AdminPage />
                         </ProtectedRoute>
                     }

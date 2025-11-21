@@ -27,7 +27,6 @@ const availablePortSchema = new mongoose.Schema({
 });
 
 // Индексы для быстрого поиска
-availablePortSchema.index({ portName: 1 });
 availablePortSchema.index({ isHidden: 1 });
 
 export const AvailablePort = configDB.model('AvailablePort', availablePortSchema);

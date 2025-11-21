@@ -146,8 +146,6 @@ export async function getAllAvailablePorts(userRole = 'viewer', AvailablePortMod
       return userRole === 'admin' || !settings?.isHidden;
     });
 
-  console.log(`Итого доступно портов: ${formattedPorts.length}`, formattedPorts.map(p => p.name));
-
   return formattedPorts;
 }
 

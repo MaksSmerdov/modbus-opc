@@ -17,7 +17,10 @@ export const Header: React.FC = () => {
     const isAdmin = useMemo(() => user?.role === 'admin', [user?.role]);
     const isOperator = useMemo(() => user?.role === 'operator', [user?.role]);
     const canManagePolling = useMemo(() => isAdmin || isOperator, [isAdmin, isOperator]);
-    const isAdminPage = useMemo(() => location.pathname === '/admin', [location.pathname]);
+    const isAdminPage = useMemo(() => 
+        location.pathname.startsWith('/admin'), 
+        [location.pathname]
+    );
     const isMonitorPage = useMemo(() => location.pathname === '/monitor', [location.pathname]);
 
     const handleLogout = useCallback(async () => {
@@ -29,7 +32,7 @@ export const Header: React.FC = () => {
     }, [logout]);
 
     const handleAdmin = useCallback(() => {
-        navigate('/admin');
+        navigate('/admin/users-list');
     }, [navigate]);
 
     const handleMonitor = useCallback(() => {

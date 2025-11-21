@@ -1,0 +1,16 @@
+@use "@/shared/styles/variables" as vars;
+
+.editPortModal {
+  &__field {
+    margin-bottom: 24px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__switch {
+    margin: 0;
+  }
+}
+

@@ -24,17 +24,6 @@
   &__error {
     color: vars.$red;
   }
-
-  &__hidden {
-    color: vars.$text-secondary-light;
-    font-style: italic;
-  }
-
-  &__notFound {
-    color: vars.$text-secondary-light;
-    font-size: 12px;
-    font-style: italic;
-  }
 }
 
 :global(.dark) {
@@ -50,14 +39,6 @@
 
     &__error {
       color: vars.$red;
-    }
-
-    &__hidden {
-      color: vars.$text-secondary-dark;
-    }
-
-    &__notFound {
-      color: vars.$text-secondary-dark;
     }
   }
 }

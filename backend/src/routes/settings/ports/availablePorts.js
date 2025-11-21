@@ -1,8 +1,8 @@
 import express from 'express';
 import { AvailablePort } from '../../../models/settings/index.js';
-import { logAudit } from '../../../utils/auditLogger.js';
 import { adminOnlyMiddleware } from '../../../middleware/auth.js';
 import { getAllAvailablePorts } from '../../../utils/portScanner.js';
+import { getWindowsCOMPorts } from '../../../utils/portScanner.js';
 
 const router = express.Router();
 
@@ -100,6 +100,16 @@ router.get('/', async (req, res) => {
  */
 router.get('/settings', adminOnlyMiddleware, async (req, res) => {
   try {
+    // Получаем все системные порты
+    const windowsPorts = await getWindowsCOMPorts();
+    const systemPortNames = new Set(windowsPorts.map(p => p.name.toUpperCase()));
+    
+    // Удаляем настройки для портов, которых нет в системе
+    await AvailablePort.deleteMany({
+      portName: { $nin: Array.from(systemPortNames) }
+    });
+    
+    // Получаем оставшиеся настройки
     const settings = await AvailablePort.find()
       .sort({ portName: 1 })
       .lean();
@@ -192,19 +202,6 @@ router.put('/settings/:portName', adminOnlyMiddleware, async (req, res) => {
       { new: true, upsert: true, runValidators: true }
     );
 
-    // Логируем изменение
-    if (req.user) {
-      await logAudit({
-        user: req.user,
-        action: settings.isNew ? 'create' : 'update',
-        entityType: 'availablePort',
-        entityName: normalizedPortName,
-        fieldName: 'settings',
-        newValue: JSON.stringify({ description: settings.description, isHidden: settings.isHidden }),
-        req
-      });
-    }
-
     res.json({
       success: true,
       data: settings
@@ -226,67 +223,4 @@ router.put('/settings/:portName', adminOnlyMiddleware, async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/config/ports/available/settings/{portName}:
- *   delete:
- *     summary: Удалить настройки COM-порта (только для админа)
- *     tags: [Ports]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: portName
- *         required: true
- *         schema:
- *           type: string
- *         description: Имя COM-порта (например, COM1)
- *     responses:
- *       200:
- *         description: Настройки порта удалены
- *       404:
- *         description: Настройки порта не найдены
- *       500:
- *         description: Ошибка сервера
- */
-router.delete('/settings/:portName', adminOnlyMiddleware, async (req, res) => {
-  try {
-    const { portName } = req.params;
-    const normalizedPortName = portName.toUpperCase();
-
-    const settings = await AvailablePort.findOneAndDelete({ portName: normalizedPortName });
-
-    if (!settings) {
-      return res.status(404).json({
-        success: false,
-        error: 'Настройки порта не найдены'
-      });
-    }
-
-    // Логируем удаление
-    if (req.user) {
-      await logAudit({
-        user: req.user,
-        action: 'delete',
-        entityType: 'availablePort',
-        entityName: normalizedPortName,
-        oldValue: JSON.stringify({ description: settings.description, isHidden: settings.isHidden }),
-        req
-      });
-    }
-
-    res.json({
-      success: true,
-      message: 'Настройки порта удалены'
-    });
-  } catch (error) {
-    console.error('Ошибка удаления настроек порта:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Ошибка удаления настроек порта'
-    });
-  }
-});
-
 export default router;
-

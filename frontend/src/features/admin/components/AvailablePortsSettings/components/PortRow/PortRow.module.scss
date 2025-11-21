@@ -1,0 +1,27 @@
+@use "@/shared/styles/variables" as vars;
+
+.portRow {
+  &__hidden {
+    color: vars.$text-secondary-light;
+    font-style: italic;
+  }
+
+  &__notFound {
+    color: vars.$text-secondary-light;
+    font-size: 12px;
+    font-style: italic;
+  }
+}
+
+:global(.dark) {
+  .portRow {
+    &__hidden {
+      color: vars.$text-secondary-dark;
+    }
+
+    &__notFound {
+      color: vars.$text-secondary-dark;
+    }
+  }
+}
+

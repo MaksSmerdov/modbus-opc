@@ -2,10 +2,11 @@ import { Input } from '@/shared/ui/Input/Input';
 import { Select } from '@/shared/ui/Select/Select';
 import { MenuItem } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
-import { useGetAvailablePortsQuery } from '../../../api/portsApi';
+import { useGetAvailablePortsQuery, useGetAvailablePortsSettingsQuery } from '../../../api/portsApi';
 import type { AvailablePorts } from '../../../types';
 import type { PortFormData } from '../portSchemas';
 import { getRTUFieldError } from '../utils/formUtils';
+import { useMemo } from 'react';
 import styles from '../AddPortForm.module.scss';
 
 interface RTUFieldsProps {
@@ -14,19 +15,55 @@ interface RTUFieldsProps {
     watchedConnectionType: string;
 }
 
+interface PortOption {
+    name: string;
+    displayName: string;
+}
+
 export const RTUFields = ({ isLoading = false, errors, watchedConnectionType }: RTUFieldsProps) => {
     const { register } = useFormContext<PortFormData>();
-    // Добавляем refetchOnMountOrArgChange для обновления при открытии модалки
+    
     const { data: availablePorts = [], error: portsError } = useGetAvailablePortsQuery(undefined, {
         refetchOnMountOrArgChange: true,
     });
+    
+    const { data: portSettings = [] } = useGetAvailablePortsSettingsQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+    });
+
+    // Объединяем порты с настройками, фильтруем скрытые и форматируем отображение
+    const portOptions = useMemo(() => {
+        const settingsMap = new Map(portSettings.map(s => [s.portName, s]));
+        const options: PortOption[] = [];
+
+        availablePorts.forEach((port: AvailablePorts) => {
+            const settings = settingsMap.get(port.name);
+            
+            // Пропускаем скрытые порты
+            if (settings?.isHidden) {
+                return;
+            }
+
+            // Форматируем отображение: "ПОРТ - ОПИСАНИЕ" или просто "ПОРТ"
+            const displayName = settings?.description
+                ? `${port.name} - ${settings.description}`
+                : port.name;
+
+            options.push({
+                name: port.name,
+                displayName,
+            });
+        });
+
+        return options.sort((a, b) => a.name.localeCompare(b.name));
+    }, [availablePorts, portSettings]);
 
     const portError = getRTUFieldError('port', watchedConnectionType, errors);
 
     const helperText = portError?.message ||
         (portsError
             ? 'Ошибка загрузки списка портов'
-            : availablePorts.length > 0
+            : portOptions.length > 0
                 ? 'Выберите из списка или введите вручную (формат: COM1, COM2 и т.д.)'
                 : 'Введите COM порт вручную (формат: COM1, COM2 и т.д.)');
 
@@ -41,13 +78,15 @@ export const RTUFields = ({ isLoading = false, errors, watchedConnectionType }: 
                     disabled={isLoading}
                     placeholder="COM1"
                     inputProps={{
-                        list: availablePorts.length > 0 ? 'available-ports-list' : undefined,
+                        list: portOptions.length > 0 ? 'available-ports-list' : undefined,
                     }}
                 />
-                {availablePorts.length > 0 && (
+                {portOptions.length > 0 && (
                     <datalist id="available-ports-list">
-                        {availablePorts.map((port: AvailablePorts) => (
-                            <option key={port.name} value={port.name} />
+                        {portOptions.map((option) => (
+                            <option key={option.name} value={option.name}>
+                                {option.displayName}
+                            </option>
                         ))}
                     </datalist>
                 )}

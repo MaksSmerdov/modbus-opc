@@ -24,9 +24,3 @@ export const config = {
     usersUri: process.env.MONGODB_USERS_URI || 'mongodb://localhost:27017/modbus-users'
   },
 };
-
-// Логируем текущую конфигурацию при запуске
-console.log(`\n🚀 Режим: ${config.env}`);
-console.log(`📡 Сервер: http://${config.server.host}:${config.server.port}`);
-console.log(`💾 БД конфигурации: ${config.database.configUri}`);
-console.log(`💾 БД данных: ${config.database.dataUri}\n`);

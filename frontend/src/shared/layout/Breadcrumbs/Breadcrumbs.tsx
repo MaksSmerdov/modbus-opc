@@ -25,8 +25,15 @@ export const Breadcrumbs: React.FC = () => {
         // Всегда добавляем "Главная" как первый элемент (кроме самой главной)
         crumbs.push({ label: 'Главная', path: '/' });
 
-        if (location.pathname === '/admin') {
-            crumbs.push({ label: 'Админ панель' });
+        if (location.pathname.startsWith('/admin')) {
+            crumbs.push({ label: 'Админ панель', path: '/admin/users-list' });
+            if (location.pathname === '/admin/users-list') {
+                crumbs.push({ label: 'Пользователи' });
+            } else if (location.pathname === '/admin/audit-log') {
+                crumbs.push({ label: 'Журнал действий' });
+            } else if (location.pathname === '/admin/com-ports') {
+                crumbs.push({ label: 'COM-порты' });
+            }
         } else if (location.pathname === '/monitor') {
             crumbs.push({ label: 'Мониторинг' });
         } else if (params.portSlug && params.deviceSlug) {

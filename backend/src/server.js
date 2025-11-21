@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config/env.js';
 import connectDB from './utils/database.js';
 import { initModbus } from './services/modbusInit.js';
@@ -11,6 +13,13 @@ import { getServerSettings } from './models/settings/index.js';
 
 const app = express();
 const { port, host } = config.server;
+
+// Получаем __dirname для ES модулей
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Путь к собранному фронтенду
+const frontendDistPath = path.join(__dirname, '../../frontend/dist');
 
 // Подключение к базе данных
 void connectDB();
@@ -100,26 +109,35 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customSiteTitle: 'Modbus OPC Server API Documentation',
 }));
 
-// Базовый маршрут
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Modbus OPC Server is running',
-    environment: config.env,
-    host: host,
-    port: port,
-    documentation: `http://${host}:${port}/api-docs`
-  });
-});
-
-// Подключаем все API роуты
+// API роуты (должны быть ПЕРЕД статическими файлами)
 app.use('/api', apiRouter);
+
+// Раздача статических файлов фронтенда
+app.use(express.static(frontendDistPath));
+
+// Fallback для SPA - все остальные запросы возвращают index.html
+app.use((req, res, next) => {
+  // Пропускаем API и Swagger запросы
+  if (req.path.startsWith('/api') || req.path.startsWith('/api-docs')) {
+    return next();
+  }
+  
+  // Пропускаем запросы к статическим файлам (с расширениями)
+  if (req.path.includes('.')) {
+    return next();
+  }
+  
+  // Для всех остальных GET запросов возвращаем index.html
+  if (req.method === 'GET') {
+    return res.sendFile(path.join(frontendDistPath, 'index.html'));
+  }
+  
+  next();
+});
 
 // Запуск сервера
 app.listen(port, host, () => {
-  console.log(`✓ API доступен:`);
-  console.log(`  - Swagger документация: http://${host}:${port}/api-docs`);
-  console.log(`  - Данные устройств: http://${host}:${port}/api/data/devices`);
-  console.log(`  - Конфигурация: http://${host}:${port}/api/config`);
+  console.log(`Сервер запущен на http://${host}:${port}`);
 });
 
 // Корректное завершение при выходе
