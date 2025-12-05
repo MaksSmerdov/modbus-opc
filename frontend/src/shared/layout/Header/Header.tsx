@@ -39,7 +39,7 @@ export const Header: React.FC = () => {
     return (
         <header className={styles['header']}>
             <div className={styles['header__left']}>
-                <h2 className={`${styles['header__title']} title-reset`}>Modbus OPC</h2>
+                <h2 className={`${styles['header__title']} title-reset`}>Modbus Service</h2>
             </div>
             <div className={styles['header__right']}>
                 <ThemeToggle />

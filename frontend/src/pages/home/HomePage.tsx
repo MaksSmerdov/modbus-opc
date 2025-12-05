@@ -25,7 +25,7 @@ export const HomePage = () => {
         if (!isAuthenticated || !user) {
             return {
                 greeting: baseText,
-                description: 'Система Modbus OPC Server предоставляет возможность мониторинга и управления Modbus устройствами в режиме реального времени.',
+                description: 'Система Modbus Service предоставляет возможность мониторинга и управления Modbus устройствами в режиме реального времени.',
                 capabilities: [
                     'Просмотр данных мониторинга всех устройств',
                     'Отслеживание текущих значений тегов',
@@ -85,7 +85,7 @@ export const HomePage = () => {
     return (
         <div className={`${styles['homePage']} page`}>
             <div className={styles['homePage__content']}>
-                <h1 className={`${styles['homePage__title']} title-reset`}>Modbus OPC</h1>
+                <h1 className={`${styles['homePage__title']} title-reset`}>Modbus Service</h1>
                 <p className={styles['homePage__greeting']}>
                     {content.greeting}
                 </p>
