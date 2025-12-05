@@ -1,5 +1,5 @@
 import express from 'express';
-import { getDeviceModel } from '../../models/data/index.js';
+import { getDeviceModel } from '../../models/index.js';
 import { formatDate } from '../../utils/dateFormatter.js';
 import { getModbusManager } from '../../server.js';
 
@@ -194,7 +194,7 @@ router.get('/:deviceName/history', async (req, res) => {
   try {
     const deviceSlug = req.params.deviceName.toLowerCase(); // На самом деле это slug
 
-    // Находим устройство по slug чтобы получить его slug для модели
+    // Находим устройство по slug, чтобы получить его slug для модели
     const manager = modbusManager || getModbusManager();
     if (!manager) {
       return res.status(503).json({ error: 'Modbus не инициализирован' });
