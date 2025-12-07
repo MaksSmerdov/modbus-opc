@@ -1,7 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
-import { useGetMeQuery } from '../features/auth/api/authApi';
+import { useGetMeQuery } from '@/features/auth/api/authApi';
 import { Loader } from '@/shared/ui/Loader/Loader';
 import { SnackbarProvider } from '@/shared/providers/SnackbarProvider';
 import { AppRoutes } from './routes/AppRoutes';

@@ -1,5 +1,5 @@
-import type { CreateDeviceData } from '../../../types';
-import type { DeviceFormData } from '../deviceSchemas';
+import type { CreateDeviceData } from '@/features/settings/device/types';
+import type { DeviceFormData } from '@/features/settings/device/components/AddDeviceForm/deviceSchemas';
 import { transliterate } from '@/shared/utils/transliterate';
 
 /**

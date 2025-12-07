@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
-import { useUpdateTagMutation } from '../../api/tagsApi';
+import { useUpdateTagMutation } from '@/features/settings/tag/api/tagsApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
-import { TagDetailsModal } from '../TagDetailsModal/TagDetailsModal';
-import { ByteOrderModal } from '../ByteOrderModal/ByteOrderModal';
+import { TagDetailsModal } from '@/features/settings/tag/components/TagDetailsModal/TagDetailsModal';
+import { ByteOrderModal } from '@/features/settings/tag/components/ByteOrderModal/ByteOrderModal';
 import { TagsTableToolbar } from './TagsTableToolbar/TagsTableToolbar';
 import { TagsTableRow } from './TagsTableRow/TagsTableRow';
 import { Table } from '@/shared/ui/Table/Table';
@@ -11,7 +11,7 @@ import { useTagEditing } from './hooks/useTagEditing';
 import { useColumnVisibility } from './hooks/useColumnVisibility';
 import { createTagsTableColumns } from './utils/createTagsTableColumns';
 import { handleDataTypeChange } from './utils/handleDataTypeChange';
-import type { Tag, UpdateTagData, ByteOrder, CreateTagData } from '../../types';
+import type { Tag, UpdateTagData, ByteOrder, CreateTagData } from '@/features/settings/tag/types';
 import styles from './TagsTable.module.scss';
 
 interface TagsTableProps {

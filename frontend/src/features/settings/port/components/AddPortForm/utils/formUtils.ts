@@ -1,6 +1,6 @@
-import type { CreatePortData } from '../../../types';
+import type { CreatePortData } from '@/features/settings/port/types';
 import type { z } from 'zod';
-import { rtuPortSchema, tcpPortSchema, type PortFormData } from '../portSchemas';
+import { rtuPortSchema, tcpPortSchema, type PortFormData } from '@/features/settings/port/components/AddPortForm/portSchemas';
 import type { FieldErrors } from 'react-hook-form';
 
 type RTUFormData = z.infer<typeof rtuPortSchema>;

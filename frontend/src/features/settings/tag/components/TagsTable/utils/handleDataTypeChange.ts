@@ -1,5 +1,5 @@
 import { shouldShowByteOrder, getDefaultLength } from './tagsTableUtils';
-import type { CreateTagData } from '../../../types';
+import type { CreateTagData } from '@/features/settings/tag/types';
 
 export const handleDataTypeChange = (
     newDataType: CreateTagData['dataType'],

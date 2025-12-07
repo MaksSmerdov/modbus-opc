@@ -5,7 +5,7 @@ import { Input } from '@/shared/ui/Input/Input';
 import { Button } from '@/shared/ui/Button/Button';
 import { Select } from '@/shared/ui/Select/Select';
 import { MenuItem } from '@mui/material';
-import type { CreatePortData, ConnectionType } from '../../types';
+import type { CreatePortData, ConnectionType } from '@/features/settings/port/types';
 import { portSchema, type PortFormData } from './portSchemas';
 import {
     getDefaultPortFormValues,

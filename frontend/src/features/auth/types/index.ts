@@ -1,5 +1,5 @@
 // Импортируем общие типы из shared
-import type { User, UserRole } from '../../../shared/types';
+import type { User, UserRole } from '@/shared/types';
 
 // Реэкспортируем для удобства использования в модуле auth
 export type { User, UserRole };

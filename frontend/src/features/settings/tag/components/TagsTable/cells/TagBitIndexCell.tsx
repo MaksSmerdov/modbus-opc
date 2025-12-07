@@ -1,5 +1,5 @@
 import { TagNumberCell } from './TagNumberCell';
-import { shouldShowBitIndex } from '../utils/tagsTableUtils';
+import { shouldShowBitIndex } from '@/features/settings/tag/components/TagsTable/utils/tagsTableUtils';
 import styles from './TagCell.module.scss';
 
 interface TagBitIndexCellProps {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useAppSelector } from '../../../../app/hooks/hooks';
+import { useAppSelector } from '@/app/hooks/hooks';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
-import type { User, UserRole } from '../../../../shared/types';
+import type { User, UserRole } from '@/shared/types';
 import styles from './UserRow.module.scss';
 import { Button } from '@/shared/ui/Button/Button';
 

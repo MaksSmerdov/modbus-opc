@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Header } from '../Header/Header';
-import { Sidebar } from '../Sidebar/Sidebar';
-import { Breadcrumbs } from '../Breadcrumbs/Breadcrumbs';
+import { Header } from '@/shared/layout/Header/Header';
+import { Sidebar } from '@/shared/layout/Sidebar/Sidebar';
+import { Breadcrumbs } from '@/shared/layout/Breadcrumbs/Breadcrumbs';
 import { useAppSelector } from '@/app/hooks/hooks';
 import styles from './AppLayout.module.scss';
 

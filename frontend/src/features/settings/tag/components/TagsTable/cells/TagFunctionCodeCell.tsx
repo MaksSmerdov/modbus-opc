@@ -1,6 +1,6 @@
 import { MenuItem } from '@mui/material';
 import { Select } from '@/shared/ui/Select/Select';
-import type { FunctionCode } from '../../../types';
+import type { FunctionCode } from '@/features/settings/tag/types';
 import styles from './TagCell.module.scss';
 
 interface TagFunctionCodeCellProps {

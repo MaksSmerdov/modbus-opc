@@ -1,7 +1,7 @@
 import { Input } from '@/shared/ui/Input/Input';
 import { useFormContext } from 'react-hook-form';
-import type { PortFormData } from '../portSchemas';
-import { getTCPFieldError } from '../utils/formUtils';
+import type { PortFormData } from '@/features/settings/port/components/AddPortForm/portSchemas';
+import { getTCPFieldError } from '@/features/settings/port/components/AddPortForm/utils/formUtils';
 
 interface TCPFieldsProps {
     isLoading?: boolean;

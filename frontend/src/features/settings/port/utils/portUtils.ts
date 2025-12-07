@@ -1,4 +1,4 @@
-import type { Port } from '../types';
+import type { Port } from '@/features/settings/port/types';
 
 /**
  * Форматирует информацию о порте для отображения

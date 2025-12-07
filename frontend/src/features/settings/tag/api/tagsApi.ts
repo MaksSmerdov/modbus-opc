@@ -5,7 +5,7 @@ import type {
     TagResponse,
     CreateTagData,
     UpdateTagData,
-} from '../types';
+} from '@/features/settings/tag/types';
 
 export const tagsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({

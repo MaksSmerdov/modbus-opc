@@ -1,5 +1,5 @@
 import { Edit } from '@mui/icons-material';
-import type { ByteOrder } from '../../../types';
+import type { ByteOrder } from '@/features/settings/tag/types';
 import styles from './TagCell.module.scss';
 
 interface TagByteOrderCellProps {

@@ -1,5 +1,5 @@
 import { TagNumberCell } from './TagNumberCell';
-import { shouldShowLength } from '../utils/tagsTableUtils';
+import { shouldShowLength } from '@/features/settings/tag/components/TagsTable/utils/tagsTableUtils';
 import styles from './TagCell.module.scss';
 
 interface TagLengthCellProps {

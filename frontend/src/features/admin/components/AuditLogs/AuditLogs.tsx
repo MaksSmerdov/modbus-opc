@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useGetAuditLogsQuery } from '../../api/auditApi';
-import { ConfirmModal } from '../../../../shared/ui/ConfirmModal/ConfirmModal';
+import { useGetAuditLogsQuery } from '@/features/admin/api/auditApi';
+import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
 import { useAuditLogsDeletion } from './hooks/useAuditLogsDeletion';
 import { AuditLogsHeader } from './AuditLogsHeader/AuditLogsHeader';
 import { AuditLogsTable } from './AuditLogsTable/AuditLogsTable';

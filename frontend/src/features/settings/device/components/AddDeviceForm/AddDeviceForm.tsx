@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shared/ui/Input/Input';
 import { Button } from '@/shared/ui/Button/Button';
 import { useAppSelector } from '@/app/hooks/hooks';
-import type { CreateDeviceData } from '../../types';
+import type { CreateDeviceData } from '@/features/settings/device/types';
 import { deviceSchema, type DeviceFormData } from './deviceSchemas';
 import {
     getDefaultDeviceFormValues,

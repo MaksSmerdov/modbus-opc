@@ -1,5 +1,5 @@
-import { Modal } from '../Modal/Modal';
-import { Button } from '../Button/Button';
+import { Modal } from '@/shared/ui/Modal/Modal';
+import { Button } from '@/shared/ui/Button/Button';
 import styles from './ConfirmModal.module.scss';
 
 interface ConfirmModalProps {

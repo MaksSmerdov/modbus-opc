@@ -1,6 +1,6 @@
 import { MenuItem } from '@mui/material';
 import { Select } from '@/shared/ui/Select/Select';
-import type { DataType } from '../../../types';
+import type { DataType } from '@/features/settings/tag/types';
 import styles from './TagCell.module.scss';
 
 interface TagDataTypeCellProps {

@@ -1,4 +1,4 @@
-import { baseApi } from '../../../shared/api/baseApi';
+import { baseApi } from '@/shared/api/baseApi';
 
 export interface AuditLog {
   _id: string;

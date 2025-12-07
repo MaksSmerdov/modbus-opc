@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { usersApi } from '../../api/usersApi';
+import { usersApi } from '@/features/admin/api/usersApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
-import { UserRow } from '../UserRow/UserRow';
-import { Button } from '../../../../shared/ui/Button/Button';
-import { Table, type TableColumn } from '../../../../shared/ui/Table/Table';
-import type { User } from '../../../../shared/types';
+import { UserRow } from '@/features/admin/components/UserRow/UserRow';
+import { Button } from '@/shared/ui/Button/Button';
+import { Table, type TableColumn } from '@/shared/ui/Table/Table';
+import type { User } from '@/shared/types';
 import styles from './UsersList.module.scss';
 
 export const UsersList = () => {

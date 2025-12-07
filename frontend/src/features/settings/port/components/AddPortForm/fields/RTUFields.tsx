@@ -2,9 +2,9 @@ import { Input } from '@/shared/ui/Input/Input';
 import { Select } from '@/shared/ui/Select/Select';
 import { MenuItem } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
-import type { PortFormData } from '../portSchemas';
-import { getRTUFieldError } from '../utils/formUtils';
-import styles from '../AddPortForm.module.scss';
+import type { PortFormData } from '@/features/settings/port/components/AddPortForm/portSchemas';
+import { getRTUFieldError } from '@/features/settings/port/components/AddPortForm/utils/formUtils';
+import styles from '@/features/settings/port/components/AddPortForm/AddPortForm.module.scss';
 
 interface RTUFieldsProps {
     isLoading?: boolean;

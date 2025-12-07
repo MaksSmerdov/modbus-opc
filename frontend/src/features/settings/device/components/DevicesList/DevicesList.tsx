@@ -1,15 +1,15 @@
 import { useMemo, useCallback, memo } from 'react';
-import { useGetDevicesQuery } from '../../api/devicesApi';
+import { useGetDevicesQuery } from '@/features/settings/device/api/devicesApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
-import { DeviceCard } from '../DeviceCard/DeviceCard';
-import { DeviceCardSkeleton } from '../DeviceCard/DeviceCardSkeleton';
+import { DeviceCard } from '@/features/settings/device/components/DeviceCard/DeviceCard';
+import { DeviceCardSkeleton } from '@/features/settings/device/components/DeviceCard/DeviceCardSkeleton';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
-import { useDeviceDeletion } from '../../hooks/useDeviceDeletion';
-import { useDeviceToggle } from '../../hooks/useDeviceToggle';
-import { useDeviceLogToggle } from '../../hooks/useDeviceLogToggle';
-import { filterDevicesByPort } from '../../utils/deviceUtils';
-import type { Device } from '../../types';
+import { useDeviceDeletion } from '@/features/settings/device/hooks/useDeviceDeletion';
+import { useDeviceToggle } from '@/features/settings/device/hooks/useDeviceToggle';
+import { useDeviceLogToggle } from '@/features/settings/device/hooks/useDeviceLogToggle';
+import { filterDevicesByPort } from '@/features/settings/device/utils/deviceUtils';
+import type { Device } from '@/features/settings/device/types';
 import styles from './DevicesList.module.scss';
 import { useParams } from 'react-router-dom';
 

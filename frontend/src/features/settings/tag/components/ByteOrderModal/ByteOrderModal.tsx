@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Modal } from '@/shared/ui/Modal/Modal';
 import { Button } from '@/shared/ui/Button/Button';
-import type { ByteOrder } from '../../types';
+import type { ByteOrder } from '@/features/settings/tag/types';
 import styles from './ByteOrderModal.module.scss';
 
 interface ByteOrderModalProps {

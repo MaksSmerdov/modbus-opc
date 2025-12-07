@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { useUpdateDeviceMutation } from '../api/devicesApi';
+import { useUpdateDeviceMutation } from '@/features/settings/device/api/devicesApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
-import type { Device } from '../types';
+import type { Device } from '@/features/settings/device/types';
 
 export function useDeviceLogToggle() {
     const [updateDevice] = useUpdateDeviceMutation();
