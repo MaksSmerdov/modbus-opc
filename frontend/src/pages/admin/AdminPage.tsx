@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '@/app/hooks/hooks.ts';
-import { UsersList } from '../../features/admin/components/UsersList/UsersList';
-import { AuditLogs } from '../../features/admin/components/AuditLogs/AuditLogs';
+import { UsersList } from '@/features/admin/components/UsersList/UsersList';
+import { AuditLogs } from '@/features/admin/components/AuditLogs/AuditLogs';
 import { Button } from '@/shared/ui/Button/Button';
 import styles from './AdminPage.module.scss';
 

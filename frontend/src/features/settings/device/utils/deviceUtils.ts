@@ -1,4 +1,4 @@
-import type { Device } from '../types';
+import type { Device } from '@/features/settings/device/types';
 
 /**
  * Получает правильное склонение слова "тэг" для числа

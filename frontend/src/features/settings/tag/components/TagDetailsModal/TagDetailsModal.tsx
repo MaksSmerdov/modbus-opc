@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Modal } from '@/shared/ui/Modal/Modal';
 import { Button } from '@/shared/ui/Button/Button';
 import { Input } from '@/shared/ui/Input/Input';
-import type { Tag, UpdateTagData } from '../../types';
+import type { Tag, UpdateTagData } from '@/features/settings/tag/types';
 import styles from './TagDetailsModal.module.scss';
 
 interface TagDetailsModalProps {

@@ -1,4 +1,4 @@
-import type { Device } from '../types';
+import type { Device } from '@/features/settings/device/types';
 
 /**
  * Нормализует portId устройства: если это объект, извлекает _id, иначе возвращает как есть

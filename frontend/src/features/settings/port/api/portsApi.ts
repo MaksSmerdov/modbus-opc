@@ -5,7 +5,7 @@ import type {
     PortResponse,
     CreatePortData,
     UpdatePortData,
-} from '../types';
+} from '@/features/settings/port/types';
 
 export const portsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({

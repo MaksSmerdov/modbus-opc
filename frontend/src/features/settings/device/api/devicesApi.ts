@@ -5,8 +5,8 @@ import type {
     DeviceResponse,
     CreateDeviceData,
     UpdateDeviceData,
-} from '../types';
-import { normalizeDevicePortId, normalizeDevicesPortId } from '../utils/normalizeDevice';
+} from '@/features/settings/device/types';
+import { normalizeDevicePortId, normalizeDevicesPortId } from '@/features/settings/device/utils/normalizeDevice';
 
 export const devicesApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({

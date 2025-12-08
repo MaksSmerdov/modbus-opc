@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useDeleteDeviceMutation } from '../api/devicesApi';
+import { useDeleteDeviceMutation } from '@/features/settings/device/api/devicesApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 
 export function useDeviceDeletion() {

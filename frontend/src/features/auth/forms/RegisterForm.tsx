@@ -1,10 +1,10 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRegisterMutation } from '../api/authApi';
+import { useRegisterMutation } from '@/features/auth/api/authApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
-import { Input } from '../../../shared/ui/Input/Input';
-import { Button } from '../../../shared/ui/Button/Button';
-import { registerSchema, type RegisterFormData } from '../schemas/authSchemas';
+import { Input } from '@/shared/ui/Input/Input';
+import { Button } from '@/shared/ui/Button/Button';
+import { registerSchema, type RegisterFormData } from '@/features/auth/schemas/authSchemas';
 import styles from './AuthForms.module.scss';
 
 export const RegisterForm = () => {

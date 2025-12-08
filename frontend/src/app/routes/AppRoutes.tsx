@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAppSelector } from '../hooks/hooks';
+import { useAppSelector } from '@/app/hooks/hooks';
 import { AdminPage } from '@/features/admin';
 import { AppLayout, ProtectedRoute } from '@/shared/layout';
 import { AuthPage } from '@/pages/auth/AuthPage';

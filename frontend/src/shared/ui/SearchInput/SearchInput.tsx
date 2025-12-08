@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, forwardRef } from 'react';
 import { Search } from '@mui/icons-material';
-import { Input } from '../Input/Input';
+import { Input } from '@/shared/ui/Input/Input';
 import styles from './SearchInput.module.scss';
 
 export interface SearchInputProps {

@@ -3,7 +3,7 @@ import {
     useDeleteAuditLogMutation,
     useDeleteAllAuditLogsMutation,
     useDeleteAuditLogsByDateMutation
-} from '../../../api/auditApi';
+} from '@/features/admin/api/auditApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 
 export function useAuditLogsDeletion() {

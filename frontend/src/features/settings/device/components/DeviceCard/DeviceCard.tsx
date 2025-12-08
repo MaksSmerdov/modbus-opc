@@ -5,8 +5,8 @@ import { transliterate } from '@/shared/utils/transliterate';
 import { useGetTagsQuery } from '@/features/settings/tag/api/tagsApi';
 import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useThrottle } from '@/shared/hooks/useThrottle';
-import { formatTagsCount, formatSaveInterval, getEditTooltip, getDeleteTooltip } from '../../utils/deviceUtils';
-import type { Device } from '../../types';
+import { formatTagsCount, formatSaveInterval, getEditTooltip, getDeleteTooltip } from '@/features/settings/device/utils/deviceUtils';
+import type { Device } from '@/features/settings/device/types';
 import styles from './DeviceCard.module.scss';
 
 interface DeviceCardProps {

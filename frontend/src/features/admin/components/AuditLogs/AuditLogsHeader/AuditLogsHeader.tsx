@@ -1,4 +1,4 @@
-import { Button } from '../../../../../shared/ui/Button/Button';
+import { Button } from '@/shared/ui/Button/Button';
 import styles from './AuditLogsHeader.module.scss';
 
 interface AuditLogsHeaderProps {

@@ -1,15 +1,15 @@
 import { useMemo, useCallback, memo, useRef, useEffect } from 'react';
-import { useGetPortsQuery } from '../../api/portsApi';
+import { useGetPortsQuery } from '@/features/settings/port/api/portsApi';
 import { useGetDevicesQuery } from '@/features/settings/device/api/devicesApi';
 import { useGetPollingStatusQuery } from '@/features/polling/api/pollingApi';
 import { useAppSelector } from '@/app/hooks/hooks';
-import { PortCard } from '../PortCard/PortCard';
-import { PortCardSkeleton } from '../PortCard/PortCardSkeleton';
+import { PortCard } from '@/features/settings/port/components/PortCard/PortCard';
+import { PortCardSkeleton } from '@/features/settings/port/components/PortCard/PortCardSkeleton';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
-import { usePortDeletion } from '../../hooks/usePortDeletion';
-import { usePortToggle } from '../../hooks/usePortToggle';
-import { countDevicesByPort } from '../../utils/portUtils';
-import type { Port } from '../../types';
+import { usePortDeletion } from '@/features/settings/port/hooks/usePortDeletion';
+import { usePortToggle } from '@/features/settings/port/hooks/usePortToggle';
+import { countDevicesByPort } from '@/features/settings/port/utils/portUtils';
+import type { Port } from '@/features/settings/port/types';
 import styles from './PortsList.module.scss';
 
 interface PortsListProps {

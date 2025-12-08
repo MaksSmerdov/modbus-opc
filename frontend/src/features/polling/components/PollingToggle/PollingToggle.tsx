@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 import { PlayArrow, Stop } from '@mui/icons-material';
-import { useGetPollingStatusQuery, useStartPollingMutation, useStopPollingMutation } from '../../api/pollingApi';
+import { useGetPollingStatusQuery, useStartPollingMutation, useStopPollingMutation } from '@/features/polling/api/pollingApi';
 import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useThrottle } from '@/shared/hooks/useThrottle';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';

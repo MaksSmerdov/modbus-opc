@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { TagsTableActions } from '../TagsTableActions/TagsTableActions';
+import { TagsTableActions } from '@/features/settings/tag/components/TagsTable/TagsTableActions/TagsTableActions';
 import {
     TagNameCell,
     TagAddressCell,
@@ -9,9 +9,9 @@ import {
     TagLengthCell,
     TagBitIndexCell,
     TagByteOrderCell,
-} from '../cells';
-import { shouldShowLength, shouldShowBitIndex } from '../utils/tagsTableUtils';
-import type { Tag, CreateTagData } from '../../../types';
+} from '@/features/settings/tag/components/TagsTable/cells';
+import { shouldShowLength, shouldShowBitIndex } from '@/features/settings/tag/components/TagsTable/utils/tagsTableUtils';
+import type { Tag, CreateTagData } from '@/features/settings/tag/types';
 import styles from './TagsTableRow.module.scss';
 
 interface TagsTableRowProps {

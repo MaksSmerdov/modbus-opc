@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useDeletePortMutation } from '../api/portsApi';
+import { useDeletePortMutation } from '@/features/settings/port/api/portsApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 
 export function usePortDeletion() {

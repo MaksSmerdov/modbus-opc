@@ -1,7 +1,7 @@
 import { Delete, Edit, MoreVert, PowerSettingsNew } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Menu, MenuItem } from '@mui/material';
-import type { Port } from '../../types';
+import type { Port } from '@/features/settings/port/types';
 import { transliterate } from '@/shared/utils/transliterate';
 import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useThrottle } from '@/shared/hooks/useThrottle';

@@ -1,10 +1,10 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useLoginMutation } from '../api/authApi';
+import { useLoginMutation } from '@/features/auth/api/authApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
-import { Input } from '../../../shared/ui/Input/Input';
-import { Button } from '../../../shared/ui/Button/Button';
-import { loginSchema, type LoginFormData } from '../schemas/authSchemas';
+import { Input } from '@/shared/ui/Input/Input';
+import { Button } from '@/shared/ui/Button/Button';
+import { loginSchema, type LoginFormData } from '@/features/auth/schemas/authSchemas';
 import styles from './AuthForms.module.scss';
 
 export const LoginForm = () => {

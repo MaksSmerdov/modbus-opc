@@ -1,4 +1,4 @@
-import type { CreateTagData, UpdateTagData } from '../../../types';
+import type { CreateTagData, UpdateTagData } from '@/features/settings/tag/types';
 import { shouldShowByteOrder, getDefaultLength } from './tagsTableUtils';
 
 /**
