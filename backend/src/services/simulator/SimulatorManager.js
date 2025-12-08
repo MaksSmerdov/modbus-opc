@@ -58,7 +58,7 @@ class SimulatorManager {
       lastSave: null,
       lastRetryAttempt: null,
       data: {},
-      saveTimer: null
+      saveTimer: null,
     };
 
     this.devices.push(deviceConfig);
@@ -70,8 +70,16 @@ class SimulatorManager {
     return deviceConfig;
   }
 
-  startPolling() {
+  async startPolling() {
     if (this.isPolling) {
+      return;
+    }
+
+    try {
+      await this.connect();
+    } catch (error) {
+      console.error('✗ Не удалось подключить симулятор:', error.message);
+      this.isPolling = false;
       return;
     }
 
@@ -97,8 +105,6 @@ class SimulatorManager {
     }
     this.isPolling = false;
   }
-
 }
 
 export default SimulatorManager;
-
