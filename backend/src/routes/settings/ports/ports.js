@@ -15,7 +15,7 @@ function formatPort(port) {
     connectionType: port.connectionType,
     isActive: port.isActive ?? true,
     createdAt: port.createdAt,
-    updatedAt: port.updatedAt
+    updatedAt: port.updatedAt,
   };
 
   if (port.connectionType === 'RTU') {
@@ -25,13 +25,13 @@ function formatPort(port) {
       baudRate: port.baudRate,
       dataBits: port.dataBits,
       stopBits: port.stopBits,
-      parity: port.parity
+      parity: port.parity,
     };
-  } else if (port.connectionType === 'TCP') {
+  } else if (port.connectionType === 'TCP' || port.connectionType === 'TCP_RTU') {
     return {
       ...base,
       host: port.host,
-      tcpPort: port.tcpPort
+      tcpPort: port.tcpPort,
     };
   }
 
@@ -71,22 +71,20 @@ function formatPort(port) {
  */
 router.get('/', async (req, res) => {
   try {
-    const ports = await Port.find()
-      .sort({ name: 1 })
-      .lean();
+    const ports = await Port.find().sort({ name: 1 }).lean();
 
     const formattedPorts = ports.map(formatPort);
 
     res.json({
       success: true,
       count: formattedPorts.length,
-      data: formattedPorts
+      data: formattedPorts,
     });
   } catch (error) {
     console.error('Ошибка получения портов:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка получения портов'
+      error: 'Ошибка получения портов',
     });
   }
 });
@@ -137,19 +135,19 @@ router.get('/:id', async (req, res) => {
     if (!port) {
       return res.status(404).json({
         success: false,
-        error: 'Порт не найден'
+        error: 'Порт не найден',
       });
     }
 
     res.json({
       success: true,
-      data: formatPort(port)
+      data: formatPort(port),
     });
   } catch (error) {
     console.error('Ошибка получения порта:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка получения порта'
+      error: 'Ошибка получения порта',
     });
   }
 });
@@ -202,7 +200,7 @@ router.post('/', async (req, res) => {
     if (!portData.name || !portData.connectionType) {
       return res.status(400).json({
         success: false,
-        error: 'Не все обязательные поля заполнены'
+        error: 'Не все обязательные поля заполнены',
       });
     }
 
@@ -211,16 +209,21 @@ router.post('/', async (req, res) => {
       if (!portData.port || !portData.baudRate) {
         return res.status(400).json({
           success: false,
-          error: 'Для RTU необходимо указать порт и скорость'
+          error: 'Для RTU необходимо указать порт и скорость',
         });
       }
-    } else if (portData.connectionType === 'TCP') {
-      if (!portData.host) {
+    } else if (portData.connectionType === 'TCP' || portData.connectionType === 'TCP_RTU') {
+      if (!portData.host || !portData.tcpPort) {
         return res.status(400).json({
           success: false,
-          error: 'Для TCP необходимо указать хост'
+          error: 'Для TCP/TCP_RTU необходимо указать хост и TCP порт',
         });
       }
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: 'Некорректный тип подключения',
+      });
     }
 
     const port = await Port.create(portData);
@@ -234,13 +237,13 @@ router.post('/', async (req, res) => {
         entityName: port.name,
         fieldName: 'name',
         newValue: port.name,
-        req
+        req,
       });
     }
 
     res.status(201).json({
       success: true,
-      data: formatPort(port.toObject())
+      data: formatPort(port.toObject()),
     });
   } catch (error) {
     console.error('Ошибка создания порта:', error);
@@ -248,13 +251,13 @@ router.post('/', async (req, res) => {
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        error: 'Порт с таким именем уже существует'
+        error: 'Порт с таким именем уже существует',
       });
     }
 
     res.status(500).json({
       success: false,
-      error: 'Ошибка создания порта'
+      error: 'Ошибка создания порта',
     });
   }
 });
@@ -320,24 +323,22 @@ router.put('/:id', async (req, res) => {
     const oldPort = await Port.findById(req.params.id).lean();
     const isActiveChanged = oldPort && 'isActive' in portData && oldPort.isActive !== portData.isActive;
 
-    const port = await Port.findByIdAndUpdate(
-      req.params.id,
-      portData,
-      { new: true, runValidators: true }
-    ).lean();
+    const port = await Port.findByIdAndUpdate(req.params.id, portData, { new: true, runValidators: true }).lean();
 
     if (!port) {
       return res.status(404).json({
         success: false,
-        error: 'Порт не найден'
+        error: 'Порт не найден',
       });
     }
 
     // Реинициализируем Modbus, если изменился isActive или другие критичные параметры
-    const criticalParamsChanged = isActiveChanged ||
+    const criticalParamsChanged =
+      isActiveChanged ||
       portData.connectionType !== oldPort?.connectionType ||
       (port.connectionType === 'RTU' && (portData.port !== oldPort?.port || portData.baudRate !== oldPort?.baudRate)) ||
-      (port.connectionType === 'TCP' && (portData.host !== oldPort?.host || portData.tcpPort !== oldPort?.tcpPort));
+      ((port.connectionType === 'TCP' || port.connectionType === 'TCP_RTU') &&
+        (portData.host !== oldPort?.host || portData.tcpPort !== oldPort?.tcpPort));
 
     if (criticalParamsChanged) {
       await reinitializeModbus();
@@ -354,7 +355,7 @@ router.put('/:id', async (req, res) => {
           fieldName: 'name',
           oldValue: oldPort.name,
           newValue: port.name,
-          req
+          req,
         });
       }
       if (isActiveChanged) {
@@ -365,14 +366,14 @@ router.put('/:id', async (req, res) => {
           entityName: port.name,
           oldValue: port.name,
           newValue: port.isActive,
-          req
+          req,
         });
       }
     }
 
     res.json({
       success: true,
-      data: formatPort(port)
+      data: formatPort(port),
     });
   } catch (error) {
     console.error('Ошибка обновления порта:', error);
@@ -380,13 +381,13 @@ router.put('/:id', async (req, res) => {
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        error: 'Порт с таким именем уже существует'
+        error: 'Порт с таким именем уже существует',
       });
     }
 
     res.status(500).json({
       success: false,
-      error: 'Ошибка обновления порта'
+      error: 'Ошибка обновления порта',
     });
   }
 });
@@ -441,13 +442,13 @@ router.delete('/:id', async (req, res) => {
   try {
     // Проверяем, используется ли порт какими-либо устройствами
     const devicesUsingProfile = await Device.countDocuments({
-      portId: req.params.id
+      portId: req.params.id,
     });
 
     if (devicesUsingProfile > 0) {
       return res.status(400).json({
         success: false,
-        error: `Порт используется ${devicesUsingProfile} устройством(и). Удаление невозможно.`
+        error: `Порт используется ${devicesUsingProfile} устройством(и). Удаление невозможно.`,
       });
     }
 
@@ -457,7 +458,7 @@ router.delete('/:id', async (req, res) => {
     if (!port) {
       return res.status(404).json({
         success: false,
-        error: 'Порт не найден'
+        error: 'Порт не найден',
       });
     }
 
@@ -471,22 +472,21 @@ router.delete('/:id', async (req, res) => {
         entityType: 'port',
         entityName: port.name,
         oldValue: port.name,
-        req
+        req,
       });
     }
 
     res.json({
       success: true,
-      message: 'Порт удален'
+      message: 'Порт удален',
     });
   } catch (error) {
     console.error('Ошибка удаления порта:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка удаления порта'
+      error: 'Ошибка удаления порта',
     });
   }
 });
 
 export default router;
-

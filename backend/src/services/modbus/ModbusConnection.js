@@ -24,12 +24,15 @@ class ModbusConnection {
           baudRate: this.baudRate,
           dataBits: this.dataBits,
           stopBits: this.stopBits,
-          parity: this.parity
+          parity: this.parity,
         });
         console.log(`✓ Подключено к порту ${this.port} (Modbus RTU)`);
       } else if (this.connectionType === 'TCP') {
         await this.client.connectTCP(this.tcpHost, { port: this.tcpPort });
         console.log(`✓ Подключено к ${this.tcpHost}:${this.tcpPort} (Modbus TCP)`);
+      } else if (this.connectionType === 'TCP_RTU') {
+        await this.client.connectTelnet(this.tcpHost, { port: this.tcpPort });
+        console.log(`✓ Подключено к ${this.tcpHost}:${this.tcpPort} (Modbus RTU over TCP)`);
       } else {
         throw new Error(`Неизвестный тип подключения: ${this.connectionType}`);
       }
@@ -37,7 +40,6 @@ class ModbusConnection {
       this.isConnected = true;
       return true;
     } catch (error) {
-      console.error('✗ Ошибка подключения Modbus:', error.message);
       this.isConnected = false;
       throw error;
     }
@@ -57,4 +59,3 @@ class ModbusConnection {
 }
 
 export default ModbusConnection;
-

@@ -59,9 +59,12 @@ async function initModbusManagers(devicesByPort, pollInterval = 5000) {
   for (const [, portData] of Object.entries(devicesByPort)) {
     const port = portData.port;
     const isRTU = port.connectionType === 'RTU';
+    const isTcpRtu = port.connectionType === 'TCP_RTU';
 
     if (isRTU) {
       console.log(`\n=== Инициализация Modbus RTU на ${port.port} (${port.baudRate} baud) ===`);
+    } else if (isTcpRtu) {
+      console.log(`\n=== Инициализация Modbus RTU over TCP на ${port.host}:${port.tcpPort} ===`);
     } else {
       console.log(`\n=== Инициализация Modbus TCP на ${port.host}:${port.tcpPort} ===`);
     }
@@ -96,7 +99,8 @@ function groupDevicesByPort(devices) {
 
   devices.forEach((device) => {
     const port = device.port;
-    const portKey = port.connectionType === 'RTU' ? `${port.port}_RTU` : `${port.host}:${port.tcpPort}_TCP`;
+    const portKey =
+      port.connectionType === 'RTU' ? `${port.port}_RTU` : `${port.host}:${port.tcpPort}_${port.connectionType}`;
 
     if (!devicesByPort[portKey]) {
       devicesByPort[portKey] = {
