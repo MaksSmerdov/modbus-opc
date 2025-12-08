@@ -34,32 +34,32 @@ router.post('/start', async (req, res) => {
     if (!manager) {
       return res.status(400).json({
         error: 'Modbus Manager не инициализирован',
-        message: 'Добавьте устройства и порты для инициализации'
+        message: 'Добавьте устройства и порты для инициализации',
       });
     }
 
     if (manager.isPolling) {
       return res.status(400).json({
         error: 'Опрос уже запущен',
-        isPolling: true
+        isPolling: true,
       });
     }
 
     // Обновляем состояние в БД
     await updatePollingState(true);
 
-    manager.startPolling();
-    console.log('✓ Опрос устройств запущен');
+    await manager.startPolling();
+    console.log('✓ Опрос устройств запущен (с автоповтором подключения при ошибке)');
 
     res.json({
-      message: 'Опрос успешно запущен',
-      isPolling: true
+      message: 'Опрос запущен. При недоступности порта выполняются повторные попытки подключения.',
+      isPolling: true,
     });
   } catch (error) {
     console.error('Ошибка запуска опроса:', error);
     res.status(500).json({
       error: 'Ошибка запуска опроса',
-      message: error.message
+      message: error.message,
     });
   }
 });
@@ -94,14 +94,14 @@ router.post('/stop', async (req, res) => {
     if (!manager) {
       return res.status(400).json({
         error: 'Modbus Manager не инициализирован',
-        message: 'Нет активного менеджера для остановки'
+        message: 'Нет активного менеджера для остановки',
       });
     }
 
     if (!manager.isPolling) {
       return res.status(400).json({
         error: 'Опрос уже остановлен',
-        isPolling: false
+        isPolling: false,
       });
     }
 
@@ -113,16 +113,15 @@ router.post('/stop', async (req, res) => {
 
     res.json({
       message: 'Опрос успешно остановлен',
-      isPolling: false
+      isPolling: false,
     });
   } catch (error) {
     console.error('Ошибка остановки опроса:', error);
     res.status(500).json({
       error: 'Ошибка остановки опроса',
-      message: error.message
+      message: error.message,
     });
   }
 });
 
 export default router;
-

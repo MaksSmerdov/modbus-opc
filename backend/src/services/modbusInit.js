@@ -8,7 +8,7 @@ import { getServerSettings } from '../models/settings/index.js';
  * Добавляет устройства в менеджер
  */
 function addDevicesToManager(manager, devices) {
-  devices.forEach(device => {
+  devices.forEach((device) => {
     manager.addDevice({
       slaveId: device.slaveId,
       name: device.name,
@@ -19,7 +19,7 @@ function addDevicesToManager(manager, devices) {
       saveInterval: device.saveInterval || 30000,
       logData: device.logData || false,
       isActive: device.isActive,
-      portIsActive: device.portIsActive
+      portIsActive: device.portIsActive,
     });
   });
 }
@@ -29,9 +29,7 @@ function addDevicesToManager(manager, devices) {
  * Примечание: опрос НЕ запускается автоматически, это контролируется состоянием из БД в server.js
  */
 async function initializeManager(manager, devices) {
-  await manager.connect();
   addDevicesToManager(manager, devices);
-  // manager.startPolling() - теперь вызывается в server.js на основе состояния из БД
 }
 
 /**
@@ -39,11 +37,11 @@ async function initializeManager(manager, devices) {
  */
 async function initSimulator(devices, pollInterval = 5000) {
   console.log(`\n=== Инициализация Симулятора (режим разработки) ===`);
-  console.log(`Устройства: ${devices.map(d => d.name).join(', ')}`);
+  console.log(`Устройства: ${devices.map((d) => d.name).join(', ')}`);
   console.log(`Интервал опроса: ${pollInterval}мс`);
 
   const manager = new SimulatorManager({
-    pollInterval
+    pollInterval,
   });
 
   await initializeManager(manager, devices);
@@ -58,21 +56,28 @@ async function initSimulator(devices, pollInterval = 5000) {
 async function initModbusManagers(devicesByPort, pollInterval = 5000) {
   let lastManager = null;
 
-  for (const [portKey, portData] of Object.entries(devicesByPort)) {
+  for (const [, portData] of Object.entries(devicesByPort)) {
     const port = portData.port;
+    const isRTU = port.connectionType === 'RTU';
 
-    console.log(`\n=== Инициализация Modbus на ${port.port} (${port.baudRate} baud) ===`);
-    console.log(`Устройства на порту: ${portData.devices.map(d => d.name).join(', ')}`);
+    if (isRTU) {
+      console.log(`\n=== Инициализация Modbus RTU на ${port.port} (${port.baudRate} baud) ===`);
+    } else {
+      console.log(`\n=== Инициализация Modbus TCP на ${port.host}:${port.tcpPort} ===`);
+    }
+    console.log(`Устройства на порту: ${portData.devices.map((d) => d.name).join(', ')}`);
     console.log(`Интервал опроса: ${pollInterval}мс`);
 
     const manager = new ModbusManager({
       connectionType: port.connectionType,
-      port: port.port,
-      baudRate: port.baudRate,
-      dataBits: port.dataBits,
-      stopBits: port.stopBits,
-      parity: port.parity,
-      pollInterval
+      port: isRTU ? port.port : undefined,
+      baudRate: isRTU ? port.baudRate : undefined,
+      dataBits: isRTU ? port.dataBits : undefined,
+      stopBits: isRTU ? port.stopBits : undefined,
+      parity: isRTU ? port.parity : undefined,
+      tcpHost: port.host,
+      tcpPort: port.tcpPort,
+      pollInterval,
     });
 
     await initializeManager(manager, portData.devices);
@@ -89,13 +94,14 @@ async function initModbusManagers(devicesByPort, pollInterval = 5000) {
 function groupDevicesByPort(devices) {
   const devicesByPort = {};
 
-  devices.forEach(device => {
+  devices.forEach((device) => {
     const port = device.port;
-    const portKey = `${port.port}_${port.connectionType}`;
+    const portKey = port.connectionType === 'RTU' ? `${port.port}_RTU` : `${port.host}:${port.tcpPort}_TCP`;
+
     if (!devicesByPort[portKey]) {
       devicesByPort[portKey] = {
-        port: port,
-        devices: []
+        port,
+        devices: [],
       };
     }
     devicesByPort[portKey].devices.push(device);
