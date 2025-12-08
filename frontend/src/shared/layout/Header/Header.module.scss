@@ -1,117 +1,119 @@
-@use "@/shared/styles/variables" as vars;
-@use "@/shared/styles/mixins" as mixins;
+@use '@/shared/styles/variables' as vars;
+@use '@/shared/styles/mixins' as mixins;
 
 .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
+  @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+  border-bottom: 1px solid;
+  @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
+  height: 79px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  @include mixins.dark-theme {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  &__left {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 16px;
-    @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
-    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
-    border-bottom: 1px solid;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: vars.$intoxicate;
+    margin: 0;
+
+    &_clickable {
+      cursor: pointer;
+      @include mixins.transition(opacity);
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__polling {
+    display: flex;
+    align-items: center;
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 16px;
+    border-left: 1px solid;
     @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
-    height: 79px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-left: 8px;
+  }
+
+  &__userInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background-color: rgba(vars.$intoxicate, 0.1);
 
     @include mixins.dark-theme {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      background-color: rgba(vars.$intoxicate, 0.15);
     }
+  }
 
-    &__left {
-        display: flex;
-        align-items: center;
+  &__userIcon {
+    font-size: 18px !important;
+    color: vars.$intoxicate;
+  }
+
+  &__userName {
+    font-size: 0.875rem;
+    font-weight: 500;
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+  }
+
+  &__adminButton,
+  &__logoutButton,
+  &__monitorButton,
+  &__docsButton {
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
+    @include mixins.transition();
+
+    &:hover {
+      @include mixins.transition(background-color, color);
+      background-color: rgba(vars.$intoxicate, 0.1) !important;
+      color: vars.$intoxicate !important;
+
+      @include mixins.dark-theme {
+        background-color: rgba(vars.$intoxicate, 0.2) !important;
+      }
     }
+  }
 
-    &__title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: vars.$intoxicate;
-        margin: 0;
+  &__adminButton_active,
+  &__monitorButton_active,
+  &__docsButton_active {
+    background-color: rgba(vars.$intoxicate, 0.15) !important;
+    color: vars.$intoxicate !important;
 
-        &_clickable {
-            cursor: pointer;
-            @include mixins.transition(opacity);
-
-            &:hover {
-                opacity: 0.8;
-            }
-        }
+    @include mixins.dark-theme {
+      background-color: rgba(vars.$intoxicate, 0.25) !important;
     }
-
-    &__right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    &__polling {
-        display: flex;
-        align-items: center;
-    }
-
-    &__user {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding-left: 16px;
-        border-left: 1px solid;
-        @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
-        margin-left: 8px;
-    }
-
-    &__userInfo {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 4px 12px;
-        border-radius: 20px;
-        background-color: rgba(vars.$intoxicate, 0.1);
-
-        @include mixins.dark-theme {
-            background-color: rgba(vars.$intoxicate, 0.15);
-        }
-    }
-
-    &__userIcon {
-        font-size: 18px !important;
-        color: vars.$intoxicate;
-    }
-
-    &__userName {
-        font-size: 0.875rem;
-        font-weight: 500;
-        @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
-    }
-
-    &__adminButton,
-    &__logoutButton,
-    &__monitorButton {
-        @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
-        @include mixins.transition();
-
-        &:hover {
-            @include mixins.transition(background-color, color);
-            background-color: rgba(vars.$intoxicate, 0.1) !important;
-            color: vars.$intoxicate !important;
-
-            @include mixins.dark-theme {
-                background-color: rgba(vars.$intoxicate, 0.2) !important;
-            }
-        }
-    }
-
-    &__adminButton_active,
-    &__monitorButton_active {
-        background-color: rgba(vars.$intoxicate, 0.15) !important;
-        color: vars.$intoxicate !important;
-
-        @include mixins.dark-theme {
-            background-color: rgba(vars.$intoxicate, 0.25) !important;
-        }
-    }
+  }
 }

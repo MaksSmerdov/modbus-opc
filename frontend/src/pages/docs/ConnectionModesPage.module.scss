@@ -1,0 +1,124 @@
+@use '@/shared/styles/variables' as vars;
+@use '@/shared/styles/mixins' as mixins;
+
+.doc {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  &__eyebrow {
+    margin: 0 0 4px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+  }
+
+  &__subtitle {
+    margin: 6px 0 0;
+    font-size: 14px;
+    line-height: 1.4;
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
+  }
+
+  &__back {
+    align-self: flex-start;
+    text-decoration: none;
+    font-size: 13px;
+    @include mixins.theme-color(vars.$intoxicate, vars.$intoxicate);
+    @include mixins.transition(color);
+
+    &:hover {
+      color: vars.$intoxicate;
+      opacity: 0.9;
+    }
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__sectionTitle {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+  }
+
+  &__list {
+    display: grid;
+    gap: 12px;
+  }
+
+  &__card {
+    padding: 14px;
+    border: 1px solid;
+    border-radius: 10px;
+    @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
+    @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__cardTitle {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+  }
+
+  &__tag {
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: vars.$intoxicate;
+    background: rgba(vars.$intoxicate, 0.12);
+
+    @include mixins.dark-theme {
+      background: rgba(vars.$intoxicate, 0.18);
+    }
+  }
+
+  &__line {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
+  }
+
+  &__bullets {
+    display: grid;
+    gap: 8px;
+  }
+
+  &__bulletItem {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+  }
+}
