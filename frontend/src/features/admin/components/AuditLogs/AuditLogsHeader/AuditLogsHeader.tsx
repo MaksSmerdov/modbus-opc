@@ -32,12 +32,12 @@ export const AuditLogsHeader = ({
                     <option value="user">Пользователи</option>
                     <option value="polling">Опрос</option>
                 </select>
-                <Button onClick={onRefresh} variant="outlined" size="small">
+                <Button onClick={onRefresh} variant="default" size="small">
                     Обновить
                 </Button>
                 <Button
                     onClick={onDeleteDateClick}
-                    variant="outlined"
+                    variant="danger"
                     size="small"
                     className={styles['auditLogsHeader__delete-button']}
                 >
@@ -45,7 +45,7 @@ export const AuditLogsHeader = ({
                 </Button>
                 <Button
                     onClick={onDeleteAllClick}
-                    variant="outlined"
+                    variant="danger"
                     size="small"
                     className={styles['auditLogsHeader__delete-button']}
                 >

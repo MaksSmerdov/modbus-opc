@@ -14,8 +14,8 @@ interface TagsTableToolbarProps {
     onReorderModeChange?: (enabled: boolean) => void;
 }
 
-export const TagsTableToolbar = ({ 
-    onAdd, 
+export const TagsTableToolbar = ({
+    onAdd,
     onBulkDelete,
     onSelectAll,
     selectedCount = 0,
@@ -68,18 +68,17 @@ export const TagsTableToolbar = ({
                 )}
                 {onBulkDelete && (
                     <Button
-                        variant="contained"
+                        variant="danger"
                         size="small"
                         onClick={onBulkDelete}
                         disabled={disabled || selectedCount === 0}
                         startIcon={<Delete fontSize="small" />}
-                        className={styles['tagsTableToolbar__deleteButton']}
                     >
                         Удалить выбранные
                     </Button>
                 )}
                 <Button
-                    variant="contained"
+                    variant="default"
                     size="small"
                     onClick={onAdd}
                     disabled={disabled}

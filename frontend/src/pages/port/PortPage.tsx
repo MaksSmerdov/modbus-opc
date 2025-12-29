@@ -125,7 +125,7 @@ export const PortPage = () => {
                         <h2 className={styles['portPage__sectionTitle']}>Устройства</h2>
                         {canManageDevices && (
                             <Button
-                                variant="contained"
+                                variant="default"
                                 size="small"
                                 startIcon={<AddIcon />}
                                 onClick={() => {

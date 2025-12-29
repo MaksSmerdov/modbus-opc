@@ -25,31 +25,12 @@
         font-weight: 500;
         color: vars.$text-secondary-light;
     }
-
-    &__deleteButton {
-        :global(.MuiButton-root) {
-            background-color: vars.$red;
-            color: white;
-
-            &:hover:not(:disabled) {
-                background-color: color.adjust(vars.$red, $lightness: -10%);
-            }
-        }
-    }
 }
 
 :global(.dark) {
     .tagsTableToolbar {
         &__selectedCount {
             color: vars.$text-secondary-dark;
-        }
-
-        &__deleteButton {
-            :global(.MuiButton-root) {
-                &:hover:not(:disabled) {
-                    background-color: color.adjust(vars.$red, $lightness: 10%);
-                }
-            }
         }
     }
 }

@@ -67,7 +67,7 @@ export const portsApi = baseApi.injectEndpoints({
                 method: 'POST',
             }),
             transformResponse: (response: PortResponse) => response.data,
-            invalidatesTags: ['Ports'],
+            invalidatesTags: ['Ports', 'Devices'],
         }),
     }),
 });

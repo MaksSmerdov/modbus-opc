@@ -66,7 +66,7 @@ export const CloneTagModal = ({
                         Отмена
                     </Button>
                     <Button 
-                        variant="contained" 
+                        variant="success" 
                         onClick={handleConfirm} 
                         disabled={isLoading || !isValid} 
                         fullWidth

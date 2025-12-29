@@ -88,7 +88,7 @@ export const UsersList = () => {
     return (
       <div className={styles['usersList__error']}>
         <p>{error}</p>
-        <Button onClick={handleRefresh} variant="outlined" size="small">
+        <Button onClick={handleRefresh} variant="default" size="small">
           Попробовать снова
         </Button>
       </div>
@@ -107,7 +107,7 @@ export const UsersList = () => {
     <div className={styles['usersList']}>
       <div className={styles['usersList__header']}>
         <h2 className={styles['usersList__title']}>Список пользователей</h2>
-        <Button onClick={handleRefresh} variant="outlined" size="small">
+        <Button onClick={handleRefresh} variant="default" size="small">
           Обновить
         </Button>
       </div>

@@ -71,7 +71,7 @@ export const RegisterForm = () => {
 
       <Button
         type="submit"
-        variant="contained"
+        variant="success"
         size="large"
         fullWidth
         disabled={isLoading}

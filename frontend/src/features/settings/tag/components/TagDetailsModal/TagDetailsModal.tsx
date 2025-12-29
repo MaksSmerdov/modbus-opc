@@ -181,7 +181,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
                     <Button variant="outlined" onClick={handleCancel} disabled={isLoading} fullWidth>
                         Отмена
                     </Button>
-                    <Button variant="contained" onClick={handleSave} disabled={isLoading} fullWidth>
+                    <Button variant="success" onClick={handleSave} disabled={isLoading} fullWidth>
                         {isLoading ? 'Сохранение...' : 'Сохранить'}
                     </Button>
                 </div>

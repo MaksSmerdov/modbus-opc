@@ -141,7 +141,7 @@ export const AddDeviceForm = ({
         <Button variant="outlined" onClick={onCancel} disabled={isLoading} fullWidth>
           Отмена
         </Button>
-        <Button type="submit" variant="contained" disabled={isLoading || (mode === 'edit' && !isDirty)} fullWidth>
+        <Button type="submit" variant="success" disabled={isLoading || (mode === 'edit' && !isDirty)} fullWidth>
           {isLoading
             ? mode === 'edit'
               ? 'Сохранение...'

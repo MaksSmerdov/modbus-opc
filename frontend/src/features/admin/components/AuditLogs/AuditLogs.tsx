@@ -67,7 +67,7 @@ export const AuditLogs = () => {
                 message="Вы уверены, что хотите удалить этот лог? Это действие нельзя отменить."
                 confirmText="Удалить"
                 cancelText="Отмена"
-                confirmVariant="contained"
+                confirmVariant="danger"
                 isLoading={deletion.isDeletingLog}
             />
 
@@ -79,7 +79,7 @@ export const AuditLogs = () => {
                 message="Вы уверены, что хотите удалить все логи? Это действие нельзя отменить."
                 confirmText="Удалить все"
                 cancelText="Отмена"
-                confirmVariant="contained"
+                confirmVariant="danger"
                 isLoading={deletion.isDeletingAll}
             />
 
@@ -104,7 +104,7 @@ export const AuditLogs = () => {
                 }
                 confirmText="Удалить"
                 cancelText="Отмена"
-                confirmVariant="contained"
+                confirmVariant="danger"
                 isLoading={deletion.isDeletingByDate}
             />
         </div>

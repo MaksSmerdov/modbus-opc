@@ -32,7 +32,20 @@ export const PortCard = memo(
 
     const isActive = useMemo(() => {
       const slug = transliterate(port.name);
-      return location.pathname === `/${slug}`;
+      const pathname = location.pathname;
+      const portPath = `/${slug}`;
+      
+      if (pathname === portPath) {
+        return true;
+      }
+      
+      if (pathname.startsWith(`${portPath}/`)) {
+        const nextSegment = pathname.slice(portPath.length + 1).split('/')[0];
+        const reservedPaths = ['admin', 'login', 'register'];
+        return !reservedPaths.includes(nextSegment);
+      }
+      
+      return false;
     }, [port.name, location.pathname]);
 
     const handleCardClick = useCallback(

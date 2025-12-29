@@ -1,5 +1,5 @@
 import express from 'express';
-import { Port, Device } from '../../../models/settings/index.js';
+import { Port, Device, Tag } from '../../../models/settings/index.js';
 import { reinitializeModbus } from '../../../utils/modbusReloader.js';
 import { logAudit } from '../../../utils/auditLogger.js';
 
@@ -578,6 +578,141 @@ router.post('/:id/clone', async (req, res) => {
     clonedData.name = newName;
 
     const clonedPort = await Port.create(clonedData);
+
+    // Получаем все устройства исходного порта
+    const sourceDevices = await Device.find({ portId: sourcePort._id }).lean();
+
+    // Клонируем каждое устройство и его теги
+    for (const sourceDevice of sourceDevices) {
+      // Получаем все теги исходного устройства
+      const sourceTags = await Tag.find({ deviceId: sourceDevice._id }).lean();
+
+      // Генерируем имя для клонированного устройства
+      const deviceNameMatch = sourceDevice.name.match(copyPattern);
+      const deviceBaseName = deviceNameMatch ? deviceNameMatch[1] : sourceDevice.name;
+      
+      // Находим максимальный номер среди всех копий базового имени устройства
+      const allDevices = await Device.find({}).lean();
+      
+      let deviceMaxNumber = 0;
+      for (const device of allDevices) {
+        const match = device.name.match(copyPattern);
+        if (match) {
+          const deviceBaseNameMatch = match[1];
+          const number = parseInt(match[2], 10);
+          if (deviceBaseNameMatch === deviceBaseName && !isNaN(number) && number > deviceMaxNumber) {
+            deviceMaxNumber = number;
+          }
+        }
+      }
+      
+      let deviceCounter = deviceMaxNumber + 1;
+      let newDeviceName = `${deviceBaseName} (${deviceCounter})`;
+      
+      while (await Device.findOne({ name: newDeviceName })) {
+        deviceCounter++;
+        newDeviceName = `${deviceBaseName} (${deviceCounter})`;
+      }
+
+      // Генерируем slug для устройства
+      const generateSlug = (name) => {
+        const translit = {
+          'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+          'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
+          'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+          'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
+          'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'
+        };
+
+        let slug = name
+          .toLowerCase()
+          .split('')
+          .map(char => {
+            const lowerChar = char.toLowerCase();
+            return translit[lowerChar] || (/[a-z0-9]/.test(char) ? char : '-');
+          })
+          .join('')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+
+        return slug || 'device';
+      };
+
+      let baseSlug = generateSlug(sourceDevice.name);
+      let finalSlug = `${baseSlug}-copy`;
+      let slugCounter = 1;
+
+      while (await Device.findOne({ slug: finalSlug })) {
+        finalSlug = `${baseSlug}-copy-${slugCounter}`;
+        slugCounter++;
+      }
+
+      // Находим свободный slaveId на новом порту
+      let newSlaveId = sourceDevice.slaveId;
+      const MAX_SLAVE_ID = 247;
+
+      // Проверяем уникальность slaveId в рамках нового порта
+      while (newSlaveId <= MAX_SLAVE_ID) {
+        const existingDevice = await Device.findOne({
+          portId: clonedPort._id,
+          slaveId: newSlaveId
+        });
+
+        if (!existingDevice) {
+          break;
+        }
+
+        newSlaveId++;
+      }
+
+      // Если не нашли свободный slaveId, пропускаем это устройство
+      if (newSlaveId > MAX_SLAVE_ID) {
+        console.warn(`Не удалось найти свободный Slave ID для устройства ${sourceDevice.name} на порту ${clonedPort.name}`);
+        continue;
+      }
+
+      // Создаем клонированное устройство
+      const clonedDeviceData = {
+        name: newDeviceName,
+        slug: finalSlug,
+        slaveId: newSlaveId,
+        portId: clonedPort._id,
+        timeout: sourceDevice.timeout,
+        retries: sourceDevice.retries,
+        saveInterval: sourceDevice.saveInterval,
+        isActive: false, // Клонированное устройство по умолчанию неактивно
+      };
+
+      const clonedDevice = await Device.create(clonedDeviceData);
+
+      // Клонируем все теги устройства
+      if (sourceTags.length > 0) {
+        const clonedTags = sourceTags.map((tag) => ({
+          deviceId: clonedDevice._id,
+          address: tag.address,
+          length: tag.length,
+          name: tag.name,
+          category: tag.category,
+          functionCode: tag.functionCode,
+          dataType: tag.dataType,
+          bitIndex: tag.bitIndex,
+          byteOrder: tag.byteOrder,
+          scale: tag.scale,
+          offset: tag.offset,
+          decimals: tag.decimals,
+          unit: tag.unit,
+          minValue: tag.minValue,
+          maxValue: tag.maxValue,
+          description: tag.description,
+          compositeDisplay: tag.compositeDisplay,
+          order: tag.order,
+        }));
+        await Tag.insertMany(clonedTags);
+      }
+    }
+
+    // Реинициализируем Modbus после клонирования
+    await reinitializeModbus();
 
     res.status(201).json({
       success: true,

@@ -1,4 +1,6 @@
+@use "sass:color";
 @use "@/shared/styles/mixins" as mixins;
+@use "@/shared/styles/variables" as vars;
 
 .button {
     &__root {
@@ -7,7 +9,8 @@
       @include mixins.transition(all, 0.3s);
   
       &:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
+        cursor: not-allowed;
       }
     }
   
@@ -15,8 +18,85 @@
       :global(.MuiButton-root) {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
-        &:hover {
+        &:hover:not(:disabled) {
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        &:disabled {
+          background-color: rgba(0, 0, 0, 0.12) !important;
+          color: rgba(0, 0, 0, 0.26) !important;
+        }
+      }
+    }
+
+    // Зеленый вариант для принятия/подтверждения (более приглушенный)
+    &_success {
+      :global(.MuiButton-root) {
+        background-color: #2e7d32 !important; // Более приглушенный зеленый
+        color: white !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+
+        &:hover:not(:disabled) {
+          background-color: #1b5e20 !important;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        &:focus {
+          background-color: #2e7d32 !important;
+        }
+
+        &:disabled {
+          background-color: rgba(46, 125, 50, 0.3) !important;
+          color: rgba(255, 255, 255, 0.5) !important;
+          box-shadow: none !important;
+        }
+      }
+    }
+
+    // Красный вариант для удаления (еще более приглушенный)
+    &_danger {
+      :global(.MuiButton-root) {
+        background-color: #c62828 !important; // Еще более приглушенный красный
+        color: white !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+
+        &:hover:not(:disabled) {
+          background-color: #b71c1c !important;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        &:focus {
+          background-color: #c62828 !important;
+        }
+
+        &:disabled {
+          background-color: rgba(198, 40, 40, 0.3) !important;
+          color: rgba(255, 255, 255, 0.5) !important;
+          box-shadow: none !important;
+        }
+      }
+    }
+
+    // Синий вариант для остальных действий (более приглушенный)
+    &_default {
+      :global(.MuiButton-root) {
+        background-color: #1976d2 !important; // Более приглушенный синий
+        color: white !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+
+        &:hover:not(:disabled) {
+          background-color: #1565c0 !important;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        &:focus {
+          background-color: #1976d2 !important;
+        }
+
+        &:disabled {
+          background-color: rgba(25, 118, 210, 0.3) !important;
+          color: rgba(255, 255, 255, 0.5) !important;
+          box-shadow: none !important;
         }
       }
     }
@@ -25,16 +105,60 @@
       :global(.MuiButton-root) {
         border-width: 2px;
   
-        &:hover {
+        &:hover:not(:disabled) {
           border-width: 2px;
+        }
+
+        &:disabled {
+          border-color: rgba(0, 0, 0, 0.12) !important;
+          color: rgba(0, 0, 0, 0.26) !important;
+        }
+      }
+    }
+
+    // Улучшенные стили для outlined в темной теме
+    :global(.dark) & {
+      &_outlined {
+        :global(.MuiButton-root) {
+          &:disabled {
+            border-color: rgba(255, 255, 255, 0.12) !important;
+            color: rgba(255, 255, 255, 0.26) !important;
+          }
+        }
+      }
+
+      &_contained {
+        :global(.MuiButton-root) {
+          &:disabled {
+            background-color: rgba(255, 255, 255, 0.12) !important;
+            color: rgba(255, 255, 255, 0.26) !important;
+          }
         }
       }
     }
   
     &_text {
       :global(.MuiButton-root) {
-        &:hover {
+        &:hover:not(:disabled) {
           background-color: rgba(0, 0, 0, 0.04);
+        }
+
+        &:disabled {
+          color: rgba(0, 0, 0, 0.26) !important;
+        }
+      }
+    }
+
+    :global(.dark) & {
+      &_text {
+        :global(.MuiButton-root) {
+          &:hover:not(:disabled) {
+            background-color: rgba(255, 255, 255, 0.08);
+          }
+
+          &:disabled {
+            color: rgba(255, 255, 255, 0.26) !important;
+          }
         }
       }
     }
@@ -69,7 +193,7 @@
       @include mixins.transition(transform, 0.2s);
       @include mixins.transition(box-shadow, 0.2s);
 
-      &:active {
+      &:active:not(:disabled) {
         transform: scale(0.98);
       }
     }

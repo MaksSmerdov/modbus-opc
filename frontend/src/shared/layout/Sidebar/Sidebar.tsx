@@ -95,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         </div>
         <div className={styles['sidebar__content']}>
           <Button
-            variant="contained"
+            variant="default"
             size="small"
             startIcon={<AddIcon />}
             onClick={handleOpenModal}

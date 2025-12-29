@@ -134,7 +134,7 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
                 message="Вы уверены, что хотите удалить это устройство? Это действие нельзя отменить."
                 confirmText="Удалить"
                 cancelText="Отмена"
-                confirmVariant="contained"
+                confirmVariant="danger"
                 isLoading={isDeleting}
             />
         </>

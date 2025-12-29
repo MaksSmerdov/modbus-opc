@@ -10,7 +10,7 @@ interface ConfirmModalProps {
     message: string | React.ReactNode;
     confirmText?: string;
     cancelText?: string;
-    confirmVariant?: 'contained' | 'outlined' | 'text';
+    confirmVariant?: 'contained' | 'outlined' | 'text' | 'success' | 'danger' | 'default';
     isLoading?: boolean;
 }
 

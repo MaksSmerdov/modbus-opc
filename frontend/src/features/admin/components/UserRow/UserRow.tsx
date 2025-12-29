@@ -86,7 +86,7 @@ export const UserRow = ({ user, onRoleUpdate, onDelete }: UserRowProps) => {
         {user.createdAt ? formatDate(user.createdAt) : '-'}
       </td>
       <td className={styles['userRow__actions']}>
-        <Button variant="outlined" size="small" onClick={handleDelete} disabled={isCurrentUser || isDeleting}>
+        <Button variant="danger" size="small" onClick={handleDelete} disabled={isCurrentUser || isDeleting}>
           Удалить
         </Button>
       </td>

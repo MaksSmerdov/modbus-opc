@@ -156,7 +156,7 @@ export const PortsList = memo(({ onEdit }: PortsListProps) => {
         message={deleteMessage}
         confirmText="Удалить"
         cancelText="Отмена"
-        confirmVariant="contained"
+        confirmVariant="danger"
         isLoading={isDeleting}
       />
     </>

@@ -62,7 +62,7 @@ export const LoginForm = () => {
 
       <Button
         type="submit"
-        variant="contained"
+        variant="success"
         size="large"
         fullWidth
         disabled={isLoading}

@@ -56,7 +56,7 @@ export function OptionSelectModal<T extends string | number>({
                     <Button variant="outlined" onClick={onClose}>
                         Отмена
                     </Button>
-                    <Button variant="contained" onClick={handleSave}>
+                    <Button variant="success" onClick={handleSave}>
                         Сохранить
                     </Button>
                 </>
