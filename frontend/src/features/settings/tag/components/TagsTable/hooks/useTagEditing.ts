@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { useCreateTagMutation, useUpdateTagMutation, useDeleteTagMutation } from '@/features/settings/tag/api/tagsApi';
+import { useCreateTagMutation, useUpdateTagMutation, useDeleteTagMutation, useCloneTagMutation } from '@/features/settings/tag/api/tagsApi';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { validateTagData, normalizeCreateTagData, normalizeUpdateTagData } from '@/features/settings/tag/components/TagsTable/utils/tagFormUtils';
 import type { Tag, CreateTagData } from '@/features/settings/tag/types';
@@ -14,6 +14,7 @@ export const useTagEditing = (deviceId: string) => {
     const [createTag, { isLoading: isCreating }] = useCreateTagMutation();
     const [updateTag, { isLoading: isUpdating }] = useUpdateTagMutation();
     const [deleteTag, { isLoading: isDeleting }] = useDeleteTagMutation();
+    const [cloneTag, { isLoading: isCloning }] = useCloneTagMutation();
     const [editingRow, setEditingRow] = useState<EditingRow | null>(null);
     // Сохраняем исходный тип данных тэга для правильной нормализации при обновлении
     const originalDataTypeRef = useRef<Record<string, string>>({});
@@ -97,17 +98,29 @@ export const useTagEditing = (deviceId: string) => {
         setEditingRow(null);
     }, []);
 
+    const handleClone = useCallback(async (tagId: string) => {
+        try {
+            await cloneTag({ deviceId, tagId }).unwrap();
+            showSuccess('Тэг успешно скопирован');
+        } catch (error) {
+            console.error('Ошибка клонирования тэга:', error);
+            showError('Не удалось скопировать тэг');
+        }
+    }, [deviceId, cloneTag, showSuccess, showError]);
+
     return {
         editingRow,
         setEditingRow,
         handleSave,
         handleDelete,
+        handleClone,
         startEditing,
         startCreating,
         cancelEditing,
         isCreating,
         isUpdating,
         isDeleting,
+        isCloning,
     };
 };
 

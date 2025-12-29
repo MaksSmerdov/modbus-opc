@@ -1,4 +1,4 @@
-import { Delete, Edit, MoreVert, PowerSettingsNew } from '@mui/icons-material';
+import { Delete, Edit, MoreVert, PowerSettingsNew, ContentCopy } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, MenuItem } from '@mui/material';
 import type { Port } from '@/features/settings/port/types';
@@ -15,11 +15,12 @@ interface PortCardProps {
   onEdit?: (port: Port) => void;
   onDelete?: (portId: string, devicesCount: number) => void;
   onToggleActive?: (port: Port) => void;
+  onClone?: (port: Port) => void;
   isPollingActive?: boolean;
 }
 
 export const PortCard = memo(
-  ({ port, devicesCount = 0, onEdit, onDelete, onToggleActive, isPollingActive = false }: PortCardProps) => {
+  ({ port, devicesCount = 0, onEdit, onDelete, onToggleActive, onClone, isPollingActive = false }: PortCardProps) => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -61,6 +62,12 @@ export const PortCard = memo(
       }
     }, [onDelete, port._id, devicesCount]);
 
+    const handleClone = useCallback(() => {
+      if (onClone) {
+        onClone(port);
+      }
+    }, [onClone, port]);
+
     const handleToggleInternal = useCallback(() => {
       if (onToggleActive) {
         onToggleActive(port);
@@ -100,7 +107,7 @@ export const PortCard = memo(
               />
             )}
 
-            {(onEdit || onDelete) && (
+            {(onEdit || onDelete || onClone) && (
               <>
                 <IconButton
                   icon={<MoreVert fontSize="small" />}
@@ -128,6 +135,19 @@ export const PortCard = memo(
                     >
                       <Edit fontSize="small" />
                       <span className={styles['portCard__menuText']}>Редактировать</span>
+                    </MenuItem>
+                  )}
+                  {onClone && (
+                    <MenuItem
+                      onClick={() => {
+                        handleActionsClose();
+                        handleClone();
+                      }}
+                      disabled={isToggling}
+                      className={styles['portCard__menuItem']}
+                    >
+                      <ContentCopy fontSize="small" />
+                      <span className={styles['portCard__menuText']}>Клонировать</span>
                     </MenuItem>
                   )}
                   {onDelete && (

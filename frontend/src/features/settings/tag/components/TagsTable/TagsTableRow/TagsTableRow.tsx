@@ -27,11 +27,13 @@ interface TagsTableRowProps {
     onByteOrderClick?: () => void;
     onEdit?: () => void;
     onDelete?: () => void;
+    onClone?: () => void;
     onSave: () => void;
     onCancel: () => void;
     onDetails?: () => void;
     isSaving?: boolean;
     isDeleting?: boolean;
+    isCloning?: boolean;
     disabled?: boolean;
 }
 
@@ -47,11 +49,13 @@ export const TagsTableRow = memo(({
     onByteOrderClick,
     onEdit,
     onDelete,
+    onClone,
     onSave,
     onCancel,
     onDetails,
     isSaving = false,
     isDeleting = false,
+    isCloning = false,
     disabled = false,
 }: TagsTableRowProps) => {
     const currentDataType = useMemo(() => {
@@ -172,12 +176,14 @@ export const TagsTableRow = memo(({
                         isEditing={isEditing}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onClone={onClone}
                         onSave={onSave}
                         onCancel={onCancel}
                         onDetails={onDetails}
                         disabled={disabled}
                         isSaving={isSaving}
                         isDeleting={isDeleting}
+                        isCloning={isCloning}
                     />
                 </td>
             )}

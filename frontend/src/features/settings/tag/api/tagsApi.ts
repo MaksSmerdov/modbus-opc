@@ -73,6 +73,19 @@ export const tagsApi = baseApi.injectEndpoints({
                 'Tags',
             ],
         }),
+
+        // Клонировать тэг
+        cloneTag: builder.mutation<Tag, { deviceId: string; tagId: string }>({
+            query: ({ deviceId, tagId }) => ({
+                url: `/config/devices/${deviceId}/tags/${tagId}/clone`,
+                method: 'POST',
+            }),
+            transformResponse: (response: TagResponse) => response.data,
+            invalidatesTags: (_result, _error, { deviceId }) => [
+                { type: 'Tags', id: `LIST-${deviceId}` },
+                'Tags',
+            ],
+        }),
     }),
 });
 
@@ -84,4 +97,5 @@ export const {
     useCreateTagMutation,
     useUpdateTagMutation,
     useDeleteTagMutation,
+    useCloneTagMutation,
 } = tagsApi;

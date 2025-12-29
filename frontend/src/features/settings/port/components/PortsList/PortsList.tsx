@@ -8,6 +8,7 @@ import { PortCardSkeleton } from '@/features/settings/port/components/PortCard/P
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
 import { usePortDeletion } from '@/features/settings/port/hooks/usePortDeletion';
 import { usePortToggle } from '@/features/settings/port/hooks/usePortToggle';
+import { usePortClone } from '@/features/settings/port/hooks/usePortClone';
 import { countDevicesByPort, formatDevicesCount } from '@/features/settings/port/utils/portUtils';
 import type { Port } from '@/features/settings/port/types';
 import styles from './PortsList.module.scss';
@@ -38,6 +39,7 @@ export const PortsList = memo(({ onEdit }: PortsListProps) => {
   } = usePortDeletion();
 
   const { handleTogglePortActive } = usePortToggle();
+  const { handleClone } = usePortClone();
 
   const isPollingActive = useMemo(() => isPolling, [isPolling]);
   const canManagePorts = useMemo(() => user?.role === 'admin' || user?.role === 'operator', [user?.role]);
@@ -71,6 +73,15 @@ export const PortsList = memo(({ onEdit }: PortsListProps) => {
       }
     },
     [canManagePorts, handleTogglePortActive]
+  );
+
+  const handleClonePort = useCallback(
+    (port: Port) => {
+      if (canManagePorts) {
+        handleClone(port);
+      }
+    },
+    [canManagePorts, handleClone]
   );
 
   const deleteMessage = useMemo(() => {
@@ -132,6 +143,7 @@ export const PortsList = memo(({ onEdit }: PortsListProps) => {
               canManagePorts ? (portId) => handleDeletePort(portId, devicesCountByPort[port._id] ?? 0) : undefined
             }
             onToggleActive={canManagePorts ? handleToggleActive : undefined}
+            onClone={canManagePorts ? handleClonePort : undefined}
             isPollingActive={isPollingActive}
           />
         ))}

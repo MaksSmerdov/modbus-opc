@@ -59,6 +59,16 @@ export const portsApi = baseApi.injectEndpoints({
                 'Ports',
             ],
         }),
+
+        // Клонировать порт
+        clonePort: builder.mutation<Port, string>({
+            query: (id) => ({
+                url: `/config/ports/${id}/clone`,
+                method: 'POST',
+            }),
+            transformResponse: (response: PortResponse) => response.data,
+            invalidatesTags: ['Ports'],
+        }),
     }),
 });
 
@@ -70,5 +80,6 @@ export const {
     useCreatePortMutation,
     useUpdatePortMutation,
     useDeletePortMutation,
+    useClonePortMutation,
 } = portsApi;
 

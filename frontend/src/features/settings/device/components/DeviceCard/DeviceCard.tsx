@@ -1,5 +1,5 @@
 import { memo, useMemo, useCallback } from 'react';
-import { Delete, Edit, PowerSettingsNew } from '@mui/icons-material';
+import { Delete, Edit, PowerSettingsNew, ContentCopy } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { transliterate } from '@/shared/utils/transliterate';
 import { useGetTagsQuery } from '@/features/settings/tag/api/tagsApi';
@@ -20,11 +20,12 @@ interface DeviceCardProps {
   onEdit?: (device: Device) => void;
   onDelete?: (deviceId: string) => void;
   onToggleActive?: (device: Device) => void;
+  onClone?: (device: Device) => void;
   isPollingActive?: boolean;
 }
 
 export const DeviceCard = memo(
-  ({ device, portSlug, onEdit, onDelete, onToggleActive, isPollingActive = false }: DeviceCardProps) => {
+  ({ device, portSlug, onEdit, onDelete, onToggleActive, onClone, isPollingActive = false }: DeviceCardProps) => {
     const navigate = useNavigate();
     const isEditDeleteDisabled = useMemo(() => isPollingActive && device.isActive, [isPollingActive, device.isActive]);
 
@@ -72,6 +73,12 @@ export const DeviceCard = memo(
       }
     }, [onDelete, device._id]);
 
+    const handleClone = useCallback(() => {
+      if (onClone) {
+        onClone(device);
+      }
+    }, [onClone, device]);
+
     const handleToggleInternal = useCallback(() => {
       if (onToggleActive) {
         onToggleActive(device);
@@ -110,6 +117,15 @@ export const DeviceCard = memo(
                   variant="edit"
                   disabled={isEditDeleteDisabled || isToggling}
                   onClick={handleEdit}
+                />
+              )}
+              {onClone && (
+                <IconButton
+                  icon={<ContentCopy fontSize="small" />}
+                  tooltip="Клонировать устройство"
+                  variant="edit"
+                  disabled={isToggling}
+                  onClick={handleClone}
                 />
               )}
               {onDelete && (

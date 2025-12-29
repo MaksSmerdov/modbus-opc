@@ -477,4 +477,127 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/config/ports/{id}/clone:
+ *   post:
+ *     summary: Клонировать порт подключения
+ *     tags: [Ports]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId порта
+ *     responses:
+ *       201:
+ *         description: Порт успешно скопирован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Port'
+ *       404:
+ *         description: Порт не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/:id/clone', async (req, res) => {
+  try {
+    const sourcePort = await Port.findById(req.params.id).lean();
+
+    if (!sourcePort) {
+      return res.status(404).json({
+        success: false,
+        error: 'Порт не найден',
+      });
+    }
+
+    // Создаем копию порта с новым именем
+    const clonedData = {
+      connectionType: sourcePort.connectionType,
+      isActive: false, // Клонированный порт по умолчанию неактивен
+    };
+
+    // Копируем параметры в зависимости от типа подключения
+    if (sourcePort.connectionType === 'RTU') {
+      clonedData.port = sourcePort.port;
+      clonedData.baudRate = sourcePort.baudRate;
+      clonedData.dataBits = sourcePort.dataBits;
+      clonedData.stopBits = sourcePort.stopBits;
+      clonedData.parity = sourcePort.parity;
+    } else if (sourcePort.connectionType === 'TCP' || sourcePort.connectionType === 'TCP_RTU') {
+      clonedData.host = sourcePort.host;
+      clonedData.tcpPort = sourcePort.tcpPort;
+    }
+
+    // Извлекаем базовое имя (убираем суффикс "(число)" если есть)
+    const copyPattern = /^(.+) \((\d+)\)$/;
+    const nameMatch = sourcePort.name.match(copyPattern);
+    const baseName = nameMatch ? nameMatch[1] : sourcePort.name;
+    
+    // Находим максимальный номер среди всех копий базового имени
+    const allPorts = await Port.find({}).lean();
+    
+    let maxNumber = 0;
+    for (const port of allPorts) {
+      const match = port.name.match(copyPattern);
+      if (match) {
+        const portBaseName = match[1];
+        const number = parseInt(match[2], 10);
+        // Проверяем, что базовое имя совпадает с исходным
+        if (portBaseName === baseName && !isNaN(number) && number > maxNumber) {
+          maxNumber = number;
+        }
+      }
+    }
+    
+    // Начинаем с максимального номера + 1
+    let counter = maxNumber + 1;
+    let newName = `${baseName} (${counter})`;
+    
+    // Дополнительная проверка на случай параллельных запросов
+    while (await Port.findOne({ name: newName })) {
+      counter++;
+      newName = `${baseName} (${counter})`;
+    }
+    clonedData.name = newName;
+
+    const clonedPort = await Port.create(clonedData);
+
+    res.status(201).json({
+      success: true,
+      data: formatPort(clonedPort.toObject()),
+    });
+  } catch (error) {
+    console.error('Ошибка клонирования порта:', error);
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        error: 'Порт с таким именем уже существует',
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка клонирования порта',
+    });
+  }
+});
+
 export default router;

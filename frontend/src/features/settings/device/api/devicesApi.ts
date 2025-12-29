@@ -68,6 +68,18 @@ export const devicesApi = baseApi.injectEndpoints({
                 'Devices',
             ],
         }),
+
+        // Клонировать устройство
+        cloneDevice: builder.mutation<Device, string>({
+            query: (id) => ({
+                url: `/config/devices/${id}/clone`,
+                method: 'POST',
+            }),
+            transformResponse: (response: DeviceResponse) => {
+                return normalizeDevicePortId(response.data);
+            },
+            invalidatesTags: ['Devices'],
+        }),
     }),
 });
 
@@ -79,4 +91,5 @@ export const {
     useCreateDeviceMutation,
     useUpdateDeviceMutation,
     useDeleteDeviceMutation,
+    useCloneDeviceMutation,
 } = devicesApi;

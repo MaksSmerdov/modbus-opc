@@ -32,12 +32,14 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
         setEditingRow,
         handleSave,
         handleDelete,
+        handleClone,
         startEditing,
         startCreating,
         cancelEditing,
         isCreating,
         isUpdating: isUpdatingTag,
         isDeleting,
+        isCloning,
     } = useTagEditing(deviceId);
 
     const [detailsModalOpen, setDetailsModalOpen] = useState(false);
@@ -195,11 +197,13 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                                 onByteOrderClick={isEditing ? handleOpenByteOrderModal : undefined}
                                 onEdit={() => startEditing(tag)}
                                 onDelete={() => handleDeleteClick(tag._id)}
+                                onClone={() => handleClone(tag._id)}
                                 onSave={handleSave}
                                 onCancel={cancelEditing}
                                 onDetails={() => handleOpenDetails(tag)}
                                 isSaving={isUpdatingTag}
                                 isDeleting={isDeleting}
+                                isCloning={isCloning}
                                 disabled={editingRow !== null && editingRow.id !== tag._id}
                             />
                         );

@@ -7,6 +7,7 @@ import { DeviceCardSkeleton } from '@/features/settings/device/components/Device
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
 import { useDeviceDeletion } from '@/features/settings/device/hooks/useDeviceDeletion';
 import { useDeviceToggle } from '@/features/settings/device/hooks/useDeviceToggle';
+import { useDeviceClone } from '@/features/settings/device/hooks/useDeviceClone';
 import { filterDevicesByPort } from '@/features/settings/device/utils/deviceUtils';
 import type { Device } from '@/features/settings/device/types';
 import styles from './DevicesList.module.scss';
@@ -38,6 +39,7 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
     } = useDeviceDeletion();
 
     const { handleToggleDeviceActive } = useDeviceToggle();
+    const { handleClone } = useDeviceClone();
 
     const isPollingActive = useMemo(() => isPolling, [isPolling]);
     const canManageDevices = useMemo(() => user?.role === 'admin' || user?.role === 'operator', [user?.role]);
@@ -66,6 +68,12 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
             handleToggleDeviceActive(device);
         }
     }, [canManageDevices, handleToggleDeviceActive]);
+
+    const handleCloneDevice = useCallback((device: Device) => {
+        if (canManageDevices) {
+            handleClone(device);
+        }
+    }, [canManageDevices, handleClone]);
 
     if (isLoading) {
         return (
@@ -102,6 +110,7 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
                     const handleEdit = canManageDevices && onEdit ? () => handleEditDevice(device) : undefined;
                     const handleDelete = canManageDevices ? () => handleDeleteDevice(device._id) : undefined;
                     const handleToggle = canManageDevices ? () => handleToggleActive(device) : undefined;
+                    const handleClone = canManageDevices ? () => handleCloneDevice(device) : undefined;
 
                     return (
                         <DeviceCard
@@ -111,6 +120,7 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
                             onEdit={handleEdit}
                             onDelete={handleDelete}
                             onToggleActive={handleToggle}
+                            onClone={handleClone}
                             isPollingActive={isPollingActive}
                         />
                     );

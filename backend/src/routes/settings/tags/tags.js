@@ -58,24 +58,22 @@ router.get('/devices/:deviceId/tags', async (req, res) => {
     if (!device) {
       return res.status(404).json({
         success: false,
-        error: 'Устройство не найдено'
+        error: 'Устройство не найдено',
       });
     }
 
-    const tags = await Tag.find({ deviceId })
-      .sort({ address: 1 })
-      .lean();
+    const tags = await Tag.find({ deviceId }).sort({ address: 1 }).lean();
 
     res.json({
       success: true,
       count: tags.length,
-      data: tags
+      data: tags,
     });
   } catch (error) {
     console.error('Ошибка получения тэгов:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка получения тэгов'
+      error: 'Ошибка получения тэгов',
     });
   }
 });
@@ -134,19 +132,19 @@ router.get('/devices/:deviceId/tags/:id', async (req, res) => {
     if (!tag) {
       return res.status(404).json({
         success: false,
-        error: 'Тэг не найден'
+        error: 'Тэг не найден',
       });
     }
 
     res.json({
       success: true,
-      data: tag
+      data: tag,
     });
   } catch (error) {
     console.error('Ошибка получения тэга:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка получения тэга'
+      error: 'Ошибка получения тэга',
     });
   }
 });
@@ -261,7 +259,7 @@ router.post('/devices/:deviceId/tags', async (req, res) => {
     if (!device) {
       return res.status(404).json({
         success: false,
-        error: 'Устройство не найдено'
+        error: 'Устройство не найдено',
       });
     }
 
@@ -269,32 +267,32 @@ router.post('/devices/:deviceId/tags', async (req, res) => {
     if (!tagData.address && tagData.address !== 0) {
       return res.status(400).json({
         success: false,
-        error: 'Адрес тэга обязателен'
+        error: 'Адрес тэга обязателен',
       });
     }
     if (!tagData.length) {
       return res.status(400).json({
         success: false,
-        error: 'Длина тэга обязательна'
+        error: 'Длина тэга обязательна',
       });
     }
     if (!tagData.name) {
       return res.status(400).json({
         success: false,
-        error: 'Название тэга обязательно'
+        error: 'Название тэга обязательно',
       });
     }
     if (!tagData.dataType) {
       return res.status(400).json({
         success: false,
-        error: 'Тип данных тэга обязателен'
+        error: 'Тип данных тэга обязателен',
       });
     }
 
     // Создание тэга
     const tag = await Tag.create({
       ...tagData,
-      deviceId
+      deviceId,
     });
 
     // Реинициализируем Modbus для применения изменений
@@ -309,19 +307,19 @@ router.post('/devices/:deviceId/tags', async (req, res) => {
         entityName: tag.name,
         fieldName: 'name',
         newValue: tag.name,
-        req
+        req,
       });
     }
 
     res.status(201).json({
       success: true,
-      data: tag
+      data: tag,
     });
   } catch (error) {
     console.error('Ошибка создания тэга:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка создания тэга'
+      error: 'Ошибка создания тэга',
     });
   }
 });
@@ -416,16 +414,12 @@ router.put('/devices/:deviceId/tags/:id', async (req, res) => {
     // Получаем старые данные перед обновлением
     const oldTag = await Tag.findOne({ _id: id, deviceId }).lean();
 
-    const tag = await Tag.findOneAndUpdate(
-      { _id: id, deviceId },
-      tagData,
-      { new: true, runValidators: true }
-    ).lean();
+    const tag = await Tag.findOneAndUpdate({ _id: id, deviceId }, tagData, { new: true, runValidators: true }).lean();
 
     if (!tag) {
       return res.status(404).json({
         success: false,
-        error: 'Тэг не найден'
+        error: 'Тэг не найден',
       });
     }
 
@@ -443,7 +437,7 @@ router.put('/devices/:deviceId/tags/:id', async (req, res) => {
           fieldName: 'name',
           oldValue: oldTag.name,
           newValue: tag.name,
-          req
+          req,
         });
       }
       if (oldTag.address !== tag.address) {
@@ -455,20 +449,20 @@ router.put('/devices/:deviceId/tags/:id', async (req, res) => {
           fieldName: 'address',
           oldValue: oldTag.address,
           newValue: tag.address,
-          req
+          req,
         });
       }
     }
 
     res.json({
       success: true,
-      data: tag
+      data: tag,
     });
   } catch (error) {
     console.error('Ошибка обновления тэга:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка обновления тэга'
+      error: 'Ошибка обновления тэга',
     });
   }
 });
@@ -529,7 +523,7 @@ router.delete('/devices/:deviceId/tags/:id', async (req, res) => {
     if (!tag) {
       return res.status(404).json({
         success: false,
-        error: 'Тэг не найден'
+        error: 'Тэг не найден',
       });
     }
 
@@ -546,22 +540,224 @@ router.delete('/devices/:deviceId/tags/:id', async (req, res) => {
         entityType: 'tag',
         entityName: tag.name,
         oldValue: tag.name,
-        req
+        req,
       });
     }
 
     res.json({
       success: true,
-      message: 'Тэг удален'
+      message: 'Тэг удален',
     });
   } catch (error) {
     console.error('Ошибка удаления тэга:', error);
     res.status(500).json({
       success: false,
-      error: 'Ошибка удаления тэга'
+      error: 'Ошибка удаления тэга',
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /api/config/devices/{deviceId}/tags/{id}/clone:
+ *   post:
+ *     summary: Клонировать тэг
+ *     tags: [Tags]
+ *     parameters:
+ *       - in: path
+ *         name: deviceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId устройства
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId тэга
+ *     responses:
+ *       201:
+ *         description: Тэг успешно скопирован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Tag'
+ *       404:
+ *         description: Тэг не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+/**
+ * Типы данных, для которых требуется уникальность адреса
+ */
+const ADDRESS_VALIDATION_TYPES = ['int16', 'uint16', 'int32', 'uint32', 'float32'];
+
+/**
+ * Проверяет, перекрываются ли диапазоны адресов
+ */
+function addressRangesOverlap(start1, length1, start2, length2) {
+  const end1 = start1 + length1 - 1;
+  const end2 = start2 + length2 - 1;
+  return start1 <= end2 && start2 <= end1;
+}
+
+/**
+ * Находит свободный адрес для клонированного тэга
+ * @param {string} deviceId - ID устройства
+ * @param {number} startAddress - Начальный адрес для поиска
+ * @param {number} tagLength - Длина тэга
+ * @param {string} dataType - Тип данных тэга
+ * @returns {Promise<number>} - Свободный адрес
+ */
+async function findFreeAddress(deviceId, startAddress, tagLength, dataType) {
+  // Если тип данных не требует уникальности адреса, возвращаем исходный адрес
+  if (!ADDRESS_VALIDATION_TYPES.includes(dataType)) {
+    return startAddress;
+  }
+
+  // Для типа 'bits' несколько тэгов могут быть на одном адресе
+  if (dataType === 'bits') {
+    return startAddress;
+  }
+
+  // Получаем все существующие тэги устройства с типами, требующими уникальности адреса
+  const existingTags = await Tag.find({
+    deviceId,
+    dataType: { $in: ADDRESS_VALIDATION_TYPES },
+  }).lean();
+
+  // Начинаем поиск с адреса исходного тэга + его длина
+  let newAddress = startAddress + tagLength;
+  const MAX_ADDRESS = 65535;
+
+  // Ищем свободный диапазон адресов
+  while (newAddress + tagLength - 1 <= MAX_ADDRESS) {
+    let isFree = true;
+
+    // Проверяем, не перекрывается ли диапазон с существующими тэгами
+    for (const existingTag of existingTags) {
+      const existingLength = existingTag.length || 1;
+
+      if (addressRangesOverlap(newAddress, tagLength, existingTag.address, existingLength)) {
+        isFree = false;
+        break;
+      }
+    }
+
+    // Если нашли свободный адрес, возвращаем его
+    if (isFree) {
+      return newAddress;
+    }
+
+    // Переходим к следующему адресу
+    newAddress++;
+  }
+
+  // Если не нашли свободный адрес, возвращаем исходный (будет ошибка при сохранении)
+  return startAddress;
+}
+
+router.post('/devices/:deviceId/tags/:id/clone', async (req, res) => {
+  try {
+    const { deviceId, id } = req.params;
+
+    const sourceTag = await Tag.findOne({ _id: id, deviceId }).lean();
+
+    if (!sourceTag) {
+      return res.status(404).json({
+        success: false,
+        error: 'Тэг не найден',
+      });
+    }
+
+    // Получаем длину тэга
+    const tagLength = sourceTag.length || 1;
+
+    // Находим свободный адрес для клонированного тэга
+    const freeAddress = await findFreeAddress(deviceId, sourceTag.address, tagLength, sourceTag.dataType);
+
+    // Создаем копию тэга
+    const clonedTagData = {
+      deviceId: sourceTag.deviceId,
+      address: freeAddress,
+      length: tagLength,
+      category: sourceTag.category,
+      functionCode: sourceTag.functionCode,
+      dataType: sourceTag.dataType,
+      bitIndex: sourceTag.bitIndex,
+      byteOrder: sourceTag.byteOrder,
+      scale: sourceTag.scale,
+      offset: sourceTag.offset,
+      decimals: sourceTag.decimals,
+      unit: sourceTag.unit,
+      minValue: sourceTag.minValue,
+      maxValue: sourceTag.maxValue,
+      description: sourceTag.description,
+    };
+
+    // Извлекаем базовое имя (убираем суффикс "(число)" если есть)
+    const copyPattern = /^(.+) \((\d+)\)$/;
+    const nameMatch = sourceTag.name.match(copyPattern);
+    const baseName = nameMatch ? nameMatch[1] : sourceTag.name;
+
+    // Находим максимальный номер среди всех копий базового имени в этом устройстве
+    const allTags = await Tag.find({ deviceId }).lean();
+
+    let maxNumber = 0;
+    for (const tag of allTags) {
+      const match = tag.name.match(copyPattern);
+      if (match) {
+        const tagBaseName = match[1];
+        const number = parseInt(match[2], 10);
+        // Проверяем, что базовое имя совпадает с исходным
+        if (tagBaseName === baseName && !isNaN(number) && number > maxNumber) {
+          maxNumber = number;
+        }
+      }
+    }
+
+    // Начинаем с максимального номера + 1
+    let counter = maxNumber + 1;
+    let newName = `${baseName} (${counter})`;
+
+    // Дополнительная проверка на случай параллельных запросов
+    while (await Tag.findOne({ deviceId, name: newName })) {
+      counter++;
+      newName = `${baseName} (${counter})`;
+    }
+    clonedTagData.name = newName;
+
+    const clonedTag = await Tag.create(clonedTagData);
+
+    // Реинициализируем Modbus
+    await reinitializeModbus();
+
+    res.status(201).json({
+      success: true,
+      data: clonedTag,
+    });
+  } catch (error) {
+    console.error('Ошибка клонирования тэга:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка клонирования тэга',
     });
   }
 });
 
 export default router;
-

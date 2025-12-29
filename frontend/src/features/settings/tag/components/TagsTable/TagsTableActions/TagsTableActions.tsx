@@ -1,28 +1,32 @@
-import { Delete, Edit, Save, Cancel, Info } from '@mui/icons-material';
+import { Delete, Edit, Save, Cancel, Info, ContentCopy } from '@mui/icons-material';
 import styles from './TagsTableActions.module.scss';
 
 interface TagsTableActionsProps {
     isEditing: boolean;
     onEdit?: () => void;
     onDelete?: () => void;
+    onClone?: () => void;
     onSave?: () => void;
     onCancel?: () => void;
     onDetails?: () => void;
     disabled?: boolean;
     isSaving?: boolean;
     isDeleting?: boolean;
+    isCloning?: boolean;
 }
 
 export const TagsTableActions = ({
     isEditing,
     onEdit,
     onDelete,
+    onClone,
     onSave,
     onCancel,
     onDetails,
     disabled = false,
     isSaving = false,
     isDeleting = false,
+    isCloning = false,
 }: TagsTableActionsProps) => {
     if (isEditing) {
         return (
@@ -67,6 +71,16 @@ export const TagsTableActions = ({
                     title="Редактировать"
                 >
                     <Edit fontSize="small" />
+                </button>
+            )}
+            {onClone && (
+                <button
+                    className={styles['tagsTableActions__button']}
+                    onClick={onClone}
+                    disabled={disabled || isCloning}
+                    title="Клонировать"
+                >
+                    <ContentCopy fontSize="small" />
                 </button>
             )}
             {onDelete && (
