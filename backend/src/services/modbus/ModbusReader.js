@@ -55,6 +55,35 @@ class ModbusReader {
       // Если указан битовый индекс, извлекаем бит из значения
       if (register.dataType === 'bits' && typeof register.bitIndex === 'number') {
         parsedValue = extractBit(parsedValue, register.bitIndex);
+      } else if (register.dataType === 'int32_float32') {
+        // Для составного типа применяем масштабирование и округление к каждому значению
+        const scale = register.scale !== undefined ? register.scale : 1;
+        const decimals = register.decimals !== undefined ? register.decimals : 0;
+        
+        if (parsedValue && typeof parsedValue === 'object') {
+          let int32Value = parsedValue.int32Value;
+          let float32Value = parsedValue.float32Value;
+          
+          if (int32Value !== null && int32Value !== undefined) {
+            int32Value = applyScale(int32Value, scale);
+            // Применяем округление для int32Value тоже
+            if (typeof int32Value === 'number') {
+              int32Value = Number(int32Value.toFixed(decimals));
+            }
+          }
+          
+          if (float32Value !== null && float32Value !== undefined) {
+            float32Value = applyScale(float32Value, scale);
+            if (typeof float32Value === 'number') {
+              float32Value = Number(float32Value.toFixed(decimals));
+            }
+          }
+          
+          parsedValue = {
+            int32Value,
+            float32Value
+          };
+        }
       } else {
         // Применяем масштабирование (по умолчанию scale = 1) - только для не-битовых значений
         const scale = register.scale !== undefined ? register.scale : 1;
@@ -80,7 +109,8 @@ class ModbusReader {
         unit: register.unit || '',
         minValue: register.minValue,
         maxValue: register.maxValue,
-        bitIndex: register.bitIndex
+        bitIndex: register.bitIndex,
+        compositeDisplay: register.compositeDisplay
       };
     } catch (error) {
       // Очищаем буферы после ошибки

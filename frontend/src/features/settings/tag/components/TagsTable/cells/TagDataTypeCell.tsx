@@ -27,11 +27,12 @@ export const TagDataTypeCell = ({ value, isEditing, onChange }: TagDataTypeCellP
                     <MenuItem value="float32">float32</MenuItem>
                     <MenuItem value="string">string</MenuItem>
                     <MenuItem value="bits">bits</MenuItem>
+                    <MenuItem value="int32_float32">int32f32</MenuItem>
                 </Select>
             </div>
         );
     }
 
-    return <span>{value ?? 'int16'}</span>;
+    return <span>{value === 'int32_float32' ? 'int32f32' : (value ?? 'int16')}</span>;
 };
 

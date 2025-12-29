@@ -542,7 +542,7 @@ const options = {
                         },
                         length: {
                             type: 'integer',
-                            description: 'Длина в регистрах. Обязателен только для типа "string". Для остальных типов вычисляется автоматически: int16/uint16/bool/bits=1, int32/uint32/float32=2, double=4',
+                            description: 'Длина в регистрах. Обязателен только для типа "string". Для остальных типов вычисляется автоматически: int16/uint16/bool/bits=1, int32/uint32/float32=2, int32_float32=4, double=4',
                             minimum: 1,
                             maximum: 125,
                             example: 2,
@@ -568,7 +568,7 @@ const options = {
                         dataType: {
                             type: 'string',
                             description: 'Тип данных',
-                            enum: ['int16', 'uint16', 'int32', 'uint32', 'float32', 'string', 'bits'],
+                            enum: ['int16', 'uint16', 'int32', 'uint32', 'float32', 'string', 'bits', 'int32_float32'],
                             example: 'float32',
                         },
                         bitIndex: {
@@ -629,6 +629,14 @@ const options = {
                             description: 'Описание',
                             default: '',
                             example: 'Температура котла',
+                        },
+                        compositeDisplay: {
+                            type: 'string',
+                            description: 'Выбор отображаемого значения для типа int32_float32',
+                            enum: ['int32', 'float32', 'both'],
+                            nullable: true,
+                            default: null,
+                            example: 'float32',
                         },
                         createdAt: {
                             type: 'string',

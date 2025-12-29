@@ -67,7 +67,8 @@ export async function loadDevicesFromDB() {
             unit: tag.unit,
             minValue: tag.minValue,
             maxValue: tag.maxValue,
-            description: tag.description
+            description: tag.description,
+            compositeDisplay: tag.compositeDisplay
           })),
           timeout: device.timeout,
           retries: device.retries,

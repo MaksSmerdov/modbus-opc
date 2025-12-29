@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { MenuItem } from '@mui/material';
 import { Modal } from '@/shared/ui/Modal/Modal';
 import { Button } from '@/shared/ui/Button/Button';
 import { Input } from '@/shared/ui/Input/Input';
-import type { Tag, UpdateTagData } from '@/features/settings/tag/types';
+import { Select } from '@/shared/ui/Select/Select';
+import type { Tag, UpdateTagData, CompositeDisplay } from '@/features/settings/tag/types';
 import styles from './TagDetailsModal.module.scss';
 
 interface TagDetailsModalProps {
@@ -20,6 +22,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
     const [scale, setScale] = useState<string>('');
     const [offset, setOffset] = useState<string>('');
     const [decimals, setDecimals] = useState<string>('');
+    const [compositeDisplay, setCompositeDisplay] = useState<CompositeDisplay | null>(null);
 
     useEffect(() => {
         if (tag) {
@@ -29,6 +32,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             setScale(tag.scale !== null && tag.scale !== undefined ? String(tag.scale) : '1');
             setOffset(tag.offset !== null && tag.offset !== undefined ? String(tag.offset) : '0');
             setDecimals(tag.decimals !== null && tag.decimals !== undefined ? String(tag.decimals) : '0');
+            setCompositeDisplay(tag.compositeDisplay ?? 'float32');
         }
     }, [tag]);
 
@@ -42,6 +46,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             scale: scale === '' ? undefined : Number(scale),
             offset: offset === '' ? undefined : Number(offset),
             decimals: decimals === '' ? undefined : Number(decimals),
+            ...(tag.dataType === 'int32_float32' && { compositeDisplay: compositeDisplay }),
         };
 
         await onSave(updateData);
@@ -56,6 +61,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             setScale(tag.scale !== null && tag.scale !== undefined ? String(tag.scale) : '1');
             setOffset(tag.offset !== null && tag.offset !== undefined ? String(tag.offset) : '0');
             setDecimals(tag.decimals !== null && tag.decimals !== undefined ? String(tag.decimals) : '0');
+            setCompositeDisplay(tag.compositeDisplay ?? 'float32');
         }
         onClose();
     };
@@ -119,6 +125,21 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
                     helperText="Количество знаков после запятой"
                     disabled={isLoading}
                 />
+
+                {tag.dataType === 'int32_float32' && (
+                    <Select
+                        label="Отображение значения"
+                        value={compositeDisplay ?? 'float32'}
+                        onChange={(e) => setCompositeDisplay(e.target.value as CompositeDisplay)}
+                        helperText="Выберите, какое значение отображать для составного типа"
+                        disabled={isLoading}
+                        fullWidth
+                    >
+                        <MenuItem value="int32">int32</MenuItem>
+                        <MenuItem value="float32">float32</MenuItem>
+                        <MenuItem value="both">Оба значения</MenuItem>
+                    </Select>
+                )}
 
                 <Input
                     label="Описание"

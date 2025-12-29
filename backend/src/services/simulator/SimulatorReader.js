@@ -35,6 +35,68 @@ class SimulatorReader {
       return newValue;
     }
 
+    // Для составного типа int32_float32
+    if (register.dataType === 'int32_float32') {
+      const int32Key = `${key}_int32`;
+      const float32Key = `${key}_float32`;
+      
+      // Генерируем int32 значение
+      let minInt32 = -10000;
+      let maxInt32 = 10000;
+      if (register.minValue !== undefined && register.minValue !== null) {
+        minInt32 = register.minValue;
+      }
+      if (register.maxValue !== undefined && register.maxValue !== null) {
+        maxInt32 = register.maxValue;
+      }
+      
+      const lastInt32Value = this.lastValues.get(int32Key);
+      let int32Value;
+      if (lastInt32Value !== undefined && Math.random() > 0.1) {
+        const change = (maxInt32 - minInt32) * 0.05 * (Math.random() * 2 - 1);
+        int32Value = lastInt32Value + change;
+        int32Value = Math.max(minInt32, Math.min(maxInt32, int32Value));
+      } else {
+        int32Value = minInt32 + Math.random() * (maxInt32 - minInt32);
+      }
+      this.lastValues.set(int32Key, int32Value);
+      
+      // Генерируем float32 значение
+      let minFloat32 = 0;
+      let maxFloat32 = 100;
+      if (register.minValue !== undefined && register.minValue !== null) {
+        minFloat32 = register.minValue;
+      }
+      if (register.maxValue !== undefined && register.maxValue !== null) {
+        maxFloat32 = register.maxValue;
+      }
+      
+      const lastFloat32Value = this.lastValues.get(float32Key);
+      let float32Value;
+      if (lastFloat32Value !== undefined && Math.random() > 0.1) {
+        const change = (maxFloat32 - minFloat32) * 0.05 * (Math.random() * 2 - 1);
+        float32Value = lastFloat32Value + change;
+        float32Value = Math.max(minFloat32, Math.min(maxFloat32, float32Value));
+      } else {
+        float32Value = minFloat32 + Math.random() * (maxFloat32 - minFloat32);
+      }
+      this.lastValues.set(float32Key, float32Value);
+      
+      // Применяем масштабирование
+      const scale = register.scale !== undefined ? register.scale : 1;
+      int32Value = int32Value * scale;
+      float32Value = float32Value * scale;
+      
+      // Применяем округление
+      const decimals = register.decimals !== undefined ? register.decimals : 0;
+      float32Value = Number(float32Value.toFixed(decimals));
+      
+      return {
+        int32Value: Math.round(int32Value),
+        float32Value: float32Value
+      };
+    }
+
     // Для числовых типов - используем уставки если есть
     let min, max;
 
@@ -62,14 +124,18 @@ class SimulatorReader {
             min = 0;
             max = 10000;
             break;
-          case 'float32':
-          case 'double':
-            min = 0;
-            max = 100;
-            break;
-          default:
-            min = 0;
-            max = 100;
+        case 'float32':
+        case 'double':
+          min = 0;
+          max = 100;
+          break;
+        case 'int32_float32':
+          min = 0;
+          max = 100;
+          break;
+        default:
+          min = 0;
+          max = 100;
         }
       } else {
         // Генерируем с небольшим выходом за границы (10% шанс аварии)
@@ -98,6 +164,10 @@ class SimulatorReader {
           break;
         case 'float32':
         case 'double':
+          min = 0;
+          max = 100;
+          break;
+        case 'int32_float32':
           min = 0;
           max = 100;
           break;

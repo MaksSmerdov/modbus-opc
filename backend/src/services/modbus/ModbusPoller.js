@@ -62,6 +62,65 @@ class ModbusPoller {
             device.data[r.category][r.key] = {
               value: r.value
             };
+          } else if (r.dataType === 'int32_float32') {
+            // Для составного типа выбираем значение в зависимости от compositeDisplay
+            const compositeValue = r.value; // объект { int32Value, float32Value }
+            const displayMode = r.compositeDisplay || 'float32'; // по умолчанию float32
+            
+            let finalValue;
+            if (compositeValue && typeof compositeValue === 'object') {
+              if (displayMode === 'int32') {
+                finalValue = compositeValue.int32Value;
+              } else if (displayMode === 'float32') {
+                finalValue = compositeValue.float32Value;
+              } else { // 'both'
+                // Для 'both' оставляем объект
+                finalValue = compositeValue;
+              }
+            } else {
+              finalValue = null;
+            }
+
+            const paramData = {
+              value: finalValue,
+              unit: r.unit || ''
+            };
+
+            // Проверяем уставки для выбранного значения
+            if ((r.minValue !== null && r.minValue !== undefined) || (r.maxValue !== null && r.maxValue !== undefined)) {
+              let isAlarm = false;
+
+              if (finalValue !== null && typeof finalValue === 'number') {
+                if (r.minValue !== undefined && finalValue < r.minValue) {
+                  isAlarm = true;
+                }
+                if (r.maxValue !== undefined && finalValue > r.maxValue) {
+                  isAlarm = true;
+                }
+              } else if (displayMode === 'both' && finalValue && typeof finalValue === 'object') {
+                // Для 'both' проверяем оба значения
+                if (finalValue.int32Value !== null && typeof finalValue.int32Value === 'number') {
+                  if (r.minValue !== undefined && finalValue.int32Value < r.minValue) {
+                    isAlarm = true;
+                  }
+                  if (r.maxValue !== undefined && finalValue.int32Value > r.maxValue) {
+                    isAlarm = true;
+                  }
+                }
+                if (finalValue.float32Value !== null && typeof finalValue.float32Value === 'number') {
+                  if (r.minValue !== undefined && finalValue.float32Value < r.minValue) {
+                    isAlarm = true;
+                  }
+                  if (r.maxValue !== undefined && finalValue.float32Value > r.maxValue) {
+                    isAlarm = true;
+                  }
+                }
+              }
+
+              paramData.isAlarm = isAlarm;
+            }
+
+            device.data[r.category][r.key] = paramData;
           } else {
             const paramData = {
               value: r.value,

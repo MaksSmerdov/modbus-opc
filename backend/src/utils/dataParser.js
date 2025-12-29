@@ -6,7 +6,8 @@ export function getRegisterCount(dataType) {
     'int32': 2,     
     'uint32': 2,    
     'float32': 2,     
-    'double': 4     
+    'double': 4,
+    'int32_float32': 4  // 8 байт = 4 регистра
   };
 
   return typeMap[dataType] || 1;
@@ -87,6 +88,12 @@ export function parseData(data, dataType, byteOrder = 'BE', wordOrder = 'BE') {
 
       case 'double':
         return buffer.readDoubleBE(0);
+
+      case 'int32_float32':
+        return {
+          int32Value: buffer.readInt32BE(0),
+          float32Value: buffer.readFloatBE(4)
+        };
 
       default:
         return data[0];

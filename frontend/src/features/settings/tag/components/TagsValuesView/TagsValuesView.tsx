@@ -11,7 +11,7 @@ interface TagsValuesViewProps {
 
 interface TagWithValue {
     tag: Tag;
-    value: number | string | boolean | null;
+    value: number | string | boolean | { int32Value: number | null; float32Value: number | null } | null;
     unit: string;
     isAlarm: boolean;
 }
@@ -117,7 +117,13 @@ export const TagsValuesView = ({ tags, deviceData }: TagsValuesViewProps) => {
                                     <td className={styles['tagsValuesView__cell']}>
                                         {value !== null && value !== undefined ? (
                                             <span className={`${styles['tagsValuesView__value']} ${isAlarm ? styles['tagsValuesView__value_alarm'] : ''}`}>
-                                                {typeof value === 'boolean' ? (value ? 'Да' : 'Нет') : String(value)}
+                                                {tag.dataType === 'int32_float32' && typeof value === 'object' && value !== null && ('int32Value' in value || 'float32Value' in value) ? (
+                                                    // Для режима 'both' показываем оба значения
+                                                    <span>
+                                                        int32: {value.int32Value !== null && value.int32Value !== undefined ? String(value.int32Value) : 'N/A'}, 
+                                                        float32: {value.float32Value !== null && value.float32Value !== undefined ? String(value.float32Value) : 'N/A'}
+                                                    </span>
+                                                ) : typeof value === 'boolean' ? (value ? 'Да' : 'Нет') : String(value)}
                                             </span>
                                         ) : (
                                             <span className={styles['tagsValuesView__noData']}>Нет данных</span>

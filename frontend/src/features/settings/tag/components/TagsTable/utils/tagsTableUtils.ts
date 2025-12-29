@@ -1,7 +1,7 @@
 export const shouldShowLength = (dataType: string): boolean => dataType === 'string';
 export const shouldShowBitIndex = (dataType: string): boolean => dataType === 'bits';
 export const shouldShowByteOrder = (dataType: string): boolean => 
-    ['int32', 'uint32', 'float32'].includes(dataType);
+    ['int32', 'uint32', 'float32', 'int32_float32'].includes(dataType);
 
 export const getDefaultLength = (dataType: string): number => {
     const typeMap: Record<string, number> = {
@@ -11,6 +11,7 @@ export const getDefaultLength = (dataType: string): number => {
         'int32': 2,
         'uint32': 2,
         'float32': 2,
+        'int32_float32': 4,
     };
     return typeMap[dataType] ?? 1;
 };

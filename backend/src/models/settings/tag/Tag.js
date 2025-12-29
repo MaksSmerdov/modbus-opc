@@ -34,7 +34,8 @@ const tagSchema = new mongoose.Schema({
         'int32': 2,
         'uint32': 2,
         'float32': 2,
-        'double': 4
+        'double': 4,
+        'int32_float32': 4
       };
       return typeMap[this.dataType];
     }
@@ -60,7 +61,7 @@ const tagSchema = new mongoose.Schema({
   dataType: {
     type: String,
     required: true,
-    enum: ['int16', 'uint16', 'int32', 'uint32', 'float32', 'string', 'bits'],
+    enum: ['int16', 'uint16', 'int32', 'uint32', 'float32', 'string', 'bits', 'int32_float32'],
     lowercase: true
   },
 
@@ -129,9 +130,72 @@ const tagSchema = new mongoose.Schema({
   description: {
     type: String,
     default: ''
+  },
+
+  // Выбор отображаемого значения для составного типа int32_float32
+  compositeDisplay: {
+    type: String,
+    enum: ['int32', 'float32', 'both'],
+    default: null
   }
 }, {
   timestamps: true
+});
+
+// Pre-save hook для валидации compositeDisplay
+tagSchema.pre('save', function (next) {
+  // compositeDisplay используется только для типа int32_float32
+  if (this.dataType !== 'int32_float32' && this.compositeDisplay !== null && this.compositeDisplay !== undefined) {
+    return next(new Error('compositeDisplay используется только для типа "int32_float32"'));
+  }
+  // Если тип int32_float32, но compositeDisplay не указан, устанавливаем значение по умолчанию
+  if (this.dataType === 'int32_float32' && (this.compositeDisplay === null || this.compositeDisplay === undefined)) {
+    this.compositeDisplay = 'float32';
+  }
+  next();
+});
+
+// Pre-update hook для валидации при обновлении через findOneAndUpdate
+tagSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
+  const update = this.getUpdate();
+  const compositeDisplay = update?.compositeDisplay !== undefined 
+    ? (update.compositeDisplay || update.$set?.compositeDisplay) 
+    : undefined;
+  
+  // Если compositeDisplay обновляется, нужно проверить dataType
+  if (compositeDisplay !== undefined) {
+    // Получаем текущий документ для проверки dataType
+    this.model.findOne(this.getQuery()).then((doc) => {
+      if (!doc) {
+        return next();
+      }
+      
+      // Проверяем, обновляется ли dataType в том же запросе
+      const newDataType = update?.dataType || update?.$set?.dataType || doc.dataType;
+      
+      // Если compositeDisplay не null и dataType не int32_float32 - ошибка
+      if (compositeDisplay !== null && newDataType !== 'int32_float32') {
+        return next(new Error('compositeDisplay используется только для типа "int32_float32"'));
+      }
+      
+      // Если dataType обновляется на не-int32_float32, сбрасываем compositeDisplay
+      if (update?.dataType || update?.$set?.dataType) {
+        const updatedDataType = update.dataType || update.$set.dataType;
+        if (updatedDataType !== 'int32_float32' && compositeDisplay !== null) {
+          // Сбрасываем compositeDisplay если тип меняется
+          if (update.$set) {
+            update.$set.compositeDisplay = null;
+          } else {
+            update.compositeDisplay = null;
+          }
+        }
+      }
+      
+      next();
+    }).catch(next);
+  } else {
+    next();
+  }
 });
 
 // Индексы для ускорения поиска
