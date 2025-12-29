@@ -1,9 +1,8 @@
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useMemo, useCallback, useRef } from 'react';
 import { TagsTableActions } from '@/features/settings/tag/components/TagsTable/TagsTableActions/TagsTableActions';
 import {
     TagNameCell,
     TagAddressCell,
-    TagTextCell,
     TagFunctionCodeCell,
     TagDataTypeCell,
     TagLengthCell,
@@ -30,13 +29,11 @@ interface TagsTableRowProps {
     onDataTypeClick?: () => void;
     onFunctionCodeClick?: () => void;
     onEdit?: () => void;
-    onDelete?: () => void;
-    onClone?: () => void;
     onSave: () => void;
     onCancel: () => void;
     onDetails?: () => void;
+    onClone?: () => void;
     isSaving?: boolean;
-    isDeleting?: boolean;
     isCloning?: boolean;
     disabled?: boolean;
 }
@@ -56,13 +53,11 @@ export const TagsTableRow = memo(({
     onDataTypeClick,
     onFunctionCodeClick,
     onEdit,
-    onDelete,
-    onClone,
     onSave,
     onCancel,
     onDetails,
+    onClone,
     isSaving = false,
-    isDeleting = false,
     isCloning = false,
     disabled = false,
 }: TagsTableRowProps) => {
@@ -77,8 +72,8 @@ export const TagsTableRow = memo(({
     const showBitIndex = useMemo(() => shouldShowBitIndex(currentDataType), [currentDataType]);
 
     // Определяем значения для отображения
-    const displayData = isEditing && editingData 
-        ? editingData 
+    const displayData = isEditing && editingData
+        ? editingData
         : (tag ? {
             name: tag.name,
             address: tag.address,
@@ -92,6 +87,8 @@ export const TagsTableRow = memo(({
             decimals: tag.decimals,
             unit: tag.unit,
         } : {});
+
+    const clickTimeoutRef = useRef<number | null>(null);
 
     const handleRowClick = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
         if (canEdit && onSelect && tag && !isEditing && !disabled) {
@@ -109,45 +106,51 @@ export const TagsTableRow = memo(({
             ) {
                 return;
             }
-            onSelect(!isSelected);
+
+            // Добавляем задержку, чтобы двойной клик не вызывал выделение
+            if (clickTimeoutRef.current) {
+                clearTimeout(clickTimeoutRef.current);
+            }
+
+            clickTimeoutRef.current = setTimeout(() => {
+                onSelect(!isSelected);
+                clickTimeoutRef.current = null;
+            }, 200);
         }
     }, [canEdit, onSelect, tag, isEditing, disabled, isSelected]);
 
-    const handleNameDoubleClick = useCallback((e: React.MouseEvent<HTMLTableCellElement>) => {
-        e.stopPropagation();
+    const handleRowDoubleClick = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
         if (canEdit && onEdit && tag && !isEditing && !disabled) {
-            onEdit();
-        }
-    }, [canEdit, onEdit, tag, isEditing, disabled]);
+            // Не редактируем, если клик был по кнопке или другому интерактивному элементу
+            const target = e.target as HTMLElement;
+            if (target.closest('button') || target.closest('a') || target.closest('input') || target.closest('select')) {
+                return;
+            }
 
-    const handleAddressDoubleClick = useCallback((e: React.MouseEvent<HTMLTableCellElement>) => {
-        e.stopPropagation();
-        if (canEdit && onEdit && tag && !isEditing && !disabled) {
+            // Отменяем выделение при двойном клике
+            if (clickTimeoutRef.current) {
+                clearTimeout(clickTimeoutRef.current);
+                clickTimeoutRef.current = null;
+            }
+
             onEdit();
         }
     }, [canEdit, onEdit, tag, isEditing, disabled]);
 
     return (
-        <tr 
+        <tr
             className={`${isEditing ? styles['tagsTableRow_editing'] : ''} ${isSelected && canEdit && !isEditing ? styles['tagsTableRow_selected'] : ''}`}
             onClick={handleRowClick}
+            onDoubleClick={handleRowDoubleClick}
         >
-            <td 
-                onDoubleClick={handleNameDoubleClick}
-                className={canEdit && !isEditing && tag ? styles['tagsTableRow__editableCell'] : ''}
-                title={canEdit && !isEditing && tag ? 'Двойной клик для редактирования' : undefined}
-            >
+            <td>
                 <TagNameCell
                     value={displayData.name ?? ''}
                     isEditing={isEditing}
                     onChange={(value) => onFieldChange('name', value)}
                 />
             </td>
-            <td 
-                onDoubleClick={handleAddressDoubleClick}
-                className={canEdit && !isEditing && tag ? styles['tagsTableRow__editableCell'] : ''}
-                title={canEdit && !isEditing && tag ? 'Двойной клик для редактирования' : undefined}
-            >
+            <td>
                 <TagAddressCell
                     value={displayData.address ?? 0}
                     isEditing={isEditing}
@@ -201,7 +204,7 @@ export const TagsTableRow = memo(({
             {hasMultiByteTags && (
                 <td>
                     <TagByteOrderCell
-                        value={isEditing && editingData 
+                        value={isEditing && editingData
                             ? (editingData.byteOrder ?? 'ABCD')
                             : displayData.byteOrder}
                         isEditing={isEditing}
@@ -210,27 +213,17 @@ export const TagsTableRow = memo(({
                     />
                 </td>
             )}
-            <td>
-                <TagTextCell
-                    value={displayData.unit ?? ''}
-                    isEditing={isEditing}
-                    onChange={(value) => onFieldChange('unit', value)}
-                />
-            </td>
             {canEdit && (
                 <td>
                     <TagsTableActions
                         isEditing={isEditing}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onClone={onClone}
                         onSave={onSave}
                         onCancel={onCancel}
                         onDetails={onDetails}
-                        disabled={disabled}
+                        onClone={onClone}
                         isSaving={isSaving}
-                        isDeleting={isDeleting}
                         isCloning={isCloning}
+                        disabled={disabled}
                     />
                 </td>
             )}

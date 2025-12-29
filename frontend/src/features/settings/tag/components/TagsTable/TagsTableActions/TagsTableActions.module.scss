@@ -4,6 +4,8 @@
     display: flex;
     gap: 4px;
     justify-content: center;
+    align-items: center;
+    height: 100%;
 
     &__button {
         display: flex;
@@ -16,6 +18,8 @@
         cursor: pointer;
         color: vars.$text-secondary-light;
         transition: all 0.2s ease;
+        min-height: 32px;
+        min-width: 32px;
 
         &:hover:not(:disabled) {
             background-color: rgba(0, 0, 0, 0.05);
@@ -26,21 +30,6 @@
             opacity: 0.4;
             cursor: not-allowed;
         }
-    }
-
-    &__menu {
-        min-width: 220px;
-    }
-
-    &__menuItem {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    &__menuText {
-        font-size: 13px;
-        font-weight: 500;
     }
 }
 

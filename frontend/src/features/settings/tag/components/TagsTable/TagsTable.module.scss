@@ -20,9 +20,13 @@
                 padding: 8px;
                 overflow: hidden;
                 min-width: 0;
+                height: 48px;
+                vertical-align: middle;
             }
 
             tr {
+                height: 48px;
+                
                 &_editing {
                     background-color: rgba(vars.$intoxicate, 0.1);
                 }

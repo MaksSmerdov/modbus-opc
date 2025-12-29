@@ -29,8 +29,6 @@ export const createTagsTableColumns = (
         baseColumns.push({ key: 'byteOrder', label: 'Порядок байтов', width: '10%' });
     }
 
-    baseColumns.push({ key: 'unit', label: 'Ед. изм.', width: '8%' });
-
     if (canEdit) {
         baseColumns.push({ key: 'actions', label: 'Действия', width: '10%' });
     }

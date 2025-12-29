@@ -316,13 +316,11 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
                                 onDataTypeClick={isEditing ? handleOpenDataTypeModal : undefined}
                                 onFunctionCodeClick={isEditing ? handleOpenFunctionCodeModal : undefined}
                                 onEdit={() => startEditing(tag)}
-                                onDelete={() => handleDeleteClick(tag._id)}
-                                onClone={() => handleCloneClick(tag._id)}
                                 onSave={handleSave}
                                 onCancel={cancelEditing}
                                 onDetails={() => handleOpenDetails(tag)}
+                                onClone={() => handleCloneClick(tag._id)}
                                 isSaving={isUpdatingTag}
-                                isDeleting={isDeleting}
                                 isCloning={isCloning}
                                 disabled={editingRow !== null && editingRow.id !== tag._id}
                             />
