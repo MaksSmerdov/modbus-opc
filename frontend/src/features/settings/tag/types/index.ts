@@ -25,6 +25,7 @@ export interface Tag {
     maxValue: number | null;
     description: string;
     compositeDisplay?: CompositeDisplay | null;
+    order?: number;
     createdAt: string;
     updatedAt: string;
 }

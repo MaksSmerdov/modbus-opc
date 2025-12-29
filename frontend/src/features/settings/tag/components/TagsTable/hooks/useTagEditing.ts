@@ -4,7 +4,7 @@ import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { validateTagData, normalizeCreateTagData, normalizeUpdateTagData } from '@/features/settings/tag/components/TagsTable/utils/tagFormUtils';
 import type { Tag, CreateTagData } from '@/features/settings/tag/types';
 
-interface EditingRow {
+export interface EditingRow {
     id: string | 'new';
     data: Partial<CreateTagData>;
 }

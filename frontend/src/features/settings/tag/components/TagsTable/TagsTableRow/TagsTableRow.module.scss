@@ -22,6 +22,24 @@
         color: vars.$text-secondary-light;
         font-style: italic;
     }
+
+    &_reorderMode {
+        cursor: grab;
+        user-select: none;
+
+        &:active {
+            cursor: grabbing;
+        }
+
+        &:hover {
+            background-color: rgba(vars.$intoxicate, 0.05);
+        }
+    }
+
+    &_dragging {
+        opacity: 0.5;
+        background-color: rgba(vars.$intoxicate, 0.1);
+    }
 }
 
 :global(.dark) {
@@ -40,6 +58,16 @@
 
         &__empty {
             color: vars.$text-secondary-dark;
+        }
+
+        &_reorderMode {
+            &:hover {
+                background-color: rgba(vars.$intoxicate, 0.1);
+            }
+        }
+
+        &_dragging {
+            background-color: rgba(vars.$intoxicate, 0.2);
         }
     }
 }

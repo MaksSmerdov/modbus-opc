@@ -14,31 +14,6 @@
         gap: 16px;
     }
 
-    &__selectAllButton {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        background: transparent;
-        border: 1px solid vars.$border-color-light;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: vars.$text-primary-light;
-        transition: all 0.2s ease;
-
-        &:hover:not(:disabled) {
-            background-color: rgba(0, 0, 0, 0.05);
-            border-color: vars.$intoxicate;
-        }
-
-        &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-    }
-
     &__right {
         display: flex;
         align-items: center;
@@ -51,45 +26,14 @@
         color: vars.$text-secondary-light;
     }
 
-    &__addButton,
     &__deleteButton {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
+        :global(.MuiButton-root) {
+            background-color: vars.$red;
+            color: white;
 
-    &__addButton {
-        background-color: vars.$intoxicate;
-        color: white;
-
-        &:hover:not(:disabled) {
-            background-color: color.adjust(vars.$intoxicate, $lightness: -10%);
-        }
-
-        &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-    }
-
-    &__deleteButton {
-        background-color: vars.$red;
-        color: white;
-
-        &:hover:not(:disabled) {
-            background-color: color.adjust(vars.$red, $lightness: -10%);
-        }
-
-        &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+            &:hover:not(:disabled) {
+                background-color: color.adjust(vars.$red, $lightness: -10%);
+            }
         }
     }
 }
@@ -100,25 +44,11 @@
             color: vars.$text-secondary-dark;
         }
 
-        &__selectAllButton {
-            border-color: vars.$border-color-dark;
-            color: vars.$text-primary-dark;
-
-            &:hover:not(:disabled) {
-                background-color: rgba(255, 255, 255, 0.08);
-                border-color: vars.$intoxicate;
-            }
-        }
-
-        &__addButton {
-            &:hover:not(:disabled) {
-                background-color: color.adjust(vars.$intoxicate, $lightness: 10%);
-            }
-        }
-
         &__deleteButton {
-            &:hover:not(:disabled) {
-                background-color: color.adjust(vars.$red, $lightness: 10%);
+            :global(.MuiButton-root) {
+                &:hover:not(:disabled) {
+                    background-color: color.adjust(vars.$red, $lightness: 10%);
+                }
             }
         }
     }

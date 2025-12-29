@@ -86,6 +86,22 @@ export const tagsApi = baseApi.injectEndpoints({
                 'Tags',
             ],
         }),
+
+        // Изменить порядок тегов
+        reorderTags: builder.mutation<
+            { success: true; message: string },
+            { deviceId: string; tagIds: string[] }
+        >({
+            query: ({ deviceId, tagIds }) => ({
+                url: `/config/devices/${deviceId}/tags/reorder`,
+                method: 'PUT',
+                body: { tagIds },
+            }),
+            invalidatesTags: (_result, _error, { deviceId }) => [
+                { type: 'Tags', id: `LIST-${deviceId}` },
+                'Tags',
+            ],
+        }),
     }),
 });
 
@@ -98,4 +114,5 @@ export const {
     useUpdateTagMutation,
     useDeleteTagMutation,
     useCloneTagMutation,
+    useReorderTagsMutation,
 } = tagsApi;

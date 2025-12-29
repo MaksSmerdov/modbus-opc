@@ -62,7 +62,8 @@ router.get('/devices/:deviceId/tags', async (req, res) => {
       });
     }
 
-    const tags = await Tag.find({ deviceId }).sort({ address: 1 }).lean();
+    // Сортируем по order, если оно есть, иначе по address
+    const tags = await Tag.find({ deviceId }).sort({ order: 1, address: 1 }).lean();
 
     res.json({
       success: true,
@@ -74,6 +75,144 @@ router.get('/devices/:deviceId/tags', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Ошибка получения тэгов',
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /api/config/devices/{deviceId}/tags/reorder:
+ *   put:
+ *     summary: Изменить порядок тегов
+ *     tags: [Tags]
+ *     parameters:
+ *       - in: path
+ *         name: deviceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId устройства
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [tagIds]
+ *             properties:
+ *               tagIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Массив ID тегов в новом порядке
+ *                 example: ["507f1f77bcf86cd799439011", "507f191e810c19729de860ea"]
+ *     responses:
+ *       200:
+ *         description: Порядок тегов успешно обновлен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Порядок тегов обновлен
+ *       400:
+ *         description: Ошибка валидации
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Устройство не найдено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.put('/devices/:deviceId/tags/reorder', async (req, res) => {
+  try {
+    const { deviceId } = req.params;
+    const { tagIds } = req.body;
+
+    // Проверяем существование устройства
+    const device = await Device.findById(deviceId);
+    if (!device) {
+      return res.status(404).json({
+        success: false,
+        error: 'Устройство не найдено',
+      });
+    }
+
+    // Валидация
+    if (!Array.isArray(tagIds)) {
+      return res.status(400).json({
+        success: false,
+        error: 'tagIds должен быть массивом',
+      });
+    }
+
+    if (tagIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Массив tagIds не может быть пустым',
+      });
+    }
+
+    // Проверяем, что все теги принадлежат данному устройству
+    const tags = await Tag.find({
+      _id: { $in: tagIds },
+      deviceId,
+    }).lean();
+
+    if (tags.length !== tagIds.length) {
+      return res.status(400).json({
+        success: false,
+        error: 'Некоторые теги не найдены или не принадлежат данному устройству',
+      });
+    }
+
+    // Обновляем порядок каждого тега
+    const updatePromises = tagIds.map((tagId, index) => {
+      return Tag.updateOne(
+        { _id: tagId, deviceId },
+        { order: index }
+      );
+    });
+
+    await Promise.all(updatePromises);
+
+    // Логируем изменение порядка
+    if (req.user) {
+      await logAudit({
+        user: req.user,
+        action: 'update',
+        entityType: 'tag',
+        entityName: 'Порядок тегов',
+        fieldName: 'order',
+        newValue: `Изменен порядок ${tagIds.length} тегов`,
+        req,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Порядок тегов обновлен',
+    });
+  } catch (error) {
+    console.error('Ошибка обновления порядка тегов:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ошибка обновления порядка тегов',
     });
   }
 });
@@ -289,10 +428,22 @@ router.post('/devices/:deviceId/tags', async (req, res) => {
       });
     }
 
+    // Определяем порядок для нового тега
+    // Если order не указан, устанавливаем максимальный order + 1
+    let order = tagData.order;
+    if (order === undefined || order === null) {
+      const maxOrderTag = await Tag.findOne({ deviceId, order: { $ne: null } })
+        .sort({ order: -1 })
+        .select('order')
+        .lean();
+      order = maxOrderTag && maxOrderTag.order !== null ? maxOrderTag.order + 1 : 0;
+    }
+
     // Создание тэга
     const tag = await Tag.create({
       ...tagData,
       deviceId,
+      order,
     });
 
     // Реинициализируем Modbus для применения изменений
@@ -691,6 +842,14 @@ router.post('/devices/:deviceId/tags/:id/clone', async (req, res) => {
     // Находим свободный адрес для клонированного тэга
     const freeAddress = await findFreeAddress(deviceId, sourceTag.address, tagLength, sourceTag.dataType);
 
+    // Определяем порядок для клонированного тега
+    // Устанавливаем максимальный order + 1
+    const maxOrderTag = await Tag.findOne({ deviceId, order: { $ne: null } })
+      .sort({ order: -1 })
+      .select('order')
+      .lean();
+    const order = maxOrderTag && maxOrderTag.order !== null ? maxOrderTag.order + 1 : 0;
+
     // Создаем копию тэга
     const clonedTagData = {
       deviceId: sourceTag.deviceId,
@@ -708,6 +867,7 @@ router.post('/devices/:deviceId/tags/:id/clone', async (req, res) => {
       minValue: sourceTag.minValue,
       maxValue: sourceTag.maxValue,
       description: sourceTag.description,
+      order,
     };
 
     // Извлекаем базовое имя (убираем суффикс "(число)" если есть)

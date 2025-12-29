@@ -1,4 +1,6 @@
 import { memo, useMemo, useCallback, useRef } from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { TagsTableActions } from '@/features/settings/tag/components/TagsTable/TagsTableActions/TagsTableActions';
 import {
     TagNameCell,
@@ -36,6 +38,7 @@ interface TagsTableRowProps {
     isSaving?: boolean;
     isCloning?: boolean;
     disabled?: boolean;
+    reorderMode?: boolean;
 }
 
 export const TagsTableRow = memo(({
@@ -60,6 +63,7 @@ export const TagsTableRow = memo(({
     isSaving = false,
     isCloning = false,
     disabled = false,
+    reorderMode = false,
 }: TagsTableRowProps) => {
     const currentDataType = useMemo(() => {
         if (isEditing && editingData?.dataType) {
@@ -89,6 +93,24 @@ export const TagsTableRow = memo(({
         } : {});
 
     const clickTimeoutRef = useRef<number | null>(null);
+
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging: isSortableDragging,
+    } = useSortable({
+        id: tag?._id || 'new',
+        disabled: isEditing || disabled || !canEdit || !reorderMode,
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isSortableDragging ? 0.5 : 1,
+    };
 
     const handleRowClick = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
         if (canEdit && onSelect && tag && !isEditing && !disabled) {
@@ -137,11 +159,19 @@ export const TagsTableRow = memo(({
         }
     }, [canEdit, onEdit, tag, isEditing, disabled]);
 
+    // В режиме перестановки делаем всю строку перетаскиваемой
+    const rowProps = reorderMode && !isEditing && tag && canEdit
+        ? { ...attributes, ...listeners }
+        : {};
+
     return (
         <tr
-            className={`${isEditing ? styles['tagsTableRow_editing'] : ''} ${isSelected && canEdit && !isEditing ? styles['tagsTableRow_selected'] : ''}`}
+            ref={setNodeRef}
+            style={style}
+            className={`${isEditing ? styles['tagsTableRow_editing'] : ''} ${isSelected && canEdit && !isEditing ? styles['tagsTableRow_selected'] : ''} ${isSortableDragging ? styles['tagsTableRow_dragging'] : ''} ${reorderMode && !isEditing && tag ? styles['tagsTableRow_reorderMode'] : ''}`}
             onClick={handleRowClick}
             onDoubleClick={handleRowDoubleClick}
+            {...rowProps}
         >
             <td>
                 <TagNameCell

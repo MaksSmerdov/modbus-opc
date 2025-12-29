@@ -137,6 +137,12 @@ const tagSchema = new mongoose.Schema({
     type: String,
     enum: ['int32', 'float32', 'both'],
     default: null
+  },
+
+  // Порядок отображения тегов
+  order: {
+    type: Number,
+    default: null
   }
 }, {
   timestamps: true

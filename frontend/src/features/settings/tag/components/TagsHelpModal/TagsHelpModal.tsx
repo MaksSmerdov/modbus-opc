@@ -93,6 +93,27 @@ export const TagsHelpModal = ({ open, onClose }: TagsHelpModalProps) => {
                         Вы можете указать количество копий в появившемся модальном окне.
                     </p>
                 </section>
+
+                <section className={styles['tagsHelpModal__section']}>
+                    <h3 className={styles['tagsHelpModal__sectionTitle']}>Изменение порядка тегов</h3>
+                    <div className={styles['tagsHelpModal__list']}>
+                        <div className={styles['tagsHelpModal__listItem']}>
+                            <strong>Режим перестановки:</strong>
+                            <p>Нажмите кнопку "Переставить теги" в тулбаре, чтобы активировать режим перестановки. 
+                            В этом режиме вы можете перетаскивать теги за любую часть строки для изменения их порядка.</p>
+                        </div>
+                        <div className={styles['tagsHelpModal__listItem']}>
+                            <strong>Перетаскивание:</strong>
+                            <p>В режиме перестановки наведите курсор на любую строку тега и перетащите её в нужное место. 
+                            Порядок тегов будет автоматически сохранен на сервере.</p>
+                        </div>
+                        <div className={styles['tagsHelpModal__listItem']}>
+                            <strong>Завершение:</strong>
+                            <p>Нажмите кнопку "Завершить перестановку" в тулбаре, чтобы выйти из режима перестановки 
+                            и вернуться к обычному режиму работы с тегами.</p>
+                        </div>
+                    </div>
+                </section>
             </div>
         </Modal>
     );
