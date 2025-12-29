@@ -1,0 +1,90 @@
+@use '@/shared/styles/variables' as vars;
+@use '@/shared/styles/mixins' as mixins;
+
+.consolePanel {
+  padding-bottom: 1rem;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 700px;
+  min-width: 400px;
+  max-width: calc(100vw - 32px);
+  height: 400px;
+  max-height: 50vh;
+  @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
+  @include mixins.theme-border(vars.$border-color-light, vars.$border-color-dark);
+  @include mixins.transition(transform, 0.3s);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow: hidden;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+
+  &_open {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  &_unfocused {
+    opacity: 0.6;
+    @include mixins.transition(opacity, 0.3s);
+  }
+
+  &__content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  &__floatingButton {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 101;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    @include mixins.theme-bg(vars.$intoxicate, vars.$intoxicate);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    @include mixins.transition(all, 0.3s);
+    overflow: hidden;
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    :global(button) {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      padding: 0;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white !important;
+      min-width: auto;
+
+      &:hover {
+        background: transparent;
+      }
+
+      svg {
+        font-size: 28px !important;
+        color: white !important;
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { getDeviceModel } from '../../models/index.js';
 import { formatDate } from '../../utils/dateFormatter.js';
+import { logger } from '../../utils/logger.js';
 
 /**
  * Класс для сохранения данных Modbus устройств в БД
@@ -31,7 +32,11 @@ class ModbusSaver {
       await deviceData.save();
       device.lastSave = now;
     } catch (error) {
-      console.error(`✗ Ошибка сохранения данных ${device.name}:`, error.message);
+      logger.error(`Ошибка сохранения данных ${device.name}: ${error.message}`, {
+        deviceName: device.name,
+        deviceSlug: device.slug,
+        error: error.message
+      });
     }
   }
 

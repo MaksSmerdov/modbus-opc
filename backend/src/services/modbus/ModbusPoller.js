@@ -1,3 +1,5 @@
+import { logger } from '../../utils/logger.js';
+
 /**
  * Класс для опроса Modbus устройств
  */
@@ -8,7 +10,7 @@ class ModbusPoller {
 
   async pollDevice(device) {
     if (!this.reader.connection.isConnected) {
-      console.warn('⚠ Нет подключения к Modbus');
+      logger.warn('Нет подключения к Modbus', { deviceName: device.name });
       return;
     }
 
@@ -31,9 +33,17 @@ class ModbusPoller {
         device.lastError = results[0].error;
 
         if (device.failCount > device.retries) {
-          console.warn(`⊘ ${device.name} не отвечает, ожидание переподключения...`);
+          logger.warn(`${device.name} не отвечает, ожидание переподключения...`, {
+            deviceName: device.name,
+            failCount: device.failCount,
+            retries: device.retries
+          });
         } else {
-          console.warn(`⚠ ${device.name} не отвечает (${device.failCount}/${device.retries})`);
+          logger.warn(`${device.name} не отвечает (${device.failCount}/${device.retries})`, {
+            deviceName: device.name,
+            failCount: device.failCount,
+            retries: device.retries
+          });
         }
 
         await this.delay(100);
@@ -81,7 +91,7 @@ class ModbusPoller {
 
       // Если устройство восстановилось после отключения
       if (device.failCount > 0) {
-        console.log(`✓ ${device.name} - связь восстановлена`);
+        logger.info(`${device.name} - связь восстановлена`, { deviceName: device.name });
       }
 
       device.failCount = 0;
@@ -95,9 +105,19 @@ class ModbusPoller {
       device.lastError = error.message;
 
       if (device.failCount > device.retries) {
-        console.warn(`⊘ ${device.name} не отвечает, ожидание переподключения...`);
+        logger.error(`${device.name} не отвечает, ожидание переподключения...`, {
+          deviceName: device.name,
+          error: error.message,
+          failCount: device.failCount,
+          retries: device.retries
+        });
       } else {
-        console.warn(`⚠ ${device.name} не отвечает (${device.failCount}/${device.retries})`);
+        logger.warn(`${device.name} не отвечает (${device.failCount}/${device.retries})`, {
+          deviceName: device.name,
+          error: error.message,
+          failCount: device.failCount,
+          retries: device.retries
+        });
       }
 
       return { success: false, device, error: error.message };
@@ -109,12 +129,12 @@ class ModbusPoller {
    */
   async pollAllDevices(devices) {
     if (!this.reader.connection.isConnected) {
-      console.warn('⚠ Нет подключения для опроса устройств');
+      logger.warn('Нет подключения для опроса устройств');
       return;
     }
 
     if (devices.length === 0) {
-      console.warn('⚠ Нет устройств для опроса');
+      logger.warn('Нет устройств для опроса');
       return;
     }
 

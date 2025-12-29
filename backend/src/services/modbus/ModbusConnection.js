@@ -1,4 +1,5 @@
 import ModbusRTU from 'modbus-serial';
+import { logger } from '../../utils/logger.js';
 
 /**
  * Класс для управления подключением к Modbus
@@ -26,13 +27,24 @@ class ModbusConnection {
           stopBits: this.stopBits,
           parity: this.parity,
         });
-        console.log(`✓ Подключено к порту ${this.port} (Modbus RTU)`);
+        logger.info(`Подключено к порту ${this.port} (Modbus RTU)`, {
+          port: this.port,
+          connectionType: 'RTU'
+        });
       } else if (this.connectionType === 'TCP') {
         await this.client.connectTCP(this.tcpHost, { port: this.tcpPort });
-        console.log(`✓ Подключено к ${this.tcpHost}:${this.tcpPort} (Modbus TCP)`);
+        logger.info(`Подключено к ${this.tcpHost}:${this.tcpPort} (Modbus TCP)`, {
+          host: this.tcpHost,
+          port: this.tcpPort,
+          connectionType: 'TCP'
+        });
       } else if (this.connectionType === 'TCP_RTU') {
         await this.client.connectTelnet(this.tcpHost, { port: this.tcpPort });
-        console.log(`✓ Подключено к ${this.tcpHost}:${this.tcpPort} (Modbus RTU over TCP)`);
+        logger.info(`Подключено к ${this.tcpHost}:${this.tcpPort} (Modbus RTU over TCP)`, {
+          host: this.tcpHost,
+          port: this.tcpPort,
+          connectionType: 'TCP_RTU'
+        });
       } else {
         throw new Error(`Неизвестный тип подключения: ${this.connectionType}`);
       }
@@ -41,6 +53,13 @@ class ModbusConnection {
       return true;
     } catch (error) {
       this.isConnected = false;
+      logger.error(`Ошибка подключения к Modbus: ${error.message}`, {
+        connectionType: this.connectionType,
+        port: this.port,
+        host: this.tcpHost,
+        tcpPort: this.tcpPort,
+        error: error.message
+      });
       throw error;
     }
   }
@@ -51,9 +70,14 @@ class ModbusConnection {
         await this.client.close();
       }
       this.isConnected = false;
-      console.log('✓ Modbus подключение закрыто');
+      logger.info('Modbus подключение закрыто', {
+        connectionType: this.connectionType
+      });
     } catch (error) {
-      console.error('✗ Ошибка при отключении:', error.message);
+      logger.error(`Ошибка при отключении: ${error.message}`, {
+        connectionType: this.connectionType,
+        error: error.message
+      });
     }
   }
 }

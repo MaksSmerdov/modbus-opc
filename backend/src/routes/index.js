@@ -5,6 +5,7 @@ import pollingRouter from './polling/polling.js';
 import authRouter from './auth/auth.js';
 import usersRouter from './users/user.js';
 import auditRouter from './audit/audit.js';
+import logsRouter from './logs/logs.js';
 import { authMiddleware, adminOrOperatorMiddleware, adminOnlyMiddleware } from '../middleware/auth.js';
 import { getModbusManager } from '../server.js';
 import { getServerSettings } from '../models/settings/index.js';
@@ -21,6 +22,9 @@ router.use('/users', authMiddleware, usersRouter);
 
 // API аудита - только для admin
 router.use('/audit', authMiddleware, auditRouter);
+
+// API логов - доступны всем авторизованным
+router.use('/logs', logsRouter);
 
 // API конфигурации - только для admin и operator
 router.use('/config', authMiddleware, adminOrOperatorMiddleware, configRouter);

@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Header } from '@/shared/layout/Header/Header';
 import { Sidebar } from '@/shared/layout/Sidebar/Sidebar';
 import { Breadcrumbs } from '@/shared/layout/Breadcrumbs/Breadcrumbs';
+import { ConsolePanel } from '@/shared/layout/ConsolePanel/ConsolePanel';
 import { useAppSelector } from '@/app/hooks/hooks';
 import styles from './AppLayout.module.scss';
 
@@ -39,6 +40,7 @@ export const AppLayout: React.FC = () => {
           </div>
         </main>
       </div>
+      <ConsolePanel />
     </div>
   );
 };

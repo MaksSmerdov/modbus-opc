@@ -2,6 +2,7 @@ import ModbusConnection from './modbus/ModbusConnection.js';
 import ModbusReader from './modbus/ModbusReader.js';
 import ModbusPoller from './modbus/ModbusPoller.js';
 import ModbusSaver from './modbus/ModbusSaver.js';
+import { logger } from '../utils/logger.js';
 
 /**
  * Главный класс для управления Modbus подключением и опросом устройств
@@ -70,7 +71,7 @@ class ModbusManager {
     if (index !== -1) {
       const device = this.devices.splice(index, 1)[0];
       this.saver.stopDeviceSaving(device);
-      console.log(`✓ Удалено устройство: ${device.name}`);
+      logger.info(`Удалено устройство: ${device.name}`, { deviceName: device.name });
       return true;
     }
     return false;
@@ -89,8 +90,9 @@ class ModbusManager {
       if (portIsActive !== undefined) {
         device.portIsActive = portIsActive;
       }
-      console.log(
-        `✓ Обновлено состояние устройства ${device.name} (${deviceSlug}): isActive=${device.isActive}, portIsActive=${device.portIsActive}`
+      logger.info(
+        `Обновлено состояние устройства ${device.name} (${deviceSlug}): isActive=${device.isActive}, portIsActive=${device.portIsActive}`,
+        { deviceName: device.name, deviceSlug, isActive: device.isActive, portIsActive: device.portIsActive }
       );
       return true;
     }
@@ -112,7 +114,10 @@ class ModbusManager {
       }
     });
     if (updated > 0) {
-      console.log(`✓ Обновлено состояние порта для ${updated} устройств: portIsActive=${portIsActive}`);
+      logger.info(`Обновлено состояние порта для ${updated} устройств: portIsActive=${portIsActive}`, {
+        updatedDevices: updated,
+        portIsActive
+      });
     }
     return updated;
   }
@@ -125,7 +130,9 @@ class ModbusManager {
       await this.connect();
       return true;
     } catch (error) {
-      console.error('✗ Ошибка подключения Modbus:', error.message);
+      logger.error(`Ошибка подключения Modbus: ${error.message}`, {
+        error: error.message
+      });
       return false;
     }
   }
@@ -149,7 +156,10 @@ class ModbusManager {
       try {
         await this.poller.pollAllDevices(this.devices);
       } catch (error) {
-        console.error('✗ Ошибка опроса устройств:', error.message);
+        logger.error(`Ошибка опроса устройств: ${error.message}`, {
+          error: error.message,
+          devicesCount: this.devices.length
+        });
       }
 
       if (this.isPolling) {

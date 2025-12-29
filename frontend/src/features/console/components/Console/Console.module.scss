@@ -1,0 +1,172 @@
+@use '@/shared/styles/variables' as vars;
+@use '@/shared/styles/mixins' as mixins;
+
+.console {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid rgba(vars.$intoxicate, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    padding-right: 48px;
+    border-bottom: 1px solid rgba(vars.$intoxicate, 0.2);
+    @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+    gap: 12px;
+    position: relative;
+  }
+
+  &__title {
+    margin: 0;
+    @include mixins.text-style(16px, 1.5, 600, null);
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  &__select {
+    width: 180px;
+    flex-shrink: 0;
+    margin-bottom: 0 !important;
+
+    :global(.MuiFormControl-root) {
+      width: 180px !important;
+      margin-bottom: 0 !important;
+    }
+
+    :global(.MuiInputBase-root) {
+      height: 32px !important;
+      min-height: 32px !important;
+      font-size: 14px;
+    }
+
+    :global(.MuiSelect-select) {
+      padding: 6px 32px 6px 12px !important;
+      font-size: 0.875rem !important;
+      line-height: 1.5 !important;
+    }
+
+    :global(.MuiFormHelperText-root) {
+      display: none !important;
+      height: 0 !important;
+      margin: 0 !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    font-family: 'Courier New', monospace;
+    @include mixins.text-style(13px, 1.6, 400, null);
+    @include mixins.theme-bg(vars.$bg-primary-light, vars.$bg-primary-dark);
+
+    // Стилизация скроллбара
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(vars.$intoxicate, 0.3);
+      border-radius: 4px;
+
+      &:hover {
+        background: rgba(vars.$intoxicate, 0.5);
+      }
+    }
+  }
+
+  &__log {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 4px 8px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    word-break: break-word;
+
+    &:hover {
+      @include mixins.theme-bg(vars.$bg-secondary-light, vars.$bg-secondary-dark);
+    }
+  }
+
+  &__log_log {
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+  }
+
+  &__log_warn {
+    @include mixins.theme-color(vars.$text-primary-light, vars.$text-primary-dark);
+    background: rgba(255, 193, 7, 0.1);
+  }
+
+  &__log_error {
+    @include mixins.theme-color(vars.$red, vars.$red);
+    background: rgba(244, 67, 54, 0.1);
+  }
+
+  &__timestamp {
+    flex-shrink: 0;
+    @include mixins.text-style(12px, 1.5, 400, null);
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
+    min-width: 80px;
+  }
+
+  &__level {
+    flex-shrink: 0;
+    @include mixins.text-style(12px, 1.5, 600, null);
+    min-width: 60px;
+  }
+
+  &__message {
+    flex: 1;
+    @include mixins.text-style(13px, 1.6, 400, null);
+  }
+
+  &__metadata {
+    flex-shrink: 0;
+    @include mixins.text-style(12px, 1.5, 400, null);
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(vars.$intoxicate, 0.1);
+    margin-left: 8px;
+  }
+
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    @include mixins.text-style(14px, 1.5, 400, null);
+    @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
+  }
+}
+
