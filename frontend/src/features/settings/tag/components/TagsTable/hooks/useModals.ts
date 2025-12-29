@@ -3,7 +3,7 @@ import type { Tag } from '@/features/settings/tag/types';
 
 type ModalType = 'byteOrder' | 'dataType' | 'functionCode' | 'clone' | 'delete' | 'bulkDelete' | 'details';
 
-interface UseModalsReturn {
+export interface UseModalsReturn {
     openModal: (type: ModalType, data?: string | Tag) => void;
     closeModal: (type: ModalType) => void;
     isOpen: (type: ModalType) => boolean;

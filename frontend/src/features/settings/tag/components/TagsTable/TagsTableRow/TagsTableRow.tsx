@@ -12,6 +12,7 @@ import {
     TagByteOrderCell,
 } from '@/features/settings/tag/components/TagsTable/cells';
 import { shouldShowLength, shouldShowBitIndex } from '@/features/settings/tag/components/TagsTable/utils/tagsTableUtils';
+import { TAG_TABLE_CONFIG } from '../config';
 import type { Tag, CreateTagData } from '@/features/settings/tag/types';
 import styles from './TagsTableRow.module.scss';
 
@@ -137,7 +138,7 @@ export const TagsTableRow = memo(({
             clickTimeoutRef.current = setTimeout(() => {
                 onSelect(!isSelected);
                 clickTimeoutRef.current = null;
-            }, 200);
+            }, TAG_TABLE_CONFIG.clickTimeout);
         }
     }, [canEdit, onSelect, tag, isEditing, disabled, isSelected]);
 

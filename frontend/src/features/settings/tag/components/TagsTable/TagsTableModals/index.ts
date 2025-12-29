@@ -1,0 +1,2 @@
+export { TagsTableModals } from './TagsTableModals';
+

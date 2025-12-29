@@ -1,13 +1,7 @@
 import { useMemo } from 'react';
 import type { Tag } from '@/features/settings/tag/types';
 import { shouldShowByteOrder } from '@/features/settings/tag/components/TagsTable/utils/tagsTableUtils';
-
-interface EditingRow {
-    id: string | 'new';
-    data: Partial<{
-        dataType: Tag['dataType'];
-    }>;
-}
+import type { EditingRow } from '../types';
 
 interface ColumnVisibility {
     hasStringTags: boolean;
