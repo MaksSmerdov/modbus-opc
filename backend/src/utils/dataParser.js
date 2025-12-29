@@ -89,7 +89,7 @@ export function parseData(data, dataType, byteOrder = 'BE', wordOrder = 'BE') {
       case 'double':
         return buffer.readDoubleBE(0);
 
-      case 'int32_float32':
+      case 'int32_float32': 
         return {
           int32Value: buffer.readInt32BE(0),
           float32Value: buffer.readFloatBE(4)
