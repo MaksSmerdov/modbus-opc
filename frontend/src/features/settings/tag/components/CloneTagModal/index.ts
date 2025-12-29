@@ -1,0 +1,2 @@
+export { CloneTagModal } from './CloneTagModal';
+

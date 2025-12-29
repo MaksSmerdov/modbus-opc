@@ -23,6 +23,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
     const [offset, setOffset] = useState<string>('');
     const [decimals, setDecimals] = useState<string>('');
     const [compositeDisplay, setCompositeDisplay] = useState<CompositeDisplay | null>(null);
+    const [category, setCategory] = useState<string>('general');
 
     useEffect(() => {
         if (tag) {
@@ -33,6 +34,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             setOffset(tag.offset !== null && tag.offset !== undefined ? String(tag.offset) : '0');
             setDecimals(tag.decimals !== null && tag.decimals !== undefined ? String(tag.decimals) : '0');
             setCompositeDisplay(tag.compositeDisplay ?? 'float32');
+            setCategory(tag.category || 'general');
         }
     }, [tag]);
 
@@ -46,6 +48,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             scale: scale === '' ? undefined : Number(scale),
             offset: offset === '' ? undefined : Number(offset),
             decimals: decimals === '' ? undefined : Number(decimals),
+            category: category || 'general',
             ...(tag.dataType === 'int32_float32' && { compositeDisplay: compositeDisplay }),
         };
 
@@ -62,6 +65,7 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             setOffset(tag.offset !== null && tag.offset !== undefined ? String(tag.offset) : '0');
             setDecimals(tag.decimals !== null && tag.decimals !== undefined ? String(tag.decimals) : '0');
             setCompositeDisplay(tag.compositeDisplay ?? 'float32');
+            setCategory(tag.category || 'general');
         }
         onClose();
     };
@@ -77,6 +81,15 @@ export const TagDetailsModal = ({ open, onClose, tag, onSave, isLoading = false 
             fullWidth
         >
             <div className={styles['tagDetailsModal']}>
+                <Input
+                    label="Категория"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    helperText="Категория тега для группировки"
+                    disabled={isLoading}
+                    fullWidth
+                />
+
                 <div className={styles['tagDetailsModal__row']}>
                     <Input
                         label="Минимальное значение"

@@ -1,0 +1,14 @@
+@use "@/shared/styles/variables" as vars;
+
+.cloneTagModal {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    &__actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+    }
+}
+

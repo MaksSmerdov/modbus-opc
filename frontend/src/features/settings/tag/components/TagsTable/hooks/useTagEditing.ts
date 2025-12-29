@@ -46,13 +46,18 @@ export const useTagEditing = (deviceId: string) => {
         }
     }, [editingRow, deviceId, createTag, updateTag, showSuccess, showError]);
 
-    const handleDelete = useCallback(async (tagId: string) => {
+    const handleDelete = useCallback(async (tagId: string, silent: boolean = false) => {
         try {
             await deleteTag({ deviceId, tagId }).unwrap();
-            showSuccess('Тэг успешно удален');
+            if (!silent) {
+                showSuccess('Тэг успешно удален');
+            }
         } catch (error) {
             console.error('Ошибка удаления тэга:', error);
-            showError('Не удалось удалить тэг');
+            if (!silent) {
+                showError('Не удалось удалить тэг');
+            }
+            throw error;
         }
     }, [deviceId, deleteTag, showSuccess, showError]);
 
@@ -84,6 +89,7 @@ export const useTagEditing = (deviceId: string) => {
             data: {
                 address: 0,
                 name: '',
+                category: 'general',
                 dataType: 'int16',
                 functionCode: 'holding',
                 byteOrder: 'ABCD',
@@ -98,10 +104,13 @@ export const useTagEditing = (deviceId: string) => {
         setEditingRow(null);
     }, []);
 
-    const handleClone = useCallback(async (tagId: string) => {
+    const handleClone = useCallback(async (tagId: string, count: number = 1) => {
         try {
-            await cloneTag({ deviceId, tagId }).unwrap();
-            showSuccess('Тэг успешно скопирован');
+            // Создаем несколько копий последовательно
+            for (let i = 0; i < count; i++) {
+                await cloneTag({ deviceId, tagId }).unwrap();
+            }
+            showSuccess(`Успешно создано ${count} ${count === 1 ? 'копия' : count < 5 ? 'копии' : 'копий'} тега`);
         } catch (error) {
             console.error('Ошибка клонирования тэга:', error);
             showError('Не удалось скопировать тэг');

@@ -27,6 +27,21 @@
             cursor: not-allowed;
         }
     }
+
+    &__menu {
+        min-width: 220px;
+    }
+
+    &__menuItem {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    &__menuText {
+        font-size: 13px;
+        font-weight: 500;
+    }
 }
 
 :global(.dark) {

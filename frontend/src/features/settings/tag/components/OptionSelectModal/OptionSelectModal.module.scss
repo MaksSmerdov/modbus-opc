@@ -1,0 +1,81 @@
+@use "@/shared/styles/variables" as vars;
+
+.optionSelectModal {
+    &__options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__option {
+        border: 2px solid vars.$border-color-light;
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: vars.$bg-secondary-light;
+
+        &:hover {
+            border-color: vars.$intoxicate;
+        }
+
+        &_selected {
+            border-color: vars.$intoxicate;
+        }
+    }
+
+    &__optionHeader {
+        margin-bottom: 12px;
+    }
+
+    &__optionLabel {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    &__radio {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: vars.$intoxicate;
+    }
+
+    &__label {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: vars.$text-primary-light;
+    }
+
+    &__content {
+        padding: 8px;
+        background-color: vars.$bg-primary-light;
+        border-radius: 6px;
+    }
+}
+
+:global(.dark) {
+    .optionSelectModal {
+        &__option {
+            border-color: vars.$border-color-dark;
+            background-color: vars.$bg-primary-dark;
+
+            &:hover {
+                border-color: vars.$intoxicate;
+            }
+
+            &_selected {
+                border-color: vars.$intoxicate;
+            }
+        }
+
+        &__label {
+            color: vars.$text-primary-dark;
+        }
+
+        &__content {
+            background-color: vars.$bg-primary-dark;
+        }
+    }
+}
+

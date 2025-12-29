@@ -1,4 +1,6 @@
-import { Delete, Edit, Save, Cancel, Info, ContentCopy } from '@mui/icons-material';
+import { Delete, Edit, Save, Cancel, Info, ContentCopy, MoreVert } from '@mui/icons-material';
+import { Menu, MenuItem } from '@mui/material';
+import { useState, useCallback, useRef } from 'react';
 import styles from './TagsTableActions.module.scss';
 
 interface TagsTableActionsProps {
@@ -28,6 +30,21 @@ export const TagsTableActions = ({
     isDeleting = false,
     isCloning = false,
 }: TagsTableActionsProps) => {
+    const [actionsAnchorEl, setActionsAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const actionsButtonRef = useRef<HTMLButtonElement | null>(null);
+    const isActionsOpen = Boolean(actionsAnchorEl);
+
+    const handleActionsClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation(); // Предотвращаем всплытие события, чтобы не выделялась строка
+        if (actionsButtonRef.current) {
+            setActionsAnchorEl(actionsButtonRef.current);
+        }
+    }, []);
+
+    const handleActionsClose = useCallback(() => {
+        setActionsAnchorEl(null);
+    }, []);
+
     if (isEditing) {
         return (
             <div className={styles['tagsTableActions']}>
@@ -52,47 +69,79 @@ export const TagsTableActions = ({
     }
 
     return (
-        <div className={styles['tagsTableActions']}>
-            {onDetails && (
+        <>
+            <div className={styles['tagsTableActions']}>
                 <button
+                    ref={actionsButtonRef}
                     className={styles['tagsTableActions__button']}
-                    onClick={onDetails}
+                    onClick={handleActionsClick}
                     disabled={disabled}
-                    title="Дополнительные параметры"
+                    title="Действия"
                 >
-                    <Info fontSize="small" />
+                    <MoreVert fontSize="small" />
                 </button>
-            )}
-            {onEdit && (
-                <button
-                    className={styles['tagsTableActions__button']}
-                    onClick={onEdit}
-                    disabled={disabled}
-                    title="Редактировать"
-                >
-                    <Edit fontSize="small" />
-                </button>
-            )}
-            {onClone && (
-                <button
-                    className={styles['tagsTableActions__button']}
-                    onClick={onClone}
-                    disabled={disabled || isCloning}
-                    title="Клонировать"
-                >
-                    <ContentCopy fontSize="small" />
-                </button>
-            )}
-            {onDelete && (
-                <button
-                    className={styles['tagsTableActions__button']}
-                    onClick={onDelete}
-                    disabled={disabled || isDeleting}
-                    title="Удалить"
-                >
-                    <Delete fontSize="small" />
-                </button>
-            )}
-        </div>
+            </div>
+            <Menu
+                anchorEl={actionsAnchorEl}
+                open={isActionsOpen}
+                onClose={handleActionsClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                classes={{ paper: styles['tagsTableActions__menu'] }}
+            >
+                {onDetails && (
+                    <MenuItem
+                        onClick={() => {
+                            handleActionsClose();
+                            onDetails();
+                        }}
+                        disabled={disabled}
+                        className={styles['tagsTableActions__menuItem']}
+                    >
+                        <Info fontSize="small" />
+                        <span className={styles['tagsTableActions__menuText']}>Дополнительные параметры</span>
+                    </MenuItem>
+                )}
+                {onEdit && (
+                    <MenuItem
+                        onClick={() => {
+                            handleActionsClose();
+                            onEdit();
+                        }}
+                        disabled={disabled}
+                        className={styles['tagsTableActions__menuItem']}
+                    >
+                        <Edit fontSize="small" />
+                        <span className={styles['tagsTableActions__menuText']}>Редактировать</span>
+                    </MenuItem>
+                )}
+                {onClone && (
+                    <MenuItem
+                        onClick={() => {
+                            handleActionsClose();
+                            onClone();
+                        }}
+                        disabled={disabled || isCloning}
+                        className={styles['tagsTableActions__menuItem']}
+                    >
+                        <ContentCopy fontSize="small" />
+                        <span className={styles['tagsTableActions__menuText']}>Клонировать</span>
+                    </MenuItem>
+                )}
+                {onDelete && (
+                    <MenuItem
+                        onClick={() => {
+                            handleActionsClose();
+                            onDelete();
+                        }}
+                        disabled={disabled || isDeleting}
+                        className={styles['tagsTableActions__menuItem']}
+                    >
+                        <Delete fontSize="small" />
+                        <span className={styles['tagsTableActions__menuText']}>Удалить</span>
+                    </MenuItem>
+                )}
+            </Menu>
+        </>
     );
 };

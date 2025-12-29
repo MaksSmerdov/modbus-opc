@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useCallback } from 'react';
 import { TagsTableActions } from '@/features/settings/tag/components/TagsTable/TagsTableActions/TagsTableActions';
 import {
     TagNameCell,
@@ -23,8 +23,12 @@ interface TagsTableRowProps {
     hasBitsTags: boolean;
     hasMultiByteTags: boolean;
     canEdit: boolean;
+    isSelected?: boolean;
+    onSelect?: (checked: boolean) => void;
     onFieldChange: (field: keyof CreateTagData, value: unknown) => void;
     onByteOrderClick?: () => void;
+    onDataTypeClick?: () => void;
+    onFunctionCodeClick?: () => void;
     onEdit?: () => void;
     onDelete?: () => void;
     onClone?: () => void;
@@ -45,8 +49,12 @@ export const TagsTableRow = memo(({
     hasBitsTags,
     hasMultiByteTags,
     canEdit,
+    isSelected = false,
+    onSelect,
     onFieldChange,
     onByteOrderClick,
+    onDataTypeClick,
+    onFunctionCodeClick,
     onEdit,
     onDelete,
     onClone,
@@ -74,7 +82,6 @@ export const TagsTableRow = memo(({
         : (tag ? {
             name: tag.name,
             address: tag.address,
-            category: tag.category,
             functionCode: tag.functionCode,
             dataType: tag.dataType,
             length: tag.length,
@@ -86,16 +93,61 @@ export const TagsTableRow = memo(({
             unit: tag.unit,
         } : {});
 
+    const handleRowClick = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
+        if (canEdit && onSelect && tag && !isEditing && !disabled) {
+            // Не выделяем, если клик был по кнопке, ссылке, меню или другому интерактивному элементу
+            const target = e.target as HTMLElement;
+            if (
+                target.closest('button') ||
+                target.closest('a') ||
+                target.closest('input') ||
+                target.closest('select') ||
+                target.closest('[role="menu"]') ||
+                target.closest('[role="menuitem"]') ||
+                target.closest('.MuiMenu-root') ||
+                target.closest('.MuiMenuItem-root')
+            ) {
+                return;
+            }
+            onSelect(!isSelected);
+        }
+    }, [canEdit, onSelect, tag, isEditing, disabled, isSelected]);
+
+    const handleNameDoubleClick = useCallback((e: React.MouseEvent<HTMLTableCellElement>) => {
+        e.stopPropagation();
+        if (canEdit && onEdit && tag && !isEditing && !disabled) {
+            onEdit();
+        }
+    }, [canEdit, onEdit, tag, isEditing, disabled]);
+
+    const handleAddressDoubleClick = useCallback((e: React.MouseEvent<HTMLTableCellElement>) => {
+        e.stopPropagation();
+        if (canEdit && onEdit && tag && !isEditing && !disabled) {
+            onEdit();
+        }
+    }, [canEdit, onEdit, tag, isEditing, disabled]);
+
     return (
-        <tr className={isEditing ? styles['tagsTableRow_editing'] : ''}>
-            <td>
+        <tr 
+            className={`${isEditing ? styles['tagsTableRow_editing'] : ''} ${isSelected && canEdit && !isEditing ? styles['tagsTableRow_selected'] : ''}`}
+            onClick={handleRowClick}
+        >
+            <td 
+                onDoubleClick={handleNameDoubleClick}
+                className={canEdit && !isEditing && tag ? styles['tagsTableRow__editableCell'] : ''}
+                title={canEdit && !isEditing && tag ? 'Двойной клик для редактирования' : undefined}
+            >
                 <TagNameCell
                     value={displayData.name ?? ''}
                     isEditing={isEditing}
                     onChange={(value) => onFieldChange('name', value)}
                 />
             </td>
-            <td>
+            <td 
+                onDoubleClick={handleAddressDoubleClick}
+                className={canEdit && !isEditing && tag ? styles['tagsTableRow__editableCell'] : ''}
+                title={canEdit && !isEditing && tag ? 'Двойной клик для редактирования' : undefined}
+            >
                 <TagAddressCell
                     value={displayData.address ?? 0}
                     isEditing={isEditing}
@@ -103,17 +155,11 @@ export const TagsTableRow = memo(({
                 />
             </td>
             <td>
-                <TagTextCell
-                    value={displayData.category ?? ''}
-                    isEditing={isEditing}
-                    onChange={(value) => onFieldChange('category', value)}
-                />
-            </td>
-            <td>
                 <TagFunctionCodeCell
                     value={displayData.functionCode}
                     isEditing={isEditing}
                     onChange={(value) => onFieldChange('functionCode', value)}
+                    onFunctionCodeClick={onFunctionCodeClick}
                 />
             </td>
             <td>
@@ -121,6 +167,7 @@ export const TagsTableRow = memo(({
                     value={displayData.dataType}
                     isEditing={isEditing}
                     onChange={(value) => onFieldChange('dataType', value)}
+                    onDataTypeClick={onDataTypeClick}
                 />
             </td>
             {hasStringTags && (

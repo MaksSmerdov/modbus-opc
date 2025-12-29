@@ -1,5 +1,4 @@
-import { MenuItem } from '@mui/material';
-import { Select } from '@/shared/ui/Select/Select';
+import { Edit } from '@mui/icons-material';
 import type { DataType } from '@/features/settings/tag/types';
 import styles from './TagCell.module.scss';
 
@@ -7,32 +6,35 @@ interface TagDataTypeCellProps {
     value: DataType | undefined;
     isEditing: boolean;
     onChange: (value: DataType) => void;
+    onDataTypeClick?: () => void;
 }
 
-export const TagDataTypeCell = ({ value, isEditing, onChange }: TagDataTypeCellProps) => {
-    if (isEditing) {
+export const TagDataTypeCell = ({ 
+    value, 
+    isEditing, 
+    onChange: _onChange,
+    onDataTypeClick 
+}: TagDataTypeCellProps) => {
+    const displayValue = value === 'int32_float32' ? 'int32f32' : (value ?? 'int16');
+
+    if (isEditing && onDataTypeClick) {
         return (
-            <div className={styles['tagCell__selectWrapper']}>
-                <Select
-                    value={value ?? 'int16'}
-                    onChange={(e) => onChange(e.target.value as DataType)}
-                    fullWidth={true}
-                    helperText=""
-                    className={styles['tagCell__select']}
+            <div className={styles['tagCell__byteOrderWrapper']}>
+                <span className={styles['tagCell__byteOrderValue']}>
+                    {displayValue}
+                </span>
+                <button
+                    type="button"
+                    className={styles['tagCell__byteOrderButton']}
+                    onClick={onDataTypeClick}
+                    title="Изменить тип данных"
                 >
-                    <MenuItem value="int16">int16</MenuItem>
-                    <MenuItem value="uint16">uint16</MenuItem>
-                    <MenuItem value="int32">int32</MenuItem>
-                    <MenuItem value="uint32">uint32</MenuItem>
-                    <MenuItem value="float32">float32</MenuItem>
-                    <MenuItem value="string">string</MenuItem>
-                    <MenuItem value="bits">bits</MenuItem>
-                    <MenuItem value="int32_float32">int32f32</MenuItem>
-                </Select>
+                    <Edit fontSize="small" />
+                </button>
             </div>
         );
     }
 
-    return <span>{value === 'int32_float32' ? 'int32f32' : (value ?? 'int16')}</span>;
+    return <span>{displayValue}</span>;
 };
 

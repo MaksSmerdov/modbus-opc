@@ -1,13 +1,35 @@
 @use "@/shared/styles/variables" as vars;
 
 .tagsTableRow {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
     &_editing {
         background-color: rgba(vars.$intoxicate, 0.1);
+        cursor: default;
+    }
+
+    &_selected {
+        background-color: rgba(vars.$intoxicate, 0.15);
+        box-shadow: inset 3px 0 0 vars.$intoxicate;
+    }
+
+    &_selected:hover {
+        background-color: rgba(vars.$intoxicate, 0.2);
     }
 
     &__empty {
         color: vars.$text-secondary-light;
         font-style: italic;
+    }
+
+    &__editableCell {
+        cursor: text;
+        user-select: none;
+
+        &:hover {
+            background-color: rgba(vars.$intoxicate, 0.05);
+        }
     }
 }
 
@@ -17,8 +39,22 @@
             background-color: rgba(vars.$intoxicate, 0.2);
         }
 
+        &_selected {
+            background-color: rgba(vars.$intoxicate, 0.25);
+        }
+
+        &_selected:hover {
+            background-color: rgba(vars.$intoxicate, 0.3);
+        }
+
         &__empty {
             color: vars.$text-secondary-dark;
+        }
+
+        &__editableCell {
+            &:hover {
+                background-color: rgba(vars.$intoxicate, 0.1);
+            }
         }
     }
 }

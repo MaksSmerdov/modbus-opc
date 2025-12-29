@@ -13,7 +13,6 @@ export const createTagsTableColumns = (
     const baseColumns: TableColumn[] = [
         { key: 'name', label: 'Название', width: '25%' },
         { key: 'address', label: 'Адрес', width: '12%' },
-        { key: 'category', label: 'Категория', width: '15%' },
         { key: 'functionCode', label: 'Function Code', width: '10%' },
         { key: 'dataType', label: 'Тип данных', width: '10%' },
     ];

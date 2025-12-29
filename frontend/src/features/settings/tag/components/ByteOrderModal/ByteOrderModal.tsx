@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Modal } from '@/shared/ui/Modal/Modal';
-import { Button } from '@/shared/ui/Button/Button';
+import { useMemo } from 'react';
 import type { ByteOrder } from '@/features/settings/tag/types';
-import styles from './ByteOrderModal.module.scss';
+import { OptionSelectModal, type OptionSelectOption } from '@/features/settings/tag/components/OptionSelectModal/OptionSelectModal';
+import styles from '@/features/settings/tag/components/OptionSelectModal/OptionContent.module.scss';
 
 interface ByteOrderModalProps {
     open: boolean;
@@ -11,19 +10,14 @@ interface ByteOrderModalProps {
     onSave: (value: ByteOrder) => void;
 }
 
-interface ByteOrderOption {
-    value: ByteOrder;
-    label: string;
-    example: {
-        bytes: string[];
-        result: string;
-        explanation: string;
-    };
+interface ByteOrderExample {
+    bytes: string[];
+    result: string;
+    explanation: string;
 }
 
-const BYTE_ORDER_OPTIONS: ByteOrderOption[] = [
-    {
-        value: 'ABCD',
+const BYTE_ORDER_DATA: Record<ByteOrder, { label: string; example: ByteOrderExample }> = {
+    ABCD: {
         label: 'Старший байт первым',
         example: {
             bytes: ['12', '34', '56', '78'],
@@ -31,8 +25,7 @@ const BYTE_ORDER_OPTIONS: ByteOrderOption[] = [
             explanation: 'Байты читаются в исходном порядке: A→B→C→D',
         },
     },
-    {
-        value: 'DCBA',
+    DCBA: {
         label: 'Младший байт первым',
         example: {
             bytes: ['12', '34', '56', '78'],
@@ -40,8 +33,7 @@ const BYTE_ORDER_OPTIONS: ByteOrderOption[] = [
             explanation: 'Байты читаются в обратном порядке: D→C→B→A',
         },
     },
-    {
-        value: 'BADC',
+    BADC: {
         label: 'Обмен байтов в парах (B↔A, D↔C)',
         example: {
             bytes: ['12', '34', '56', '78'],
@@ -49,8 +41,7 @@ const BYTE_ORDER_OPTIONS: ByteOrderOption[] = [
             explanation: 'Меняются местами пары байтов: B↔A, D↔C',
         },
     },
-    {
-        value: 'CDAB',
+    CDAB: {
         label: 'Обмен байтов в парах (C↔D, A↔B)',
         example: {
             bytes: ['12', '34', '56', '78'],
@@ -58,7 +49,62 @@ const BYTE_ORDER_OPTIONS: ByteOrderOption[] = [
             explanation: 'Меняются местами пары байтов: C↔D, A↔B',
         },
     },
-];
+    BE: {
+        label: 'Big Endian',
+        example: {
+            bytes: ['12', '34', '56', '78'],
+            result: '0x12345678',
+            explanation: 'Big Endian порядок байтов',
+        },
+    },
+    LE: {
+        label: 'Little Endian',
+        example: {
+            bytes: ['12', '34', '56', '78'],
+            result: '0x78563412',
+            explanation: 'Little Endian порядок байтов',
+        },
+    },
+};
+
+const renderByteOrderContent = (example: ByteOrderExample) => (
+    <div className={styles['optionContent__example']}>
+        <div className={styles['optionContent__exampleRow']}>
+            <div className={styles['optionContent__exampleBytes']}>
+                <span className={styles['optionContent__exampleLabel']}>
+                    Исходные байты:
+                </span>
+                <div className={styles['optionContent__bytes']}>
+                    {example.bytes.map((byte, index) => (
+                        <div
+                            key={index}
+                            className={styles['optionContent__byte']}
+                        >
+                            <span className={styles['optionContent__byteLabel']}>
+                                {String.fromCharCode(65 + index)}
+                            </span>
+                            <span className={styles['optionContent__byteValue']}>
+                                {byte}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div className={styles['optionContent__exampleResult']}>
+                <span className={styles['optionContent__exampleLabel']}>
+                    Результат:
+                </span>
+                <div className={styles['optionContent__result']}>
+                    {example.result}
+                </div>
+            </div>
+        </div>
+
+        <div className={styles['optionContent__explanation']}>
+            {example.explanation}
+        </div>
+    </div>
+);
 
 export const ByteOrderModal = ({
     open,
@@ -66,109 +112,23 @@ export const ByteOrderModal = ({
     currentValue,
     onSave,
 }: ByteOrderModalProps) => {
-    const [selectedValue, setSelectedValue] = useState<ByteOrder>(currentValue);
-
-    // Синхронизируем selectedValue с currentValue при открытии модалки
-    useEffect(() => {
-        if (open) {
-            setSelectedValue(currentValue);
-        }
-    }, [open, currentValue]);
-
-    const handleSave = () => {
-        onSave(selectedValue);
-    };
-
-    const handleSelect = (value: ByteOrder) => {
-        setSelectedValue(value);
-    };
+    const options = useMemo<OptionSelectOption<ByteOrder>[]>(() => {
+        return (Object.keys(BYTE_ORDER_DATA) as ByteOrder[]).map((value) => ({
+            value,
+            label: BYTE_ORDER_DATA[value].label,
+            content: renderByteOrderContent(BYTE_ORDER_DATA[value].example),
+        }));
+    }, []);
 
     return (
-        <Modal
+        <OptionSelectModal
             open={open}
             onClose={onClose}
+            currentValue={currentValue}
+            onSave={onSave}
             title="Выбор порядка байтов"
-            maxWidth="md"
-            actions={
-                <>
-                    <Button variant="outlined" onClick={onClose}>
-                        Отмена
-                    </Button>
-                    <Button variant="contained" onClick={handleSave}>
-                        Сохранить
-                    </Button>
-                </>
-            }
-        >
-            <div className={styles['byteOrderModal']}>
-                <div className={styles['byteOrderModal__options']}>
-                    {BYTE_ORDER_OPTIONS.map((option) => {
-                        const isSelected = selectedValue === option.value;
-                        return (
-                            <div
-                                key={option.value}
-                                className={`${styles['byteOrderModal__option']} ${isSelected ? styles['byteOrderModal__option_selected'] : ''
-                                    }`}
-                                onClick={() => handleSelect(option.value)}
-                            >
-                                <div className={styles['byteOrderModal__optionHeader']}>
-                                    <div className={styles['byteOrderModal__optionLabel']}>
-                                        <input
-                                            type="radio"
-                                            name="byteOrder"
-                                            value={option.value}
-                                            checked={isSelected}
-                                            onChange={() => handleSelect(option.value)}
-                                            className={styles['byteOrderModal__radio']}
-                                        />
-                                        <span className={styles['byteOrderModal__label']}>
-                                            {option.label}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className={styles['byteOrderModal__example']}>
-                                    <div className={styles['byteOrderModal__exampleRow']}>
-                                        <div className={styles['byteOrderModal__exampleBytes']}>
-                                            <span className={styles['byteOrderModal__exampleLabel']}>
-                                                Исходные байты:
-                                            </span>
-                                            <div className={styles['byteOrderModal__bytes']}>
-                                                {option.example.bytes.map((byte, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className={styles['byteOrderModal__byte']}
-                                                    >
-                                                        <span className={styles['byteOrderModal__byteLabel']}>
-                                                            {String.fromCharCode(65 + index)}
-                                                        </span>
-                                                        <span className={styles['byteOrderModal__byteValue']}>
-                                                            {byte}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className={styles['byteOrderModal__exampleResult']}>
-                                            <span className={styles['byteOrderModal__exampleLabel']}>
-                                                Результат:
-                                            </span>
-                                            <div className={styles['byteOrderModal__result']}>
-                                                {option.example.result}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles['byteOrderModal__explanation']}>
-                                        {option.example.explanation}
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        </Modal>
+            options={options}
+            name="byteOrder"
+        />
     );
 };
-

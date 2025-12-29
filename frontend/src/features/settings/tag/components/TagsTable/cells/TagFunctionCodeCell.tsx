@@ -1,5 +1,4 @@
-import { MenuItem } from '@mui/material';
-import { Select } from '@/shared/ui/Select/Select';
+import { Edit } from '@mui/icons-material';
 import type { FunctionCode } from '@/features/settings/tag/types';
 import styles from './TagCell.module.scss';
 
@@ -7,28 +6,35 @@ interface TagFunctionCodeCellProps {
     value: FunctionCode | undefined;
     isEditing: boolean;
     onChange: (value: FunctionCode) => void;
+    onFunctionCodeClick?: () => void;
 }
 
-export const TagFunctionCodeCell = ({ value, isEditing, onChange }: TagFunctionCodeCellProps) => {
-    if (isEditing) {
+export const TagFunctionCodeCell = ({ 
+    value, 
+    isEditing, 
+    onChange: _onChange,
+    onFunctionCodeClick 
+}: TagFunctionCodeCellProps) => {
+    const displayValue = value ?? 'holding';
+
+    if (isEditing && onFunctionCodeClick) {
         return (
-            <div className={styles['tagCell__selectWrapper']}>
-                <Select
-                    value={value ?? 'holding'}
-                    onChange={(e) => onChange(e.target.value as FunctionCode)}
-                    fullWidth={true}
-                    helperText=""
-                    className={styles['tagCell__select']}
+            <div className={styles['tagCell__byteOrderWrapper']}>
+                <span className={styles['tagCell__byteOrderValue']}>
+                    {displayValue}
+                </span>
+                <button
+                    type="button"
+                    className={styles['tagCell__byteOrderButton']}
+                    onClick={onFunctionCodeClick}
+                    title="Изменить код функции"
                 >
-                    <MenuItem value="holding">holding</MenuItem>
-                    <MenuItem value="input">input</MenuItem>
-                    <MenuItem value="coil">coil</MenuItem>
-                    <MenuItem value="discrete">discrete</MenuItem>
-                </Select>
+                    <Edit fontSize="small" />
+                </button>
             </div>
         );
     }
 
-    return <span>{value ?? 'holding'}</span>;
+    return <span>{displayValue}</span>;
 };
 

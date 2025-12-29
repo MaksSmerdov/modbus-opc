@@ -31,7 +31,7 @@ export const normalizeCreateTagData = (data: Partial<CreateTagData>): Omit<Creat
             ? (data.length ?? 1)
             : (data.length ?? getDefaultLength(dataType)),
         functionCode: data.functionCode ?? 'holding',
-        ...(data.category && { category: data.category }),
+        category: data.category ?? 'general',
         ...(dataType === 'bits' && data.bitIndex !== null && data.bitIndex !== undefined && { bitIndex: data.bitIndex }),
         ...(dataType !== 'bits' && { bitIndex: null }),
         ...(shouldShowByteOrder(dataType) && data.byteOrder && { byteOrder: data.byteOrder }),

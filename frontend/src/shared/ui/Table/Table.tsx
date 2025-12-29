@@ -11,6 +11,7 @@ export interface TableProps<T = unknown> {
     columns: TableColumn[];
     data: T[];
     renderRow: (item: T, index: number) => ReactNode;
+    renderHeader?: (column: TableColumn) => ReactNode;
     emptyMessage?: string;
     className?: string;
     stickyHeader?: boolean;
@@ -20,6 +21,7 @@ export const Table = <T,>({
     columns,
     data,
     renderRow,
+    renderHeader,
     emptyMessage = 'Нет данных',
     className,
     stickyHeader = false,
@@ -30,16 +32,24 @@ export const Table = <T,>({
                 <table className={styles['table__content']}>
                     <thead className={stickyHeader ? styles['table__header_sticky'] : undefined}>
                         <tr>
-                            {columns.map((column) => (
-                                <th
-                                    key={column.key}
-                                    style={{
-                                        width: column.width,
-                                    }}
-                                >
-                                    {column.label}
-                                </th>
-                            ))}
+                            {columns.map((column) => {
+                                if (renderHeader) {
+                                    const customHeader = renderHeader(column);
+                                    if (customHeader) {
+                                        return customHeader;
+                                    }
+                                }
+                                return (
+                                    <th
+                                        key={column.key}
+                                        style={{
+                                            width: column.width,
+                                        }}
+                                    >
+                                        {column.label}
+                                    </th>
+                                );
+                            })}
                         </tr>
                     </thead>
                     <tbody>
