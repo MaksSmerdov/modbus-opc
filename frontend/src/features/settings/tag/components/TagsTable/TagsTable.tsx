@@ -126,11 +126,6 @@ export const TagsTable = ({ deviceId, tags, canEdit = false }: TagsTableProps) =
         setFunctionCodeModalOpen(false);
     }, []);
 
-    const handleDeleteClick = useCallback((tagId: string) => {
-        setTagToDelete(tagId);
-        setDeleteConfirmOpen(true);
-    }, []);
-
     const handleConfirmDelete = useCallback(async () => {
         if (!tagToDelete) return;
         await handleDelete(tagToDelete);

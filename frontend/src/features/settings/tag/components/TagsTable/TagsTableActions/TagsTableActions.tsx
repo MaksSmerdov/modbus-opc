@@ -1,4 +1,5 @@
 import { Save, Cancel, Info, ContentCopy } from '@mui/icons-material';
+import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import styles from './TagsTableActions.module.scss';
 
 interface TagsTableActionsProps {
@@ -22,31 +23,29 @@ export const TagsTableActions = ({
     isCloning = false,
     disabled = false,
 }: TagsTableActionsProps) => {
+    const handleClick = (callback?: () => void) => (e?: React.MouseEvent<HTMLButtonElement>) => {
+        if (e) {
+            e.stopPropagation();
+        }
+        callback?.();
+    };
+
     if (isEditing) {
         return (
             <div className={styles['tagsTableActions']}>
-                <button
-                    className={styles['tagsTableActions__button']}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onSave?.();
-                    }}
+                <IconButton
+                    icon={<Save fontSize="small" />}
+                    tooltip="Сохранить"
+                    onClick={handleClick(onSave)}
                     disabled={isSaving}
-                    title="Сохранить"
-                >
-                    <Save fontSize="small" />
-                </button>
-                <button
-                    className={styles['tagsTableActions__button']}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onCancel?.();
-                    }}
+                    isLoading={isSaving}
+                />
+                <IconButton
+                    icon={<Cancel fontSize="small" />}
+                    tooltip="Отмена"
+                    onClick={handleClick(onCancel)}
                     disabled={isSaving}
-                    title="Отмена"
-                >
-                    <Cancel fontSize="small" />
-                </button>
+                />
             </div>
         );
     }
@@ -54,30 +53,21 @@ export const TagsTableActions = ({
     return (
         <div className={styles['tagsTableActions']}>
             {onDetails && (
-                <button
-                    className={styles['tagsTableActions__button']}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDetails();
-                    }}
+                <IconButton
+                    icon={<Info fontSize="small" />}
+                    tooltip="Дополнительные параметры"
+                    onClick={handleClick(onDetails)}
                     disabled={disabled}
-                    title="Дополнительные параметры"
-                >
-                    <Info fontSize="small" />
-                </button>
+                />
             )}
             {onClone && (
-                <button
-                    className={styles['tagsTableActions__button']}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onClone();
-                    }}
+                <IconButton
+                    icon={<ContentCopy fontSize="small" />}
+                    tooltip="Клонировать"
+                    onClick={handleClick(onClone)}
                     disabled={disabled || isCloning}
-                    title="Клонировать"
-                >
-                    <ContentCopy fontSize="small" />
-                </button>
+                    isLoading={isCloning}
+                />
             )}
         </div>
     );

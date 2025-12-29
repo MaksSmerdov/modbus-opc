@@ -28,7 +28,6 @@ export const TagsTableToolbar = ({
                         className={styles['tagsTableToolbar__selectAllButton']}
                         onClick={() => onSelectAll(!isAllSelected)}
                         disabled={disabled}
-                        title={isAllSelected ? 'Снять выделение' : 'Выбрать все'}
                     >
                         {isIndeterminate ? (
                             <CheckBoxOutlineBlank fontSize="small" />

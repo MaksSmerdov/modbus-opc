@@ -9,9 +9,10 @@ import { Button } from '@/shared/ui/Button/Button';
 import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useSnackbar } from '@/shared/providers/SnackbarProvider';
 import { useThrottle } from '@/shared/hooks/useThrottle';
-import { ArrowBack, Code, PowerSettingsNew } from '@mui/icons-material';
+import { ArrowBack, Code, PowerSettingsNew, HelpOutline } from '@mui/icons-material';
 import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 import { TagsTable, TagsValuesView } from '@/features/settings/tag';
+import { TagsHelpModal } from '@/features/settings/tag/components/TagsHelpModal/TagsHelpModal';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './DevicePage.module.scss';
 import { PageHeader } from '@/shared/layout/PageHeader/PageHeader';
@@ -56,6 +57,7 @@ export const DevicePage = () => {
     // Отслеживаем переключение между режимами отображения
     const prevShouldShowValues = useRef(shouldShowValues);
     const [isTransitioning, setIsTransitioning] = useState(false);
+    const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
     useEffect(() => {
         if (prevShouldShowValues.current !== shouldShowValues) {
@@ -185,7 +187,14 @@ export const DevicePage = () => {
             <div className={styles['devicePage__content']}>
                 <div className={styles['devicePage__section']}>
                     <div className={styles['devicePage__sectionHeader']}>
-                        <h2 className={styles['devicePage__sectionTitle']}>Тэги</h2>
+                        <div className={styles['devicePage__sectionTitleWrapper']}>
+                            <h2 className={styles['devicePage__sectionTitle']}>Тэги</h2>
+                            <IconButton
+                                icon={<HelpOutline fontSize="small" />}
+                                tooltip="Справка по работе с тегами"
+                                onClick={() => setIsHelpModalOpen(true)}
+                            />
+                        </div>
                     </div>
 
                     {tagsLoading ? (
@@ -214,6 +223,10 @@ export const DevicePage = () => {
                     )}
                 </div>
             </div>
+            <TagsHelpModal
+                open={isHelpModalOpen}
+                onClose={() => setIsHelpModalOpen(false)}
+            />
         </div>
     );
 };

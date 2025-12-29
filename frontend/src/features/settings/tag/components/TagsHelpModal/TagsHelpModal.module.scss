@@ -1,0 +1,86 @@
+@use "@/shared/styles/variables" as vars;
+
+.tagsHelpModal {
+    padding: 8px 0;
+
+    &__section {
+        margin-bottom: 24px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__sectionTitle {
+        margin: 0 0 12px 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: vars.$text-primary-light;
+    }
+
+    &__text {
+        margin: 0 0 12px 0;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: vars.$text-secondary-light;
+    }
+
+    &__list {
+        margin: 0;
+        padding-left: 20px;
+        list-style-type: disc;
+        color: vars.$text-secondary-light;
+        font-size: 0.875rem;
+        line-height: 1.8;
+
+        li {
+            margin-bottom: 8px;
+        }
+    }
+
+    &__listItem {
+        margin-bottom: 16px;
+
+        strong {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            color: vars.$text-primary-light;
+            font-size: 0.875rem;
+        }
+
+        p {
+            margin: 0;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: vars.$text-secondary-light;
+        }
+    }
+}
+
+:global(.dark) {
+    .tagsHelpModal {
+        &__sectionTitle {
+            color: vars.$text-primary-dark;
+        }
+
+        &__text {
+            color: vars.$text-secondary-dark;
+        }
+
+        &__list {
+            color: vars.$text-secondary-dark;
+        }
+
+        &__listItem {
+            strong {
+                color: vars.$text-primary-dark;
+            }
+
+            p {
+                color: vars.$text-secondary-dark;
+            }
+        }
+    }
+}
+
