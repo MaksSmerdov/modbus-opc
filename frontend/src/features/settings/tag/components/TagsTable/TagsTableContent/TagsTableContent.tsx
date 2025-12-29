@@ -106,7 +106,7 @@ export const TagsTableContent = ({
                 hasMultiByteTags={columnVisibility.hasMultiByteTags}
                 canEdit={canEdit}
                 isSelected={isSelected}
-                onSelect={(checked) => selection.handleTagSelect(tag._id, checked)}
+                onSelect={isDragEnabled ? undefined : (checked) => selection.handleTagSelect(tag._id, checked)}
                 onFieldChange={updateEditingField}
                 onByteOrderClick={isEditing ? modalHandlers.byteOrder.open : undefined}
                 onDataTypeClick={isEditing ? modalHandlers.dataType.open : undefined}
@@ -118,7 +118,7 @@ export const TagsTableContent = ({
                 onClone={() => handleCloneClick(tag._id)}
                 isSaving={isUpdatingTag}
                 isCloning={isCloning}
-                disabled={editingRow !== null && editingRow.id !== tag._id}
+                disabled={editingRow !== null && editingRow.id !== tag._id || isDragEnabled}
                 reorderMode={isDragEnabled}
             />
         );

@@ -114,6 +114,10 @@ export const TagsTableRow = memo(({
     };
 
     const handleRowClick = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
+        // Отключаем выделение в режиме перетаскивания
+        if (reorderMode) {
+            return;
+        }
         if (canEdit && onSelect && tag && !isEditing && !disabled) {
             // Не выделяем, если клик был по кнопке, ссылке, меню или другому интерактивному элементу
             const target = e.target as HTMLElement;
@@ -140,9 +144,13 @@ export const TagsTableRow = memo(({
                 clickTimeoutRef.current = null;
             }, TAG_TABLE_CONFIG.clickTimeout);
         }
-    }, [canEdit, onSelect, tag, isEditing, disabled, isSelected]);
+    }, [reorderMode, canEdit, onSelect, tag, isEditing, disabled, isSelected]);
 
     const handleRowDoubleClick = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
+        // Отключаем редактирование в режиме перетаскивания
+        if (reorderMode) {
+            return;
+        }
         if (canEdit && onEdit && tag && !isEditing && !disabled) {
             // Не редактируем, если клик был по кнопке или другому интерактивному элементу
             const target = e.target as HTMLElement;
@@ -158,7 +166,7 @@ export const TagsTableRow = memo(({
 
             onEdit();
         }
-    }, [canEdit, onEdit, tag, isEditing, disabled]);
+    }, [reorderMode, canEdit, onEdit, tag, isEditing, disabled]);
 
     // В режиме перестановки делаем всю строку перетаскиваемой
     const rowProps = reorderMode && !isEditing && tag && canEdit
@@ -254,7 +262,7 @@ export const TagsTableRow = memo(({
                         onClone={onClone}
                         isSaving={isSaving}
                         isCloning={isCloning}
-                        disabled={disabled}
+                        disabled={disabled || reorderMode}
                     />
                 </td>
             )}

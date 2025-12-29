@@ -26,7 +26,7 @@ export const logsApi = baseApi.injectEndpoints({
         const searchParams = new URLSearchParams();
         if (params.limit) searchParams.set('limit', params.limit.toString());
         if (params.level) searchParams.set('level', params.level);
-        return `/logs?${searchParams.toString()}`;
+        return `/console?${searchParams.toString()}`;
       },
       transformResponse: (response: LogsResponse): LogEntry[] => {
         return response.data || [];
@@ -35,7 +35,7 @@ export const logsApi = baseApi.injectEndpoints({
     }),
     clearLogs: builder.mutation<{ success: boolean; message: string }, void>({
       query: () => ({
-        url: '/logs',
+        url: '/console',
         method: 'DELETE',
       }),
       invalidatesTags: ['Logs'],
