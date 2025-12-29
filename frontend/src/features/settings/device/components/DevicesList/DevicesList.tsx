@@ -7,7 +7,6 @@ import { DeviceCardSkeleton } from '@/features/settings/device/components/Device
 import { ConfirmModal } from '@/shared/ui/ConfirmModal/ConfirmModal';
 import { useDeviceDeletion } from '@/features/settings/device/hooks/useDeviceDeletion';
 import { useDeviceToggle } from '@/features/settings/device/hooks/useDeviceToggle';
-import { useDeviceLogToggle } from '@/features/settings/device/hooks/useDeviceLogToggle';
 import { filterDevicesByPort } from '@/features/settings/device/utils/deviceUtils';
 import type { Device } from '@/features/settings/device/types';
 import styles from './DevicesList.module.scss';
@@ -39,11 +38,9 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
     } = useDeviceDeletion();
 
     const { handleToggleDeviceActive } = useDeviceToggle();
-    const { handleToggleLogData } = useDeviceLogToggle();
 
     const isPollingActive = useMemo(() => isPolling, [isPolling]);
     const canManageDevices = useMemo(() => user?.role === 'admin' || user?.role === 'operator', [user?.role]);
-    const isAdmin = useMemo(() => user?.role === 'admin', [user?.role]);
 
     // Фильтруем устройства по порту
     const portDevices = useMemo(
@@ -69,12 +66,6 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
             handleToggleDeviceActive(device);
         }
     }, [canManageDevices, handleToggleDeviceActive]);
-
-    const handleToggleLog = useCallback((device: Device) => {
-        if (isAdmin) {
-            handleToggleLogData(device);
-        }
-    }, [isAdmin, handleToggleLogData]);
 
     if (isLoading) {
         return (
@@ -111,7 +102,6 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
                     const handleEdit = canManageDevices && onEdit ? () => handleEditDevice(device) : undefined;
                     const handleDelete = canManageDevices ? () => handleDeleteDevice(device._id) : undefined;
                     const handleToggle = canManageDevices ? () => handleToggleActive(device) : undefined;
-                    const handleLog = isAdmin ? () => handleToggleLog(device) : undefined;
 
                     return (
                         <DeviceCard
@@ -121,7 +111,6 @@ export const DevicesList = memo(({ portId, onEdit }: DevicesListProps) => {
                             onEdit={handleEdit}
                             onDelete={handleDelete}
                             onToggleActive={handleToggle}
-                            onToggleLogData={handleLog}
                             isPollingActive={isPollingActive}
                         />
                     );

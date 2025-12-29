@@ -71,8 +71,7 @@ export async function loadDevicesFromDB() {
           })),
           timeout: device.timeout,
           retries: device.retries,
-          saveInterval: device.saveInterval,
-          logData: device.logData
+          saveInterval: device.saveInterval
         };
       })
     );

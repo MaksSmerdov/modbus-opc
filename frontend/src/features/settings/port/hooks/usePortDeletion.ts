@@ -7,9 +7,11 @@ export function usePortDeletion() {
     const { showSuccess, showError } = useSnackbar();
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [portToDelete, setPortToDelete] = useState<string | null>(null);
+    const [devicesCount, setDevicesCount] = useState<number>(0);
 
-    const handleDeleteClick = useCallback((portId: string) => {
+    const handleDeleteClick = useCallback((portId: string, devicesCount: number) => {
         setPortToDelete(portId);
+        setDevicesCount(devicesCount);
         setDeleteConfirmOpen(true);
     }, []);
 
@@ -19,6 +21,7 @@ export function usePortDeletion() {
             await deletePort(portToDelete).unwrap();
             setDeleteConfirmOpen(false);
             setPortToDelete(null);
+            setDevicesCount(0);
             showSuccess('Порт успешно удален');
         } catch (error) {
             console.error('Ошибка удаления порта:', error);
@@ -29,15 +32,16 @@ export function usePortDeletion() {
     const handleDeleteCancel = useCallback(() => {
         setDeleteConfirmOpen(false);
         setPortToDelete(null);
+        setDevicesCount(0);
     }, []);
 
     return {
         deleteConfirmOpen,
         portToDelete,
+        devicesCount,
         isDeleting,
         handleDeleteClick,
         handleDeleteConfirm,
         handleDeleteCancel,
     };
 }
-

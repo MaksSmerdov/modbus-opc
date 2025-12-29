@@ -17,7 +17,6 @@ function addDevicesToManager(manager, devices) {
       timeout: device.timeout,
       retries: device.retries,
       saveInterval: device.saveInterval || 30000,
-      logData: device.logData || false,
       isActive: device.isActive,
       portIsActive: device.portIsActive,
     });

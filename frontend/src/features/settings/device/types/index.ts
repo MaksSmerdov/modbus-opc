@@ -7,7 +7,6 @@ export interface Device {
     timeout: number;
     retries: number;
     saveInterval: number;
-    logData: boolean;
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
@@ -22,7 +21,6 @@ export interface CreateDeviceData {
     timeout?: number; 
     retries?: number; 
     saveInterval?: number; 
-    logData?: boolean; 
     isActive?: boolean;
 }
 

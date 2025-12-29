@@ -47,10 +47,6 @@ const deviceSchema = new mongoose.Schema({
     default: 30000,
     min: 5000
   },
-  logData: {
-    type: Boolean,
-    default: false
-  },
   isActive: {
     type: Boolean,
     default: true

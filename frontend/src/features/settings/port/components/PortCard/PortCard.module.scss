@@ -17,6 +17,14 @@
     border-color: vars.$intoxicate;
   }
 
+  &_active {
+    border-color: vars.$intoxicate !important;
+    
+    :global(.dark) & {
+      border-color: vars.$intoxicate !important;
+    }
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;

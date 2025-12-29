@@ -193,7 +193,6 @@ router.post('/', async (req, res) => {
       timeout,
       retries,
       saveInterval,
-      logData,
       isActive
     } = req.body;
 
@@ -225,7 +224,6 @@ router.post('/', async (req, res) => {
       timeout,
       retries,
       saveInterval,
-      logData,
       isActive
     });
 
@@ -342,7 +340,6 @@ router.put('/:id', async (req, res) => {
       timeout,
       retries,
       saveInterval,
-      logData,
       isActive
     } = req.body;
 
@@ -367,7 +364,6 @@ router.put('/:id', async (req, res) => {
         timeout,
         retries,
         saveInterval,
-        logData,
         isActive
       },
       { new: true, runValidators: true }

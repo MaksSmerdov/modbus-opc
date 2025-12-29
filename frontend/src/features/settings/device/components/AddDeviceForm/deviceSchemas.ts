@@ -8,7 +8,6 @@ export const deviceSchema = z.object({
     timeout: z.number().min(500, 'Таймаут должен быть не менее 500мс').max(30000, 'Таймаут должен быть не более 30000мс').optional(),
     retries: z.number().min(1, 'Количество повторов должно быть от 1 до 15').max(15, 'Количество повторов должно быть от 1 до 15').optional(),
     saveInterval: z.number().min(5000, 'Интервал сохранения должен быть не менее 5000мс').optional(),
-    logData: z.boolean().optional(),
     isActive: z.boolean().optional(),
 });
 

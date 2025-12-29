@@ -1,5 +1,5 @@
 import { Delete, Edit, MoreVert, PowerSettingsNew } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, MenuItem } from '@mui/material';
 import type { Port } from '@/features/settings/port/types';
 import { transliterate } from '@/shared/utils/transliterate';
@@ -7,13 +7,13 @@ import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useThrottle } from '@/shared/hooks/useThrottle';
 import { formatPortInfo, formatDevicesCount } from '../../utils/portUtils';
 import styles from './PortCard.module.scss';
-import { memo, useMemo, useCallback, useState, useRef } from 'react';
+import React, { memo, useMemo, useCallback, useState, useRef } from 'react';
 
 interface PortCardProps {
   port: Port;
   devicesCount?: number;
   onEdit?: (port: Port) => void;
-  onDelete?: (portId: string) => void;
+  onDelete?: (portId: string, devicesCount: number) => void;
   onToggleActive?: (port: Port) => void;
   isPollingActive?: boolean;
 }
@@ -21,11 +21,18 @@ interface PortCardProps {
 export const PortCard = memo(
   ({ port, devicesCount = 0, onEdit, onDelete, onToggleActive, isPollingActive = false }: PortCardProps) => {
     const navigate = useNavigate();
+    const location = useLocation();
+
     const [actionsAnchorEl, setActionsAnchorEl] = useState<HTMLButtonElement | null>(null);
     const actionsButtonRef = useRef<HTMLButtonElement | null>(null);
 
     const portInfo = useMemo(() => formatPortInfo(port), [port]);
     const isActionsOpen = Boolean(actionsAnchorEl);
+
+    const isActive = useMemo(() => {
+      const slug = transliterate(port.name);
+      return location.pathname === `/${slug}`;
+    }, [port.name, location.pathname]);
 
     const handleCardClick = useCallback(
       (e: React.MouseEvent) => {
@@ -50,9 +57,9 @@ export const PortCard = memo(
 
     const handleDelete = useCallback(() => {
       if (onDelete) {
-        onDelete(port._id);
+        onDelete(port._id, devicesCount);
       }
-    }, [onDelete, port._id]);
+    }, [onDelete, port._id, devicesCount]);
 
     const handleToggleInternal = useCallback(() => {
       if (onToggleActive) {
@@ -73,20 +80,20 @@ export const PortCard = memo(
     }, []);
 
     return (
-      <li className={styles['portCard']} onClick={handleCardClick}>
+      <li className={`${styles['portCard']} ${isActive ? styles['portCard_active'] : ''}`} onClick={handleCardClick}>
         <div className={styles['portCard__header']}>
           <div className={styles['portCard__title']}>
             <h4 className={styles['portCard__name']}>
-                <span className={styles['portCard__nameText']}>{port.name}</span>
+              <span className={styles['portCard__nameText']}>{port.name}</span>
             </h4>
           </div>
 
           <div className={styles['portCard__headerActions']} onClick={(e) => e.stopPropagation()}>
             {onToggleActive && (
               <IconButton
-                icon={<PowerSettingsNew fontSize='small' />}
+                icon={<PowerSettingsNew fontSize="small" />}
                 tooltip={port.isActive ? 'Выключить порт' : 'Включить порт'}
-                variant='power'
+                variant="power"
                 active={port.isActive}
                 onClick={handleToggle}
                 isLoading={isToggling}
@@ -96,8 +103,8 @@ export const PortCard = memo(
             {(onEdit || onDelete) && (
               <>
                 <IconButton
-                  icon={<MoreVert fontSize='small' />}
-                  tooltip='Действия'
+                  icon={<MoreVert fontSize="small" />}
+                  tooltip="Действия"
                   ref={actionsButtonRef}
                   onClick={handleActionsClick}
                   disabled={isToggling}
@@ -119,7 +126,7 @@ export const PortCard = memo(
                       disabled={isEditDeleteDisabled || isToggling}
                       className={styles['portCard__menuItem']}
                     >
-                      <Edit fontSize='small' />
+                      <Edit fontSize="small" />
                       <span className={styles['portCard__menuText']}>Редактировать</span>
                     </MenuItem>
                   )}
@@ -132,7 +139,7 @@ export const PortCard = memo(
                       disabled={isEditDeleteDisabled || isToggling}
                       className={styles['portCard__menuItem']}
                     >
-                      <Delete fontSize='small' />
+                      <Delete fontSize="small" />
                       <span className={styles['portCard__menuText']}>Удалить</span>
                     </MenuItem>
                   )}

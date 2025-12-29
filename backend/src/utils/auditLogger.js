@@ -44,7 +44,6 @@ function generateActionDescription(action, entityType, entityName, fieldName, ol
         timeout: 'таймаут',
         retries: 'количество повторов',
         saveInterval: 'интервал сохранения',
-        logData: 'логирование данных',
         connectionType: 'тип подключения',
         host: 'хост',
         tcpPort: 'TCP порт',

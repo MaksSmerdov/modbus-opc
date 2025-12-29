@@ -17,7 +17,6 @@ export function getDefaultDeviceFormValues(
         timeout: initialData?.timeout || 500,
         retries: initialData?.retries || 3,
         saveInterval: initialData?.saveInterval || 30000,
-        logData: initialData?.logData || false,
         isActive: initialData?.isActive !== undefined ? initialData.isActive : true,
     };
 }

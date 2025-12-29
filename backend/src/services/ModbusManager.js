@@ -50,7 +50,6 @@ class ModbusManager {
       timeout: device.timeout || 500,
       retries: device.retries || 3,
       saveInterval: device.saveInterval || 30000,
-      logData: device.logData || false,
       failCount: 0,
       lastSuccess: null,
       lastError: null,

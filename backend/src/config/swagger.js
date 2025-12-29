@@ -312,12 +312,6 @@ const options = {
                             minimum: 5000,
                             example: 30000,
                         },
-                        logData: {
-                            type: 'boolean',
-                            description: 'Сохранять ли данные в БД',
-                            default: true,
-                            example: true,
-                        },
                         isActive: {
                             type: 'boolean',
                             description: 'Активно ли устройство',
@@ -381,11 +375,6 @@ const options = {
                             default: 30000,
                             minimum: 5000,
                             example: 30000,
-                        },
-                        logData: {
-                            type: 'boolean',
-                            default: true,
-                            example: true,
                         },
                         isActive: {
                             type: 'boolean',

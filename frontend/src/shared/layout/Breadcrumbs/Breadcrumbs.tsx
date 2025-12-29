@@ -41,9 +41,10 @@ export const Breadcrumbs: React.FC = () => {
         crumbs.push({ label: params.portSlug });
       }
 
-      // Находим устройство по slug
-      const device = devices?.find((d) => transliterate(d.name) === params.deviceSlug);
+      // Находим устройство по slug (используем d.slug || d.name для поиска)
+      const device = devices?.find((d) => transliterate(d.slug || d.name) === params.deviceSlug);
       if (device) {
+        // Всегда показываем название устройства, а не slug
         crumbs.push({ label: device.name });
       } else {
         crumbs.push({ label: params.deviceSlug });
@@ -57,7 +58,6 @@ export const Breadcrumbs: React.FC = () => {
         crumbs.push({ label: params.portSlug });
       }
     }
-
     return crumbs;
   }, [location.pathname, params, ports, devices]);
 

@@ -440,18 +440,6 @@ router.put('/:id', async (req, res) => {
  */
 router.delete('/:id', async (req, res) => {
   try {
-    // Проверяем, используется ли порт какими-либо устройствами
-    const devicesUsingProfile = await Device.countDocuments({
-      portId: req.params.id,
-    });
-
-    if (devicesUsingProfile > 0) {
-      return res.status(400).json({
-        success: false,
-        error: `Порт используется ${devicesUsingProfile} устройством(и). Удаление невозможно.`,
-      });
-    }
-
     // Получаем данные порта перед удалением
     const port = await Port.findById(req.params.id).lean();
 
