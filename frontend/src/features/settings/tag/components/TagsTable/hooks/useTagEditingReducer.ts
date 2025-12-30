@@ -5,7 +5,7 @@ import { validateTagData, normalizeCreateTagData, normalizeUpdateTagData } from 
 import { handleDataTypeChange } from '@/features/settings/tag/components/TagsTable/utils/handleDataTypeChange';
 import { TAG_TABLE_CONFIG } from '../config';
 import type { Tag, CreateTagData } from '@/features/settings/tag/types';
-import type { TagEditingAction, TagEditingState, EditingRow } from '../types';
+import type { TagEditingAction, TagEditingState } from '../types';
 
 const initialState: TagEditingState = {
     editingRow: null,

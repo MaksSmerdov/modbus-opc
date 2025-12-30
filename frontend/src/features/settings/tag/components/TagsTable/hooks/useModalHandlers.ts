@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { ByteOrder, DataType, FunctionCode, CreateTagData } from '@/features/settings/tag/types';
+import type { ByteOrder, DataType, FunctionCode, CreateTagData, Tag } from '@/features/settings/tag/types';
 import type { UseModalsReturn } from './useModals';
 import type { EditingRow } from '../types';
 
@@ -26,7 +26,7 @@ export interface UseModalHandlersReturn {
         save: (value: FunctionCode) => void;
     };
     details: {
-        open: (tag: unknown) => void;
+        open: (tag: Tag | string | undefined) => void;
         close: () => void;
     };
     clone: {
@@ -100,7 +100,7 @@ export const useModalHandlers = ({
     );
 
     const handleOpenDetails = useCallback(
-        (tag: unknown) => {
+        (tag: Tag | string | undefined) => {
             modals.openModal('details', tag);
         },
         [modals]

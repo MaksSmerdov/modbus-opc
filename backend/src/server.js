@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config/env.js';
 import connectDB from './utils/database.js';
 import { initModbus } from './services/modbusInit.js';
@@ -8,6 +10,10 @@ import apiRouter, { setModbusManager } from './routes/index.js';
 import { setReinitializeFunction } from './utils/modbusReloader.js';
 import { swaggerSpec } from './config/swagger.js';
 import { getServerSettings } from './models/settings/index.js';
+
+// Получаем __dirname для ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const { port, host } = config.server;
@@ -86,33 +92,42 @@ setTimeout(async () => {
 
 // Middleware
 // CORS - разрешаем запросы с любых источников в режиме разработки
-app.use(cors({
-  origin: config.env === 'development' ? '*' : ['http://localhost:5173', 'http://localhost:3000'],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: config.env === 'development' ? '*' : ['http://localhost:5173', 'http://localhost:3000'],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Swagger документация
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'Modbus OPC Server API Documentation',
-}));
-
-// Базовый маршрут
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Modbus OPC Server is running',
-    environment: config.env,
-    host: host,
-    port: port,
-    documentation: `http://${host}:${port}/api-docs`
-  });
-});
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Modbus OPC Server API Documentation',
+  })
+);
 
 // Подключаем все API роуты
 app.use('/api', apiRouter);
+
+// Раздача статических файлов из собранного фронтенда
+const frontendDistPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendDistPath));
+
+// Обработка SPA роутинга - все не-API запросы отправляем на index.html
+app.use((req, res, next) => {
+  // Пропускаем API и Swagger маршруты
+  if (req.path.startsWith('/api') || req.path.startsWith('/api-docs')) {
+    return next();
+  }
+  // Если это не статический файл, отправляем index.html для SPA
+  res.sendFile(path.join(frontendDistPath, 'index.html'));
+});
 
 // Запуск сервера
 app.listen(port, host, () => {

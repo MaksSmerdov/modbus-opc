@@ -25,33 +25,20 @@ export interface MonitorResponse {
 export const monitorApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getMonitor: builder.query<MonitorTagItem[], void>({
-            queryFn: async (arg, api, extraOptions, baseQuery) => {
-                const result = await baseQuery('/data/devices/tags/all', api, extraOptions);
-
-                // Если получили ошибку 503 с "Modbus не инициализирован",
-                // преобразуем её в успешный ответ с пустым массивом
-                if (result.error) {
-                    const errorData = result.error.data as { error?: string } | undefined;
-                    if (
-                        result.error.status === 503 &&
-                        errorData?.error?.includes('Modbus не инициализирован')
-                    ) {
-                        return {
-                            data: [],
-                        };
+            query: () => '/data/devices/tags/all',
+            transformResponse: (response: unknown) => {
+                // Проверяем, является ли ответ ошибкой
+                const errorResponse = response as { error?: string; status?: number } | undefined;
+                if (errorResponse?.error) {
+                    // Если ошибка 503 с "Modbus не инициализирован", возвращаем пустой массив
+                    if (errorResponse.status === 503 && errorResponse.error.includes('Modbus не инициализирован')) {
+                        return [];
                     }
+                    return [];
                 }
-
                 // Если успешный ответ, преобразуем его
-                if (result.data) {
-                    const response = result.data as MonitorResponse;
-                    return {
-                        data: response.data,
-                    };
-                }
-
-                // Возвращаем ошибку как есть
-                return result;
+                const successResponse = response as MonitorResponse;
+                return successResponse.data || [];
             },
             providesTags: ['Tags'],
         }),

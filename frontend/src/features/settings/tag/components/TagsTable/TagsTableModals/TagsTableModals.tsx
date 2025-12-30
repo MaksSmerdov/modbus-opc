@@ -55,15 +55,15 @@ export const TagsTableModals = ({
                 modalHandlers={{
                     byteOrder: {
                         close: modalHandlers.byteOrder.close,
-                        save: modalHandlers.byteOrder.save,
+                        save: (value: unknown) => modalHandlers.byteOrder.save(value as Parameters<typeof modalHandlers.byteOrder.save>[0]),
                     },
                     dataType: {
                         close: modalHandlers.dataType.close,
-                        save: modalHandlers.dataType.save,
+                        save: (value: unknown) => modalHandlers.dataType.save(value as Parameters<typeof modalHandlers.dataType.save>[0]),
                     },
                     functionCode: {
                         close: modalHandlers.functionCode.close,
-                        save: modalHandlers.functionCode.save,
+                        save: (value: unknown) => modalHandlers.functionCode.save(value as Parameters<typeof modalHandlers.functionCode.save>[0]),
                     },
                 }}
             />
