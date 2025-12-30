@@ -450,7 +450,53 @@ router.delete('/:id', async (req, res) => {
       });
     }
 
+    // Находим все устройства, связанные с этим портом
+    const devices = await Device.find({ portId: req.params.id }).lean();
+
+    // Удаляем все теги для каждого устройства
+    let deletedTagsCount = 0;
+    for (const device of devices) {
+      const tags = await Tag.find({ deviceId: device._id }).lean();
+      if (tags.length > 0) {
+        await Tag.deleteMany({ deviceId: device._id });
+        deletedTagsCount += tags.length;
+
+        // Логируем удаление тегов
+        if (req.user) {
+          await logAudit({
+            user: req.user,
+            action: 'delete',
+            entityType: 'tag',
+            entityName: `Теги устройства ${device.name}`,
+            oldValue: `Удалено ${tags.length} тегов`,
+            req,
+          });
+        }
+      }
+    }
+
+    // Удаляем все устройства
+    if (devices.length > 0) {
+      await Device.deleteMany({ portId: req.params.id });
+
+      // Логируем удаление устройств
+      if (req.user) {
+        await logAudit({
+          user: req.user,
+          action: 'delete',
+          entityType: 'device',
+          entityName: `Устройства порта ${port.name}`,
+          oldValue: `Удалено ${devices.length} устройств`,
+          req,
+        });
+      }
+    }
+
+    // Удаляем порт
     await Port.findByIdAndDelete(req.params.id);
+
+    // Реинициализируем Modbus после удаления порта и связанных устройств
+    await reinitializeModbus();
 
     // Логируем удаление порта
     if (req.user) {
@@ -466,7 +512,7 @@ router.delete('/:id', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Порт удален',
+      message: `Порт удален. Удалено устройств: ${devices.length}, тегов: ${deletedTagsCount}`,
     });
   } catch (error) {
     console.error('Ошибка удаления порта:', error);

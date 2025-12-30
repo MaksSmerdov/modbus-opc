@@ -3,46 +3,50 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { TagsTableActions } from '@/features/settings/tag/components/TagsTable/TagsTableActions/TagsTableActions';
 import {
-    TagNameCell,
-    TagAddressCell,
-    TagFunctionCodeCell,
-    TagDataTypeCell,
-    TagLengthCell,
-    TagBitIndexCell,
-    TagByteOrderCell,
+  TagNameCell,
+  TagAddressCell,
+  TagFunctionCodeCell,
+  TagDataTypeCell,
+  TagLengthCell,
+  TagBitIndexCell,
+  TagByteOrderCell,
 } from '@/features/settings/tag/components/TagsTable/cells';
-import { shouldShowLength, shouldShowBitIndex } from '@/features/settings/tag/components/TagsTable/utils/tagsTableUtils';
+import {
+  shouldShowLength,
+  shouldShowBitIndex,
+} from '@/features/settings/tag/components/TagsTable/utils/tagsTableUtils';
 import { TAG_TABLE_CONFIG } from '../config';
 import type { Tag, CreateTagData } from '@/features/settings/tag/types';
 import styles from './TagsTableRow.module.scss';
 
 interface TagsTableRowProps {
-    tag?: Tag;
-    isNew?: boolean;
-    isEditing: boolean;
-    editingData?: Partial<CreateTagData>;
-    hasStringTags: boolean;
-    hasBitsTags: boolean;
-    hasMultiByteTags: boolean;
-    canEdit: boolean;
-    isSelected?: boolean;
-    onSelect?: (checked: boolean) => void;
-    onFieldChange: (field: keyof CreateTagData, value: unknown) => void;
-    onByteOrderClick?: () => void;
-    onDataTypeClick?: () => void;
-    onFunctionCodeClick?: () => void;
-    onEdit?: () => void;
-    onSave: () => void;
-    onCancel: () => void;
-    onDetails?: () => void;
-    onClone?: () => void;
-    isSaving?: boolean;
-    isCloning?: boolean;
-    disabled?: boolean;
-    reorderMode?: boolean;
+  tag?: Tag;
+  isNew?: boolean;
+  isEditing: boolean;
+  editingData?: Partial<CreateTagData>;
+  hasStringTags: boolean;
+  hasBitsTags: boolean;
+  hasMultiByteTags: boolean;
+  canEdit: boolean;
+  isSelected?: boolean;
+  onSelect?: (checked: boolean) => void;
+  onFieldChange: (field: keyof CreateTagData, value: unknown) => void;
+  onByteOrderClick?: () => void;
+  onDataTypeClick?: () => void;
+  onFunctionCodeClick?: () => void;
+  onEdit?: () => void;
+  onSave: () => void;
+  onCancel: () => void;
+  onDetails?: () => void;
+  onClone?: () => void;
+  isSaving?: boolean;
+  isCloning?: boolean;
+  disabled?: boolean;
+  reorderMode?: boolean;
 }
 
-export const TagsTableRow = memo(({
+export const TagsTableRow = memo(
+  ({
     tag,
     isEditing,
     editingData,
@@ -65,21 +69,23 @@ export const TagsTableRow = memo(({
     isCloning = false,
     disabled = false,
     reorderMode = false,
-}: TagsTableRowProps) => {
+  }: TagsTableRowProps) => {
     const currentDataType = useMemo(() => {
-        if (isEditing && editingData?.dataType) {
-            return editingData.dataType;
-        }
-        return tag?.dataType ?? 'int16';
+      if (isEditing && editingData?.dataType) {
+        return editingData.dataType;
+      }
+      return tag?.dataType ?? 'int16';
     }, [isEditing, editingData?.dataType, tag?.dataType]);
 
     const showLength = useMemo(() => shouldShowLength(currentDataType), [currentDataType]);
     const showBitIndex = useMemo(() => shouldShowBitIndex(currentDataType), [currentDataType]);
 
     // Определяем значения для отображения
-    const displayData = isEditing && editingData
+    const displayData =
+      isEditing && editingData
         ? editingData
-        : (tag ? {
+        : tag
+        ? {
             name: tag.name,
             address: tag.address,
             functionCode: tag.functionCode,
@@ -91,181 +97,196 @@ export const TagsTableRow = memo(({
             offset: tag.offset,
             decimals: tag.decimals,
             unit: tag.unit,
-        } : {});
+          }
+        : {};
 
     const clickTimeoutRef = useRef<number | null>(null);
 
     const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging: isSortableDragging,
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging: isSortableDragging,
     } = useSortable({
-        id: tag?._id || 'new',
-        disabled: isEditing || disabled || !canEdit || !reorderMode,
+      id: tag?._id || 'new',
+      disabled: isEditing || disabled || !canEdit || !reorderMode,
     });
 
     const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isSortableDragging ? 0.5 : 1,
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isSortableDragging ? 0.5 : 1,
     };
 
-    const handleRowClick = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
+    const handleRowClick = useCallback(
+      (e: React.MouseEvent<HTMLTableRowElement>) => {
         // Отключаем выделение в режиме перетаскивания
         if (reorderMode) {
-            return;
+          e.preventDefault();
+          e.stopPropagation();
+          return;
         }
         if (canEdit && onSelect && tag && !isEditing && !disabled) {
-            // Не выделяем, если клик был по кнопке, ссылке, меню или другому интерактивному элементу
-            const target = e.target as HTMLElement;
-            if (
-                target.closest('button') ||
-                target.closest('a') ||
-                target.closest('input') ||
-                target.closest('select') ||
-                target.closest('[role="menu"]') ||
-                target.closest('[role="menuitem"]') ||
-                target.closest('.MuiMenu-root') ||
-                target.closest('.MuiMenuItem-root')
-            ) {
-                return;
-            }
+          // Не выделяем, если клик был по кнопке, ссылке, меню или другому интерактивному элементу
+          const target = e.target as HTMLElement;
+          if (
+            target.closest('button') ||
+            target.closest('a') ||
+            target.closest('input') ||
+            target.closest('select') ||
+            target.closest('[role="menu"]') ||
+            target.closest('[role="menuitem"]') ||
+            target.closest('.MuiMenu-root') ||
+            target.closest('.MuiMenuItem-root')
+          ) {
+            return;
+          }
 
-            // Добавляем задержку, чтобы двойной клик не вызывал выделение
-            if (clickTimeoutRef.current) {
-                clearTimeout(clickTimeoutRef.current);
-            }
+          // Добавляем задержку, чтобы двойной клик не вызывал выделение
+          if (clickTimeoutRef.current) {
+            clearTimeout(clickTimeoutRef.current);
+          }
 
-            clickTimeoutRef.current = setTimeout(() => {
-                onSelect(!isSelected);
-                clickTimeoutRef.current = null;
-            }, TAG_TABLE_CONFIG.clickTimeout);
+          clickTimeoutRef.current = setTimeout(() => {
+            onSelect(!isSelected);
+            clickTimeoutRef.current = null;
+          }, TAG_TABLE_CONFIG.clickTimeout);
         }
-    }, [reorderMode, canEdit, onSelect, tag, isEditing, disabled, isSelected]);
+      },
+      [reorderMode, canEdit, onSelect, tag, isEditing, disabled, isSelected]
+    );
 
-    const handleRowDoubleClick = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
+    const handleRowDoubleClick = useCallback(
+      (e: React.MouseEvent<HTMLTableRowElement>) => {
         // Отключаем редактирование в режиме перетаскивания
         if (reorderMode) {
-            return;
+          e.preventDefault();
+          e.stopPropagation();
+          return;
         }
         if (canEdit && onEdit && tag && !isEditing && !disabled) {
-            // Не редактируем, если клик был по кнопке или другому интерактивному элементу
-            const target = e.target as HTMLElement;
-            if (target.closest('button') || target.closest('a') || target.closest('input') || target.closest('select')) {
-                return;
-            }
+          // Не редактируем, если клик был по кнопке или другому интерактивному элементу
+          const target = e.target as HTMLElement;
+          if (target.closest('button') || target.closest('a') || target.closest('input') || target.closest('select')) {
+            return;
+          }
 
-            // Отменяем выделение при двойном клике
-            if (clickTimeoutRef.current) {
-                clearTimeout(clickTimeoutRef.current);
-                clickTimeoutRef.current = null;
-            }
+          // Отменяем выделение при двойном клике
+          if (clickTimeoutRef.current) {
+            clearTimeout(clickTimeoutRef.current);
+            clickTimeoutRef.current = null;
+          }
 
-            onEdit();
+          onEdit();
         }
-    }, [reorderMode, canEdit, onEdit, tag, isEditing, disabled]);
+      },
+      [reorderMode, canEdit, onEdit, tag, isEditing, disabled]
+    );
 
     // В режиме перестановки делаем всю строку перетаскиваемой
-    const rowProps = reorderMode && !isEditing && tag && canEdit
-        ? { ...attributes, ...listeners }
-        : {};
+    // Применяем listeners только если перетаскивание не отключено
+    const isDragDisabled = isEditing || disabled || !canEdit || !reorderMode;
+    const rowProps =
+      reorderMode && !isEditing && tag && canEdit && !isDragDisabled ? { ...attributes, ...listeners } : {};
 
     return (
-        <tr
-            ref={setNodeRef}
-            style={style}
-            className={`${isEditing ? styles['tagsTableRow_editing'] : ''} ${isSelected && canEdit && !isEditing ? styles['tagsTableRow_selected'] : ''} ${isSortableDragging ? styles['tagsTableRow_dragging'] : ''} ${reorderMode && !isEditing && tag ? styles['tagsTableRow_reorderMode'] : ''}`}
-            onClick={handleRowClick}
-            onDoubleClick={handleRowDoubleClick}
-            {...rowProps}
-        >
-            <td>
-                <TagNameCell
-                    value={displayData.name ?? ''}
-                    isEditing={isEditing}
-                    onChange={(value) => onFieldChange('name', value)}
-                />
-            </td>
-            <td>
-                <TagAddressCell
-                    value={displayData.address ?? 0}
-                    isEditing={isEditing}
-                    onChange={(value) => onFieldChange('address', value)}
-                />
-            </td>
-            <td>
-                <TagFunctionCodeCell
-                    value={displayData.functionCode}
-                    isEditing={isEditing}
-                    onChange={(value) => onFieldChange('functionCode', value)}
-                    onFunctionCodeClick={onFunctionCodeClick}
-                />
-            </td>
-            <td>
-                <TagDataTypeCell
-                    value={displayData.dataType}
-                    isEditing={isEditing}
-                    onChange={(value) => onFieldChange('dataType', value)}
-                    onDataTypeClick={onDataTypeClick}
-                />
-            </td>
-            {hasStringTags && (
-                <td>
-                    {showLength ? (
-                        <TagLengthCell
-                            value={displayData.length}
-                            dataType={currentDataType}
-                            isEditing={isEditing}
-                            onChange={(value) => onFieldChange('length', value)}
-                        />
-                    ) : (
-                        <span className={styles['tagsTableRow__empty']}>—</span>
-                    )}
-                </td>
+      <tr
+        ref={setNodeRef}
+        style={style}
+        className={`${isEditing ? styles['tagsTableRow_editing'] : ''} ${
+          isSelected && canEdit && !isEditing ? styles['tagsTableRow_selected'] : ''
+        } ${isSortableDragging ? styles['tagsTableRow_dragging'] : ''} ${
+          reorderMode && !isEditing && tag ? styles['tagsTableRow_reorderMode'] : ''
+        }`}
+        onClick={reorderMode ? undefined : handleRowClick}
+        onDoubleClick={reorderMode ? undefined : handleRowDoubleClick}
+        {...rowProps}
+      >
+        <td>
+          <TagNameCell
+            value={displayData.name ?? ''}
+            isEditing={isEditing}
+            onChange={(value) => onFieldChange('name', value)}
+          />
+        </td>
+        <td>
+          <TagAddressCell
+            value={displayData.address ?? 0}
+            isEditing={isEditing}
+            onChange={(value) => onFieldChange('address', value)}
+          />
+        </td>
+        <td>
+          <TagFunctionCodeCell
+            value={displayData.functionCode}
+            isEditing={isEditing}
+            onChange={(value) => onFieldChange('functionCode', value)}
+            onFunctionCodeClick={onFunctionCodeClick}
+          />
+        </td>
+        <td>
+          <TagDataTypeCell
+            value={displayData.dataType}
+            isEditing={isEditing}
+            onChange={(value) => onFieldChange('dataType', value)}
+            onDataTypeClick={onDataTypeClick}
+          />
+        </td>
+        {hasStringTags && (
+          <td>
+            {showLength ? (
+              <TagLengthCell
+                value={displayData.length}
+                dataType={currentDataType}
+                isEditing={isEditing}
+                onChange={(value) => onFieldChange('length', value)}
+              />
+            ) : (
+              <span className={styles['tagsTableRow__empty']}>—</span>
             )}
-            {hasBitsTags && (
-                <td>
-                    {showBitIndex ? (
-                        <TagBitIndexCell
-                            value={displayData.bitIndex ?? null}
-                            dataType={currentDataType}
-                            isEditing={isEditing}
-                            onChange={(value) => onFieldChange('bitIndex', value)}
-                        />
-                    ) : (
-                        <span className={styles['tagsTableRow__empty']}>—</span>
-                    )}
-                </td>
+          </td>
+        )}
+        {hasBitsTags && (
+          <td>
+            {showBitIndex ? (
+              <TagBitIndexCell
+                value={displayData.bitIndex ?? null}
+                dataType={currentDataType}
+                isEditing={isEditing}
+                onChange={(value) => onFieldChange('bitIndex', value)}
+              />
+            ) : (
+              <span className={styles['tagsTableRow__empty']}>—</span>
             )}
-            {hasMultiByteTags && (
-                <td>
-                    <TagByteOrderCell
-                        value={isEditing && editingData
-                            ? (editingData.byteOrder ?? 'ABCD')
-                            : displayData.byteOrder}
-                        isEditing={isEditing}
-                        onChange={(value) => onFieldChange('byteOrder', value)}
-                        onByteOrderClick={onByteOrderClick}
-                    />
-                </td>
-            )}
-            {canEdit && (
-                <td>
-                    <TagsTableActions
-                        isEditing={isEditing}
-                        onSave={onSave}
-                        onCancel={onCancel}
-                        onDetails={onDetails}
-                        onClone={onClone}
-                        isSaving={isSaving}
-                        isCloning={isCloning}
-                        disabled={disabled || reorderMode}
-                    />
-                </td>
-            )}
-        </tr>
+          </td>
+        )}
+        {hasMultiByteTags && (
+          <td>
+            <TagByteOrderCell
+              value={isEditing && editingData ? editingData.byteOrder ?? 'ABCD' : displayData.byteOrder}
+              isEditing={isEditing}
+              onChange={(value) => onFieldChange('byteOrder', value)}
+              onByteOrderClick={onByteOrderClick}
+            />
+          </td>
+        )}
+        {canEdit && (
+          <td>
+            <TagsTableActions
+              isEditing={isEditing}
+              onSave={onSave}
+              onCancel={onCancel}
+              onDetails={onDetails}
+              onClone={onClone}
+              isSaving={isSaving}
+              isCloning={isCloning}
+              disabled={disabled || reorderMode}
+            />
+          </td>
+        )}
+      </tr>
     );
-});
+  }
+);

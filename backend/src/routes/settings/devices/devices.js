@@ -503,10 +503,28 @@ router.delete('/:id', async (req, res) => {
       });
     }
 
-    await Device.findByIdAndDelete(req.params.id);
+    // Подсчитываем количество тегов перед удалением
+    const tagsCount = await Tag.countDocuments({ deviceId: req.params.id });
 
     // Удаляем все тэги устройства
-    await Tag.deleteMany({ deviceId: req.params.id });
+    if (tagsCount > 0) {
+      await Tag.deleteMany({ deviceId: req.params.id });
+
+      // Логируем удаление тегов
+      if (req.user) {
+        await logAudit({
+          user: req.user,
+          action: 'delete',
+          entityType: 'tag',
+          entityName: `Теги устройства ${device.name}`,
+          oldValue: `Удалено ${tagsCount} тегов`,
+          req
+        });
+      }
+    }
+
+    // Удаляем устройство
+    await Device.findByIdAndDelete(req.params.id);
 
     // Реинициализируем Modbus для удаления устройства из polling
     await reinitializeModbus();
@@ -525,7 +543,7 @@ router.delete('/:id', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Устройство удалено'
+      message: `Устройство удалено. Удалено тегов: ${tagsCount}`
     });
   } catch (error) {
     console.error('Ошибка удаления устройства:', error);
