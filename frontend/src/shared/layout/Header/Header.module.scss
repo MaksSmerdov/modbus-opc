@@ -91,7 +91,8 @@
   &__adminButton,
   &__logoutButton,
   &__monitorButton,
-  &__docsButton {
+  &__docsButton,
+  &__changelogButton {
     @include mixins.theme-color(vars.$text-secondary-light, vars.$text-secondary-dark);
     @include mixins.transition();
 
@@ -108,7 +109,8 @@
 
   &__adminButton_active,
   &__monitorButton_active,
-  &__docsButton_active {
+  &__docsButton_active,
+  &__changelogButton_active {
     background-color: rgba(vars.$intoxicate, 0.15) !important;
     color: vars.$intoxicate !important;
 

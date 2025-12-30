@@ -8,6 +8,7 @@ import { PortPage } from '@/pages/port/PortPage';
 import { DevicePage } from '@/pages/device/DevicePage';
 import { MonitorPage } from '@/pages/monitor/MonitorPage';
 import { ConnectionModesPage } from '@/pages/docs/ConnectionModesPage';
+import { ChangelogPage } from '@/pages/changelog';
 
 export const AppRoutes = () => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -27,6 +28,7 @@ export const AppRoutes = () => {
           }
         />
         <Route path='monitor' element={<MonitorPage />} />
+        <Route path='changelog' element={<ChangelogPage />} />
         <Route path='docs/connection-modes' element={<ConnectionModesPage />} />
         {/* Роут для страницы устройства с тэгами - только для admin и operator */}
         <Route

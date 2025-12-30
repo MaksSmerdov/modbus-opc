@@ -1,0 +1,191 @@
+@use "@/shared/styles/variables" as vars;
+
+.changelogPage {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid vars.$border-color-light;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: vars.$text-primary-light;
+  }
+
+  &__version {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__versionLabel {
+    color: vars.$text-secondary-light;
+    font-size: 14px;
+  }
+
+  &__versionValue {
+    font-weight: 600;
+    color: #1976d2;
+    font-size: 16px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  &__sectionTitle {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: vars.$text-primary-light;
+  }
+
+  &__tags {
+    &List {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+  }
+
+  &__tag {
+    padding: 4px 12px;
+    background-color: #1976d2;
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &__commits {
+    &List {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+  }
+
+  &__commit {
+    padding: 16px;
+    background-color: vars.$bg-primary-light;
+    border: 1px solid vars.$border-color-light;
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  &__commitHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__commitHash {
+    font-family: monospace;
+    font-size: 12px;
+    color: vars.$text-secondary-light;
+    background-color: vars.$bg-secondary-light;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  &__commitSubject {
+    flex: 1;
+    font-weight: 500;
+    color: vars.$text-primary-light;
+    min-width: 200px;
+  }
+
+  &__commitDate {
+    font-size: 14px;
+    color: vars.$text-secondary-light;
+  }
+
+  &__commitAuthor {
+    font-size: 14px;
+    color: vars.$text-secondary-light;
+    margin-bottom: 8px;
+  }
+
+  &__commitBody {
+    font-size: 14px;
+    color: vars.$text-primary-light;
+    white-space: pre-wrap;
+    padding-top: 8px;
+    border-top: 1px solid vars.$border-color-light;
+  }
+
+  &__error {
+    padding: 24px;
+    text-align: center;
+    color: #c62828;
+    font-size: 16px;
+  }
+
+  &__empty {
+    padding: 24px;
+    text-align: center;
+    color: vars.$text-secondary-light;
+    font-size: 14px;
+  }
+}
+
+:global(.dark) {
+  .changelogPage {
+    &__header {
+      border-bottom-color: vars.$border-color-dark;
+    }
+
+    &__title {
+      color: vars.$text-primary-dark;
+    }
+
+    &__sectionTitle {
+      color: vars.$text-primary-dark;
+    }
+
+    &__commit {
+      background-color: vars.$bg-primary-dark;
+      border-color: vars.$border-color-dark;
+
+      &:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    &__commitHash {
+      background-color: vars.$bg-secondary-dark;
+      color: vars.$text-secondary-dark;
+    }
+
+    &__commitSubject {
+      color: vars.$text-primary-dark;
+    }
+
+    &__commitBody {
+      color: vars.$text-primary-dark;
+      border-top-color: vars.$border-color-dark;
+    }
+
+    &__empty {
+      color: vars.$text-secondary-dark;
+    }
+  }
+}
+

@@ -6,6 +6,7 @@ import authRouter from './auth/auth.js';
 import usersRouter from './users/user.js';
 import auditRouter from './audit/audit.js';
 import consoleRouter from './console/console.js';
+import infoRouter from './info/info.js';
 import { authMiddleware, adminOrOperatorMiddleware, adminOnlyMiddleware } from '../middleware/auth.js';
 import { getModbusManager } from '../server.js';
 import { getServerSettings } from '../models/settings/index.js';
@@ -25,6 +26,9 @@ router.use('/audit', authMiddleware, auditRouter);
 
 // API консоли - доступны всем авторизованным
 router.use('/console', consoleRouter);
+
+// API информации о версии - доступно всем авторизованным
+router.use('/info', authMiddleware, infoRouter);
 
 // API конфигурации - только для admin и operator
 router.use('/config', authMiddleware, adminOrOperatorMiddleware, configRouter);

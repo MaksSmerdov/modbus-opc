@@ -29,6 +29,8 @@ export const Breadcrumbs: React.FC = () => {
       crumbs.push({ label: 'Админ панель' });
     } else if (location.pathname === '/monitor') {
       crumbs.push({ label: 'Мониторинг' });
+    } else if (location.pathname === '/changelog') {
+      crumbs.push({ label: 'История изменений' });
     } else if (location.pathname.startsWith('/docs/connection-modes')) {
       crumbs.push({ label: 'Документация' });
     } else if (params.portSlug && params.deviceSlug) {

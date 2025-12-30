@@ -6,7 +6,7 @@ import { PollingToggle } from '@/features/polling';
 import styles from './Header.module.scss';
 import { IconButton } from '@/shared/ui/IconButton/IconButton';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Logout, AdminPanelSettings, Person, Monitor, HelpOutline } from '@mui/icons-material';
+import { Logout, AdminPanelSettings, Person, Monitor, HelpOutline, History } from '@mui/icons-material';
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +20,7 @@ export const Header: React.FC = () => {
   const isAdminPage = useMemo(() => location.pathname === '/admin', [location.pathname]);
   const isMonitorPage = useMemo(() => location.pathname === '/monitor', [location.pathname]);
   const isDocsPage = useMemo(() => location.pathname.startsWith('/docs/connection-modes'), [location.pathname]);
+  const isChangelogPage = useMemo(() => location.pathname === '/changelog', [location.pathname]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -41,6 +42,10 @@ export const Header: React.FC = () => {
     navigate('/docs/connection-modes');
   }, [navigate]);
 
+  const handleChangelog = useCallback(() => {
+    navigate('/changelog');
+  }, [navigate]);
+
   return (
     <header className={styles['header']}>
       <div className={styles['header__left']}>
@@ -48,6 +53,13 @@ export const Header: React.FC = () => {
       </div>
       <div className={styles['header__right']}>
         <ThemeToggle />
+        <IconButton
+          icon={<History />}
+          onClick={handleChangelog}
+          className={`${styles['header__changelogButton']} ${isChangelogPage ? styles['header__changelogButton_active'] : ''}`}
+          tooltip='История изменений'
+          active={isChangelogPage}
+        />
         <IconButton
           icon={<HelpOutline />}
           onClick={handleDocs}
